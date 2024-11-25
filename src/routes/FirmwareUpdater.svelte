@@ -145,7 +145,7 @@
 	onMount(async () => {
 		try {
 			const response = await fetch(
-				'https://api.github.com/repos/btclock/btclock_v3/releases/latest'
+				'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest'
 			);
 
 			if (!response.ok) {
