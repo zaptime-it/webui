@@ -42,7 +42,8 @@
 			"httpAuthUser": "WebUI-Benutzername",
 			"httpAuthPass": "WebUI-Passwort",
 			"httpAuthText": "Schützt nur die WebUI mit einem Passwort, nicht API-Aufrufe.",
-			"currencies": "Währungen"
+			"currencies": "Währungen",
+			"mowMode": "Mow suffixmodus"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

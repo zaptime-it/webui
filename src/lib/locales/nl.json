@@ -42,7 +42,8 @@
 			"httpAuthUser": "WebUI-gebruikersnaam",
 			"httpAuthPass": "WebUI-wachtwoord",
 			"httpAuthText": "Beveiligd enkel WebUI, niet de API.",
-			"currencies": "Valuta's"
+			"currencies": "Valuta's",
+			"mowMode": "Mow achtervoegsel"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

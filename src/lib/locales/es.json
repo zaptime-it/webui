@@ -41,7 +41,8 @@
 			"httpAuthUser": "Nombre de usuario WebUI",
 			"httpAuthPass": "Contraseña WebUI",
 			"httpAuthText": "Solo la WebUI está protegida con contraseña, no las llamadas API.",
-			"currencies": "Monedas"
+			"currencies": "Monedas",
+			"mowMode": "Modo de sufijo Mow"
 		},
 		"control": {
 			"turnOff": "Apagar",

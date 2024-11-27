@@ -653,6 +653,16 @@
 					</Col>
 					<Col md="6" xl="12" xxl="6">
 						<Input
+							disabled={!$settings.suffixPrice}
+							id="mowMode"
+							bind:checked={$settings.mowMode}
+							type="switch"
+							bsSize={$uiSettings.inputSize}
+							label={$_('section.settings.mowMode')}
+						/>
+					</Col>
+					<Col md="6" xl="12" xxl="6">
+						<Input
 							id="disableLeds"
 							bind:checked={$settings.disableLeds}
 							type="switch"
