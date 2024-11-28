@@ -15,6 +15,7 @@
 
 	import { page } from '$app/stores';
 	import { locale, locales, isLoading } from 'svelte-i18n';
+	import ColorSchemeSwitcher from '../components/ColorSchemeSwitcher.svelte';
 
 	export const setLocale = (lang: string) => () => {
 		locale.set(lang);
@@ -88,6 +89,7 @@
 				</DropdownMenu>
 			</Dropdown>
 		{/if}
+		<ColorSchemeSwitcher></ColorSchemeSwitcher>
 	</Collapse>
 </Navbar>
 
