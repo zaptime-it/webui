@@ -137,6 +137,8 @@ test('api page has expected load button', async ({ page }) => {
 
 test('timezone can be negative, zero and positive', async ({ page }) => {
 	await page.goto('/');
+	await page.getByRole('button', { name: 'Show all' }).click();
+
 	const tzOffsetField = 'input#tzOffset';
 
 	for (const val of ['-10', '0', '42']) {
@@ -149,6 +151,7 @@ test('timezone can be negative, zero and positive', async ({ page }) => {
 
 test('time values can not be zero or negative', async ({ page }) => {
 	await page.goto('/');
+	await page.getByRole('button', { name: 'Show all' }).click();
 
 	for (const field of ['#timePerScreen', '#fullRefreshMin', '#minSecPriceUpd']) {
 		for (const val of ['42', '210']) {
@@ -179,6 +182,8 @@ test('time values can not be zero or negative', async ({ page }) => {
 
 test('info message when fetch eur price is enabled', async ({ page }) => {
 	await page.goto('/');
+	await page.getByRole('button', { name: 'Show all' }).click();
+
 	const inputField = 'input#fetchEurPrice';
 	const switchElement = await page.locator(inputField);
 
@@ -197,6 +202,7 @@ test('info message when fetch eur price is enabled', async ({ page }) => {
 
 test('npub values will be converted to hex pubkeys', async ({ page }) => {
 	await page.goto('/');
+	await page.getByRole('button', { name: 'Show all' }).click();
 
 	for (const field of ['#nostrZapPubkey']) {
 		for (const val of ['npub1k5f85zx0xdskyayqpfpc0zq6n7vwqjuuxugkayk72fgynp34cs3qfcvqg2']) {
@@ -212,6 +218,7 @@ test('npub values will be converted to hex pubkeys', async ({ page }) => {
 
 test('empty nostr relay field is not accepted', async ({ page }) => {
 	await page.goto('/');
+	await page.getByRole('button', { name: 'Show all' }).click();
 
 	const nostrRelayField = page.getByLabel('Nostr Relay');
 
