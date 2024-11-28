@@ -81,7 +81,7 @@ jobs:
       - name: Check GZipped directory size
         run: |
           # Set the threshold size in bytes
-          THRESHOLD=419840
+          THRESHOLD=410000
 
           # Calculate the total size of files in the directory
           DIRECTORY_SIZE=$(du -b -s build_gz | awk '{print $1}')
@@ -98,7 +98,7 @@ jobs:
       - name: Build LittleFS
         run: |
           set -e
-          /tmp/mklittlefs/mklittlefs -c build_gz -s 419840 output/littlefs.bin
+          /tmp/mklittlefs/mklittlefs -c build_gz -s 410000 output/littlefs.bin
       - name: Upload artifacts
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
