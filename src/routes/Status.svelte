@@ -136,7 +136,7 @@
 					</ButtonGroup>
 				</div>
 				{#if $settings.actCurrencies && $settings.ownDataSource}
-					<div class="d-flex justify-content-center d-none d-sm-flex mt-2">
+					<div class="d-flex justify-content-center d-sm-flex mt-2">
 						<ButtonGroup size="sm">
 							{#each $settings.actCurrencies as c}
 								<Button

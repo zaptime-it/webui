@@ -41,7 +41,7 @@
 			"nostrZapKey": "Nostr zap pubkey",
 			"nostrRelay": "Nostr Relay",
 			"nostrZapNotify": "Nostr Zap Notifications",
-			"useNostr": "Use Nostr datasource",
+			"useNostr": "Use Nostr data source",
 			"bitaxeHostname": "BitAxe hostname or IP",
 			"bitaxeEnabled": "Enable BitAxe",
 			"nostrZapPubkey": "Nostr Zap pubkey",
@@ -53,9 +53,21 @@
 			"httpAuthPass": "WebUI Password",
 			"httpAuthText": "Only password-protects WebUI, not API-calls.",
 			"currencies": "Currencies",
-			"stagingSource": "Use Staging datasource (for development)",
+			"stagingSource": "Use Staging data source (for development)",
 			"useNostrTooltip": "Very experimental and unstable. Nostr data source is not required for Nostr Zap notifications.",
-			"mowMode": "Mow Suffix Mode"
+			"mowMode": "Mow Suffix Mode",
+			"suffixShareDot": "Suffix compact notation",
+			"section": {
+				"displaysAndLed": "Displays and LEDs",
+				"screenSettings": "Screen specific",
+				"dataSource": "Data source",
+				"extraFeatures": "Extra features",
+				"system": "System"
+			},
+			"ledFlashOnZap": "LED flash on Nostr Zap",
+			"flFlashOnZap": "Frontlight flash on Nostr Zap",
+			"showAll": "Show all",
+			"hideAll": "Hide all"
 		},
 		"control": {
 			"systemInfo": "System info",

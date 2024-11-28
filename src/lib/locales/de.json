@@ -43,7 +43,19 @@
 			"httpAuthPass": "WebUI-Passwort",
 			"httpAuthText": "Schützt nur die WebUI mit einem Passwort, nicht API-Aufrufe.",
 			"currencies": "Währungen",
-			"mowMode": "Mow suffixmodus"
+			"mowMode": "Mow suffixmodus",
+			"suffixShareDot": "Kompakte Suffix-Notation",
+			"section": {
+				"displaysAndLed": "Anzeigen und LEDs",
+				"screenSettings": "Infospezifisch",
+				"dataSource": "Datenquelle",
+				"extraFeatures": "Zusätzliche Funktionen",
+				"system": "System"
+			},
+			"ledFlashOnZap": "LED blinkt bei Nostr Zap",
+			"flFlashOnZap": "Displaybeleuchting bei Nostr Zap",
+			"showAll": "Alle anzeigen",
+			"hideAll": "Alles ausblenden"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

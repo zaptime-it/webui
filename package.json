@@ -58,6 +58,7 @@
 		"msgpack-es": "^0.0.5",
 		"nostr-tools": "^2.7.1",
 		"patch-package": "^8.0.0",
+		"svelte-bootstrap-icons": "^3.1.1",
 		"svelte-i18n": "^4.0.0"
 	},
 	"resolutions": {

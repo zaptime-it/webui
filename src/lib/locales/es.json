@@ -42,7 +42,19 @@
 			"httpAuthPass": "Contraseña WebUI",
 			"httpAuthText": "Solo la WebUI está protegida con contraseña, no las llamadas API.",
 			"currencies": "Monedas",
-			"mowMode": "Modo de sufijo Mow"
+			"mowMode": "Modo de sufijo Mow",
+			"suffixShareDot": "Notación compacta de sufijo",
+			"section": {
+				"displaysAndLed": "Pantallas y LED",
+				"screenSettings": "Específico de la pantalla",
+				"dataSource": "fuente de datos",
+				"extraFeatures": "Funciones adicionales",
+				"system": "Sistema"
+			},
+			"ledFlashOnZap": "LED parpadeante con Nostr Zap",
+			"flFlashOnZap": "Flash de luz frontal con Nostr Zap",
+			"showAll": "Mostrar todo",
+			"hideAll": "Ocultar todo"
 		},
 		"control": {
 			"turnOff": "Apagar",

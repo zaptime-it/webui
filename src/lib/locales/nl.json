@@ -43,7 +43,19 @@
 			"httpAuthPass": "WebUI-wachtwoord",
 			"httpAuthText": "Beveiligd enkel WebUI, niet de API.",
 			"currencies": "Valuta's",
-			"mowMode": "Mow achtervoegsel"
+			"mowMode": "Mow achtervoegsel",
+			"suffixShareDot": "Achtervoegsel compacte notatie",
+			"section": {
+				"displaysAndLed": "Displays en LED's",
+				"screenSettings": "Schermspecifiek",
+				"dataSource": "Gegevensbron",
+				"extraFeatures": "Extra functies",
+				"system": "Systeem"
+			},
+			"ledFlashOnZap": "Knipper LED bij Nostr Zap",
+			"flFlashOnZap": "Knipper displaylicht bij Nostr Zap",
+			"showAll": "Toon alles",
+			"hideAll": "Alles verbergen"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",
