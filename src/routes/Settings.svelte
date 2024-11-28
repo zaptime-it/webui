@@ -21,8 +21,10 @@
 		Tooltip,
 		Row
 	} from '@sveltestrap/sveltestrap';
-	import EyeIcon from '../icons/EyeIcon.svelte';
-	import EyeSlashIcon from '../icons/EyeSlashIcon.svelte';
+
+	import EyeIcon from 'svelte-bootstrap-icons/lib/Eye.svelte';
+	import EyeSlashIcon from 'svelte-bootstrap-icons/lib/EyeSlash.svelte';
+
 	import { derived } from 'svelte/store';
 	import ToggleHeader from '../components/ToggleHeader.svelte';
 

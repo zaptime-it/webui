@@ -39,7 +39,7 @@
 	});
 </script>
 
-<Dropdown inNavbar class="ms-3">
+<Dropdown inNavbar>
 	<DropdownToggle nav caret>
 		{theme === 'auto' ? '🌗' : theme === 'dark' ? '🌙' : '☀️'}
 	</DropdownToggle>
