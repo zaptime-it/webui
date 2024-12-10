@@ -55,7 +55,9 @@
 			"ledFlashOnZap": "Knipper LED bij Nostr Zap",
 			"flFlashOnZap": "Knipper displaylicht bij Nostr Zap",
 			"showAll": "Toon alles",
-			"hideAll": "Alles verbergen"
+			"hideAll": "Alles verbergen",
+			"flOffWhenDark": "Displaylicht uit als het donker is",
+			"luxLightToggleText": "Stel in op 0 om uit te schakelen"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

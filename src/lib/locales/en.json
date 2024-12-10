@@ -67,7 +67,9 @@
 			"ledFlashOnZap": "LED flash on Nostr Zap",
 			"flFlashOnZap": "Frontlight flash on Nostr Zap",
 			"showAll": "Show all",
-			"hideAll": "Hide all"
+			"hideAll": "Hide all",
+			"flOffWhenDark": "Frontlight off when dark",
+			"luxLightToggleText": "Set to 0 to disable"
 		},
 		"control": {
 			"systemInfo": "System info",

@@ -517,6 +517,7 @@
 										max={1000}
 										step={1}
 									/>
+									<FormText>{$_('section.settings.luxLightToggleText')}</FormText>
 								</Col>
 							</Row>
 						{/if}
@@ -576,6 +577,15 @@
 										type="switch"
 										bsSize={$uiSettings.inputSize}
 										label={$_('section.settings.flFlashOnUpd')}
+									/>
+								</Col>
+								<Col md="6" xl="12" xxl="6">
+									<Input
+										id="flOffWhenDark"
+										bind:checked={$settings.flOffWhenDark}
+										type="switch"
+										bsSize={$uiSettings.inputSize}
+										label={$_('section.settings.flOffWhenDark')}
 									/>
 								</Col>
 							{/if}

@@ -54,7 +54,9 @@
 			"ledFlashOnZap": "LED parpadeante con Nostr Zap",
 			"flFlashOnZap": "Flash de luz frontal con Nostr Zap",
 			"showAll": "Mostrar todo",
-			"hideAll": "Ocultar todo"
+			"hideAll": "Ocultar todo",
+			"flOffWhenDark": "Luz de la pantalla cuando está oscuro",
+			"luxLightToggleText": "Establecer en 0 para desactivar"
 		},
 		"control": {
 			"turnOff": "Apagar",
