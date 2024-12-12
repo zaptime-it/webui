@@ -104,8 +104,8 @@
 	export let xxl = xl;
 </script>
 
-<Col {xs} {sm} {md} {lg} {xl} {xxl}>
-	<Card>
+<Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
+	<Card id="status">
 		<CardHeader>
 			<CardTitle>{$_('section.status.title', { default: 'Status' })}</CardTitle>
 		</CardHeader>

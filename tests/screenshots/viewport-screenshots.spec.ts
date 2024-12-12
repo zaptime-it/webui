@@ -4,19 +4,23 @@ import { initMock, settingsJson } from '../shared';
 
 test.beforeEach(initMock);
 
-test('capture screenshots across devices', async ({ page }) => {
+test('capture screenshots across devices', async ({ page }, testInfo) => {
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 
-	await page.screenshot({
-		path: `./test-results/screenshots/default-${test.info().project.name}.png`,
-		fullPage: true
+	const screenshot = await page.screenshot({
+		path: `./test-results/screenshots/default-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`
+	});
+
+	await testInfo.attach(`default`, {
+		body: screenshot,
+		contentType: 'image/png'
 	});
 });
 
-test('capture screenshots across devices with bitaxe screens', async ({ page }) => {
+test('capture screenshots across devices with bitaxe screens', async ({ page }, testInfo) => {
 	settingsJson.screens = [
 		{
 			id: 0,
@@ -71,7 +75,11 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }) 
 	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 
 	await page.screenshot({
-		path: `./test-results/screenshots/bitaxe-${test.info().project.name}.png`,
-		fullPage: true
+		path: `./test-results/screenshots/bitaxe-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`
+	});
+
+	await testInfo.attach(`bitaxe`, {
+		path: `./test-results/screenshots/bitaxe-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`,
+		contentType: 'image/png'
 	});
 });

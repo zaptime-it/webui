@@ -1,6 +1,4 @@
 @import '../node_modules/bootstrap/scss/functions';
-@import '../node_modules/bootstrap/scss/variables';
-@import '../node_modules/bootstrap/scss/variables-dark';
 
 //@import "@fontsource/antonio/latin-400.css";
 @import '@fontsource/ubuntu/latin-400.css';
@@ -14,6 +12,8 @@ $font-family-base: 'Ubuntu';
 $font-size-base: 0.9rem;
 $input-font-size-sm: $font-size-base * 0.875;
 
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/variables-dark';
 // $border-radius:               .675rem;
 
 @import '../node_modules/bootstrap/scss/mixins';
@@ -42,6 +42,40 @@ $input-font-size-sm: $font-size-base * 0.875;
 
 @import '../node_modules/bootstrap/scss/helpers';
 @import '../node_modules/bootstrap/scss/utilities/api';
+
+/* Default state (xs) - sticky */
+.sticky-xs-top {
+	position: sticky;
+	top: 0;
+	z-index: 1020;
+}
+
+@media (max-width: 576px) {
+	main {
+		margin-top: 25px;
+	}
+}
+
+/* Remove sticky behavior for larger screens */
+@media (min-width: 576px) {
+	.sticky-xs-top {
+		position: relative;
+	}
+}
+
+@include color-mode(dark) {
+	.navbar {
+		--bs-navbar-color: $light;
+		background-color: $dark;
+	}
+}
+
+@include color-mode(light) {
+	.navbar {
+		--bs-navbar-color: $dark;
+		background-color: $light;
+	}
+}
 
 nav {
 	margin-bottom: 15px;

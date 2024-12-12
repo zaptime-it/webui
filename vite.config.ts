@@ -76,6 +76,14 @@ export default defineConfig({
 			}
 		}
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				quietDeps: true,
+				silenceDeprecations: ['import']
+			}
+		}
+	},
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		globals: true,

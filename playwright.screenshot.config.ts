@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+	reporter: 'html',
 	use: {
 		locale: 'en-GB',
 		timezoneId: 'Europe/Amsterdam'
@@ -31,6 +32,20 @@ export default defineConfig({
 			use: {
 				viewport: { width: 1512, height: 982 }
 			}
+		},
+		{
+			name: 'MacBook Pro 14 inch',
+			use: {
+				viewport: { width: 1512, height: 982 }
+			}
+		},
+		{
+			name: 'MacBook Pro 14 inch Firefox HiDPI',
+			use: { ...devices['Desktop Firefox HiDPI'], viewport: { width: 1512, height: 982 } }
+		},
+		{
+			name: 'MacBook Pro 14 inch Safari',
+			use: { ...devices['Desktop Safari'], viewport: { width: 1512, height: 982 } }
 		}
 	]
 });

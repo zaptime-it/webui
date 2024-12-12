@@ -12,6 +12,7 @@
 		NavbarBrand,
 		NavbarToggler
 	} from '@sveltestrap/sveltestrap';
+	import { _ } from 'svelte-i18n';
 
 	import { page } from '$app/stores';
 	import { locale, locales, isLoading } from 'svelte-i18n';
@@ -38,7 +39,7 @@
 			return flagMap[lowercaseCode];
 		} else {
 			// Return null for unsupported language codes
-			return null;
+			return flagMap['en'];
 		}
 	};
 
@@ -61,8 +62,23 @@
 	};
 </script>
 
-<Navbar expand="md">
-	<NavbarBrand>&#8383;TClock</NavbarBrand>
+<Navbar expand="md" sticky="xs-top" theme="auto">
+	<NavbarBrand class="d-none d-sm-block">&#8383;TClock</NavbarBrand>
+	<Nav class="d-md-none" pills>
+		<NavItem>
+			<NavLink href="#control" active>{$_('section.control.title', { default: 'Control' })}</NavLink
+			>
+		</NavItem>
+		<NavItem>
+			<NavLink href="#status">{$_('section.status.title', { default: 'Status' })}</NavLink>
+		</NavItem>
+		<NavItem>
+			<NavLink class="nav-link" href="#settings"
+				>{$_('section.settings.title', { default: 'Settings' })}</NavLink
+			>
+		</NavItem>
+	</Nav>
+
 	<NavbarToggler on:click={toggle} />
 
 	<Collapse {isOpen} navbar expand="sm">
@@ -94,4 +110,6 @@
 </Navbar>
 
 <!-- +layout.svelte -->
-<slot />
+<main>
+	<slot />
+</main>

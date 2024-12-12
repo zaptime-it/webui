@@ -105,8 +105,8 @@
 	export let xxl = xl;
 </script>
 
-<Col {xs} {sm} {md} {lg} {xl} {xxl}>
-	<Card>
+<Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
+	<Card id="control">
 		<CardHeader>
 			<CardTitle>{$_('section.control.title', { default: 'Control' })}</CardTitle>
 		</CardHeader>

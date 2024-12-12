@@ -3,6 +3,7 @@
 	import { screenSize, updateScreenSize } from '$lib/screen';
 
 	import { Container, Row, Toast, ToastBody } from '@sveltestrap/sveltestrap';
+	import { replaceState } from '$app/navigation';
 
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -15,12 +16,6 @@
 		fgColor: '0',
 		bgColor: '0'
 	});
-
-	// let uiSettings = writable({
-	// 	inputSize: 'sm',
-	// 	selectClass: '',
-	// 	btnSize: 'lg'
-	// });
 
 	let status = writable({
 		data: ['L', 'O', 'A', 'D', 'I', 'N', 'G'],
@@ -60,7 +55,43 @@
 			});
 	};
 
+	let sections: (HTMLElement | null)[];
+	let observer: IntersectionObserver;
+	const SM_BREAKPOINT = 576;
+
+	const setupObserver = () => {
+		if (window.innerWidth < SM_BREAKPOINT) {
+			observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							const id = entry.target.id;
+							replaceState(`#${id}`);
+
+							// Update nav pills
+							document.querySelectorAll('.nav-link').forEach((link) => {
+								link.classList.remove('active');
+								if (link.getAttribute('href') === `#${id}`) {
+									link.classList.add('active');
+								}
+							});
+						}
+					});
+				},
+				{
+					threshold: 0.25 // Trigger when section is 50% visible
+				}
+			);
+
+			sections = ['control', 'status', 'settings'].map((id) => document.getElementById(id));
+
+			sections.forEach((section) => observer.observe(section!));
+		}
+	};
+
 	onMount(() => {
+		setupObserver();
+
 		fetchSettingsData();
 		fetchStatusData();
 
@@ -72,6 +103,11 @@
 		});
 
 		function handleResize() {
+			if (observer) {
+				observer.disconnect();
+			}
+			setupObserver();
+
 			updateScreenSize();
 		}
 
@@ -125,7 +161,9 @@
 <Container fluid>
 	<Row>
 		<Control bind:settings on:showToast={showToast} bind:status lg="3" xxl="4"></Control>
+
 		<Status bind:settings bind:status lg="6" xxl="4"></Status>
+
 		<Settings bind:settings on:showToast={showToast} on:formReset={fetchSettingsData} lg="3" xxl="4"
 		></Settings>
 	</Row>
