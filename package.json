@@ -13,6 +13,7 @@
 		"postinstall": "patch-package",
 		"test": "npm run test:integration && npm run test:unit",
 		"test:integration": "playwright test",
+		"test:screenshots": "playwright test -c playwright.screenshot.config.ts",
 		"test:unit": "vitest"
 	},
 	"devDependencies": {

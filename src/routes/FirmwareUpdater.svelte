@@ -200,7 +200,7 @@
 	<p>Loading...</p>
 {/if}
 <section class="row row-cols-lg-auto align-items-end">
-	<div class="col-12">
+	<div class="col flex-fill">
 		<label for="firmwareFile" class="form-label">Firmware file ({getFirmwareBinaryName()})</label>
 		<input
 			type="file"
@@ -216,7 +216,7 @@
 			>Update firmware</Button
 		>
 	</div>
-	<div class="col mt-2">
+	<div class="col flex-fill">
 		<label for="webuiFile" class="form-label">WebUI file (littlefs.bin)</label>
 		<input
 			type="file"

@@ -10,7 +10,7 @@ const config: PlaywrightTestConfig = {
 		port: 4173
 	},
 	reporter: process.env.CI ? 'github' : 'list',
-	testDir: 'tests',
+	testDir: 'tests/playwright',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/
 };
 

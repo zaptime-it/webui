@@ -53,6 +53,23 @@ nav {
 
 .btn-group-sm .btn {
 	font-size: 0.8rem;
+	// text-overflow: ellipsis;
+	// white-space: nowrap;
+	// overflow: hidden;
+	// width: 4rem;
+}
+
+.btn-group-sm {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.25rem !important;
+}
+
+/* Remove the border radius override that Bootstrap applies */
+.btn-group-sm > .btn {
+	border-radius: 0.25rem !important;
+	margin: 0 !important;
+	position: relative !important;
 }
 
 #customText {
@@ -63,7 +80,7 @@ nav {
 	.btclock {
 		background: #000;
 		display: flex;
-		font-size: calc(3vw + 3vh);
+		font-size: calc(2vw + 2vh);
 		font-family: 'Antonio', sans-serif;
 		font-weight: 400;
 		padding: 10px;
@@ -104,7 +121,7 @@ nav {
 			flex-direction: column; /* Stack the text and line vertically */
 			align-items: center;
 			justify-content: space-around; /* Distribute items with space between */
-			padding: 10px;
+			padding: 5px;
 		}
 
 		.splitText div:first-child::after {
@@ -116,7 +133,7 @@ nav {
 		}
 
 		.splitText {
-			font-size: calc(0.5vw + 1vh);
+			font-size: calc(0.3vw + 1vh);
 
 			.top-text,
 			.bottom-text {
