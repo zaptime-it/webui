@@ -44,6 +44,8 @@
 			"useNostr": "Use Nostr data source",
 			"bitaxeHostname": "BitAxe hostname or IP",
 			"bitaxeEnabled": "Enable BitAxe",
+			"miningPoolName": "Mining Pool",
+			"miningPoolUser": "Mining Pool username or api key",
 			"nostrZapPubkey": "Nostr Zap pubkey",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
 			"convertingValidNpub": "Converting valid npub to pubkey",

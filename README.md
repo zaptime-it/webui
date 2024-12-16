@@ -30,7 +30,11 @@ Make sure the postinstall script is ran, because otherwise the filenames are to 
 
 ## Deploying
 
-To upload the firmware to the BTClock, you need to GZIP all the files. You can use the python script `gzip_build.py` for that.
+To upload the firmware to the BTClock, you need to GZIP all the files. You can use the python script `gzip_build.py` for that:
+
+```bash
+python3 gzip_build.py
+```
 
 Then you can make a `LittleFS.bin` with mklittlefs:
 

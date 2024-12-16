@@ -698,6 +698,40 @@
 								</Col>
 							</Row>
 						{/if}
+						{#if $settings.miningPoolStatsEnabled}
+							<Row>
+								<Label md={6} for="miningPoolName" size={$uiSettings.inputSize}
+									>{$_('section.settings.miningPoolName')}</Label
+								>
+								<Col md="6">
+									<Input
+										type="text"
+										bind:value={$settings.miningPoolName}
+										name="miningPoolName"
+										id="miningPoolName"
+										bsSize={$uiSettings.inputSize}
+										required
+										minlength="64"
+									></Input>
+								</Col>
+							</Row>
+							<Row>
+								<Label md={6} for="miningPoolUser" size={$uiSettings.inputSize}
+									>{$_('section.settings.miningPoolUser')}</Label
+								>
+								<Col md="6">
+									<Input
+										type="text"
+										bind:value={$settings.miningPoolUser}
+										name="miningPoolUser"
+										id="miningPoolUser"
+										bsSize={$uiSettings.inputSize}
+										required
+										minlength="64"
+									></Input>
+								</Col>
+							</Row>
+						{/if}
 						{#if 'nostrZapNotify' in $settings && $settings['nostrZapNotify']}
 							<Row>
 								<Label md={6} for="nostrZapPubkey" size={$uiSettings.inputSize}
