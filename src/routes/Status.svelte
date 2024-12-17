@@ -151,7 +151,11 @@
 				<hr />
 				{#if $status.data}
 					<section class={lightMode ? 'lightMode' : 'darkMode'}>
-						<Rendered status={$status} className="btclock-wrapper"></Rendered>
+						<Rendered
+							status={$status}
+							className="btclock-wrapper"
+							verticalDesc={$settings.verticalDesc}
+						></Rendered>
 					</section>
 					{$_('section.status.screenCycle')}:
 					<a

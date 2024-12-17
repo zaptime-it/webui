@@ -57,7 +57,8 @@
 			"showAll": "Alle anzeigen",
 			"hideAll": "Alles ausblenden",
 			"flOffWhenDark": "Displaybeleuchtung aus, wenn es dunkel ist",
-			"luxLightToggleText": "Zum Deaktivieren auf 0 setzen"
+			"luxLightToggleText": "Zum Deaktivieren auf 0 setzen",
+			"verticalDesc": "Vrtikale Bildschirmbeschreibung"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

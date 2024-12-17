@@ -158,12 +158,18 @@ nav {
 			padding: 5px;
 		}
 
-		.splitText div:first-child::after {
+		&.verticalDesc > .splitText:first-child {
+			.textcontainer {
+				transform: rotate(-90deg);
+			}
+		}
+
+		.splitText .textcontainer :first-child::after {
 			display: block;
 			content: '';
 			margin-top: 0px;
 			border-bottom: 2px solid;
-			margin-bottom: 3px;
+			// margin-bottom: 3px;
 		}
 
 		.splitText {

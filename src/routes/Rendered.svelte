@@ -9,7 +9,7 @@
 	};
 
 	export let className = 'btclock-wrapper';
-
+	export let verticalDesc = false;
 	// Define the currency symbols as constants
 	const CURRENCY_USD = '$';
 	const CURRENCY_EUR = '[';
@@ -44,15 +44,16 @@
 </script>
 
 <div class={className} id={className}>
-	<div class="btclock">
+	<div class={'btclock' + (verticalDesc ? ' verticalDesc' : '')}>
 		{#each status.data as char}
 			{#if isSplitText(char)}
 				<div class="splitText">
-					{#if char.split('/').length}
-						<span class="top-text">{char.split('/')[0]}</span>
-						<hr />
-						<span class="bottom-text">{char.split('/')[1]}</span>
-					{/if}
+					<div class="textcontainer">
+						{#if char.split('/').length}
+							<span class="top-text">{char.split('/')[0]}</span>
+							<span class="bottom-text">{char.split('/')[1]}</span>
+						{/if}
+					</div>
 					<!-- {#each char.split('/') as part}
 						<div class="flex-items">{part}</div>
 					{/each} -->

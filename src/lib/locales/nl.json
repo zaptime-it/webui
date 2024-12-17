@@ -57,7 +57,8 @@
 			"showAll": "Toon alles",
 			"hideAll": "Alles verbergen",
 			"flOffWhenDark": "Displaylicht uit als het donker is",
-			"luxLightToggleText": "Stel in op 0 om uit te schakelen"
+			"luxLightToggleText": "Stel in op 0 om uit te schakelen",
+			"verticalDesc": "Verticale schermbeschrijving"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

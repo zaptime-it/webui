@@ -56,7 +56,8 @@
 			"showAll": "Mostrar todo",
 			"hideAll": "Ocultar todo",
 			"flOffWhenDark": "Luz de la pantalla cuando está oscuro",
-			"luxLightToggleText": "Establecer en 0 para desactivar"
+			"luxLightToggleText": "Establecer en 0 para desactivar",
+			"verticalDesc": "Descripción de pantalla vertical"
 		},
 		"control": {
 			"turnOff": "Apagar",

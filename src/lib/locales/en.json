@@ -69,7 +69,8 @@
 			"showAll": "Show all",
 			"hideAll": "Hide all",
 			"flOffWhenDark": "Frontlight off when dark",
-			"luxLightToggleText": "Set to 0 to disable"
+			"luxLightToggleText": "Set to 0 to disable",
+			"verticalDesc": "Use vertical screen description"
 		},
 		"control": {
 			"systemInfo": "System info",

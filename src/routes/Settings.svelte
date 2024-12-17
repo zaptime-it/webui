@@ -318,6 +318,15 @@
 									label={$_('section.settings.suffixShareDot')}
 								/>
 							</Col>
+							<Col md="6" xl="12" xxl="6">
+								<Input
+									id="verticalDesc"
+									bind:checked={$settings.verticalDesc}
+									type="switch"
+									bsSize={$uiSettings.inputSize}
+									label={$_('section.settings.verticalDesc')}
+								/>
+							</Col>
 
 							{#if !$settings.actCurrencies}
 								<Col md="6" xl="12" xxl="6">
