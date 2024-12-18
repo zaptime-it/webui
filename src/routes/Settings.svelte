@@ -705,14 +705,16 @@
 								>
 								<Col md="6">
 									<Input
-										type="text"
+										type="select"
 										bind:value={$settings.miningPoolName}
 										name="miningPoolName"
 										id="miningPoolName"
 										bsSize={$uiSettings.inputSize}
-										required
-										minlength="64"
-									></Input>
+										class={$uiSettings.selectClass}
+									>
+										<option value="braiins">Braiins Pool</option>
+										<option value="ocean">Ocean</option>
+									</Input>
 								</Col>
 							</Row>
 							<Row>
@@ -727,7 +729,6 @@
 										id="miningPoolUser"
 										bsSize={$uiSettings.inputSize}
 										required
-										minlength="64"
 									></Input>
 								</Col>
 							</Row>
@@ -808,6 +809,17 @@
 										type="switch"
 										bsSize={$uiSettings.inputSize}
 										label="{$_('section.settings.bitaxeEnabled')} ({$_('restartRequired')})"
+									/>
+								</Col>
+							{/if}
+							{#if 'miningPoolStatsEnabled' in $settings}
+								<Col md="6" xl="12" xxl="6">
+									<Input
+										id="miningPoolStatsEnabled"
+										bind:checked={$settings.miningPoolStatsEnabled}
+										type="switch"
+										bsSize={$uiSettings.inputSize}
+										label="{$_('section.settings.miningPoolStatsEnabled')} ({$_('restartRequired')})"
 									/>
 								</Col>
 							{/if}

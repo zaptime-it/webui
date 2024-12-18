@@ -44,6 +44,7 @@
 			"useNostr": "Use Nostr data source",
 			"bitaxeHostname": "BitAxe hostname or IP",
 			"bitaxeEnabled": "Enable BitAxe",
+			"miningPoolStatsEnabled": "Enable Mining Pool Stats",
 			"miningPoolName": "Mining Pool",
 			"miningPoolUser": "Mining Pool username or api key",
 			"nostrZapPubkey": "Nostr Zap pubkey",

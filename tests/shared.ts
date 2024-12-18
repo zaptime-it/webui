@@ -45,7 +45,7 @@ export const settingsJson = {
 	gitTag: '3.1.9',
 	bitaxeEnabled: false,
 	bitaxeHostname: 'bitaxe1',
-	miningPoolStatsEnabled: true,
+	miningPoolStatsEnabled: false,
 	miningPoolName: 'ocean',
 	miningPoolUser: '38Qkkei3SuF1Eo45BaYmRHUneRD54yyTFy',
 	nostrZapNotify: true,
