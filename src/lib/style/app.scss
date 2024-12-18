@@ -299,3 +299,7 @@ nav {
 input[type='number'] {
 	text-align: right;
 }
+
+.lightMode .bitaxelogo {
+	filter: brightness(0) saturate(100%);
+}

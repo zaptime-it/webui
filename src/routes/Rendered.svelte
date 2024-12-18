@@ -59,7 +59,7 @@
 					{/each} -->
 				</div>
 			{:else if char.startsWith('mdi')}
-				<div class="digit icon">
+				<div class={'digit icon' + (char.endsWith('bitaxe') ? ' icon-img' : '')}>
 					{#if char.endsWith('rocket')}
 						<RocketIcon></RocketIcon>
 					{/if}
@@ -68,6 +68,9 @@
 					{/if}
 					{#if char.endsWith('bolt')}
 						<ZapIcon></ZapIcon>
+					{/if}
+					{#if char.endsWith('bitaxe')}
+						<img src="/bitaxe.webp" class="bitaxelogo" />
 					{/if}
 				</div>
 			{:else if char === 'STS'}
@@ -83,8 +86,22 @@
 	</div>
 </div>
 
-<style>
+<style lang="scss">
 	.icon {
 		fill: currentColor;
+	}
+
+	.btclock-wrapper .btclock .icon.icon-img {
+		// padding: 0 15px;
+		aspect-ratio: 1;
+		width: calc(100 / 7);
+
+		img {
+			max-width: 95%;
+		}
+	}
+
+	.bitaxelogo {
+		transform: rotate(-90deg);
 	}
 </style>

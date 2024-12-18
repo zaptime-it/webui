@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { initMock, settingsJson } from '../shared';
+import { initMock, settingsJson, statusJson } from '../shared';
 
 test.beforeEach(initMock);
 
@@ -68,6 +68,9 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }, 
 			enabled: true
 		}
 	];
+
+	statusJson.data = ['mdi:bitaxe', '', 'mdi:pickaxe', '6', '3', '7', 'GH/S'];
+	statusJson.rendered = ['mdi:bitaxe', '', 'mdi:pickaxe', '6', '3', '7', 'GH/S'];
 
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
