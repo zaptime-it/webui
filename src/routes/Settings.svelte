@@ -698,7 +698,7 @@
 								</Col>
 							</Row>
 						{/if}
-						{#if $settings.miningPoolStatsEnabled}
+						{#if $settings.miningPoolStats}
 							<Row>
 								<Label md={6} for="miningPoolName" size={$uiSettings.inputSize}
 									>{$_('section.settings.miningPoolName')}</Label
@@ -812,14 +812,14 @@
 									/>
 								</Col>
 							{/if}
-							{#if 'miningPoolStatsEnabled' in $settings}
+							{#if 'miningPoolStats' in $settings}
 								<Col md="6" xl="12" xxl="6">
 									<Input
-										id="miningPoolStatsEnabled"
-										bind:checked={$settings.miningPoolStatsEnabled}
+										id="miningPoolStats"
+										bind:checked={$settings.miningPoolStats}
 										type="switch"
 										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.miningPoolStatsEnabled')} ({$_('restartRequired')})"
+										label="{$_('section.settings.miningPoolStats')} ({$_('restartRequired')})"
 									/>
 								</Col>
 							{/if}
