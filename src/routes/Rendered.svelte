@@ -70,7 +70,7 @@
 						<ZapIcon></ZapIcon>
 					{/if}
 					{#if char.endsWith('bitaxe')}
-						<img src="/bitaxe.webp" class="bitaxelogo" />
+						<img src="/bitaxe.webp" class="bitaxelogo" alt="BitAxe logo" />
 					{/if}
 				</div>
 			{:else if char === 'STS'}
