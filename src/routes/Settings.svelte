@@ -3,6 +3,7 @@
 	import { PUBLIC_BASE_URL } from '$lib/config';
 	import { uiSettings } from '$lib/uiSettings';
 	import { createEventDispatcher } from 'svelte';
+	import SettingsSwitch from '../components/SettingsSwitch.svelte';
 
 	import { _ } from 'svelte-i18n';
 	import {
@@ -13,12 +14,6 @@
 		CardTitle,
 		Col,
 		Form,
-		FormText,
-		Input,
-		InputGroup,
-		InputGroupText,
-		Label,
-		Tooltip,
 		Row
 	} from '@sveltestrap/sveltestrap';
 
@@ -27,6 +22,8 @@
 
 	import { derived } from 'svelte/store';
 	import ToggleHeader from '../components/ToggleHeader.svelte';
+	import SettingsInput from '../components/SettingsInput.svelte';
+	import SettingsSelect from '../components/SettingsSelect.svelte';
 
 	export let settings;
 
@@ -156,7 +153,7 @@
 		}
 	};
 
-	const checkValidNostrPubkey = (key) => {
+	const checkValidNostrPubkey = (key: string) => {
 		if (isValidNpub($settings[key])) {
 			dispatch('showToast', {
 				color: 'info',
@@ -258,6 +255,7 @@
 			</div>
 			<CardTitle>{$_('section.settings.title', { default: 'Settings' })}</CardTitle>
 		</CardHeader>
+
 		<CardBody>
 			<Form on:submit={onSave} class="clearfix">
 				<Row>
@@ -267,107 +265,86 @@
 						isOpen={screenSettingsIsOpen}
 					>
 						<Row>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="stealFocus"
-									bind:checked={$settings.stealFocus}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.StealFocusOnNewBlock')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="mcapBigChar"
-									bind:checked={$settings.mcapBigChar}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.useBigCharsMcap')}
-								/>
-							</Col>
-
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="useBlkCountdown"
-									bind:checked={$settings.useBlkCountdown}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.useBlkCountdown')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="useSatsSymbol"
-									bind:checked={$settings.useSatsSymbol}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.useSatsSymbol')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="suffixPrice"
-									bind:checked={$settings.suffixPrice}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.suffixPrice')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									disabled={!$settings.suffixPrice}
-									id="mowMode"
-									bind:checked={$settings.mowMode}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.mowMode')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									disabled={!$settings.suffixPrice}
-									id="suffixShareDot"
-									bind:checked={$settings.suffixShareDot}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.suffixShareDot')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="verticalDesc"
-									bind:checked={$settings.verticalDesc}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.verticalDesc')}
-								/>
-							</Col>
+							<SettingsSwitch
+								id="stealFocus"
+								bind:checked={$settings.stealFocus}
+								label={$_('section.settings.StealFocusOnNewBlock')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
+							<SettingsSwitch
+								id="mcapBigChar"
+								bind:checked={$settings.mcapBigChar}
+								label={$_('section.settings.useBigCharsMcap')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
+							<SettingsSwitch
+								id="useBlkCountdown"
+								bind:checked={$settings.useBlkCountdown}
+								label={$_('section.settings.useBlkCountdown')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
+							<SettingsSwitch
+								id="useSatsSymbol"
+								bind:checked={$settings.useSatsSymbol}
+								label={$_('section.settings.useSatsSymbol')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
+							<SettingsSwitch
+								id="suffixPrice"
+								bind:checked={$settings.suffixPrice}
+								label={$_('section.settings.suffixPrice')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
+							<SettingsSwitch
+								id="mowMode"
+								bind:checked={$settings.mowMode}
+								label={$_('section.settings.mowMode')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+								disabled={!$settings.suffixPrice}
+							/>
+							<SettingsSwitch
+								id="suffixShareDot"
+								bind:checked={$settings.suffixShareDot}
+								label={$_('section.settings.suffixShareDot')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+								disabled={!$settings.suffixPrice}
+							/>
+							<SettingsSwitch
+								id="verticalDesc"
+								bind:checked={$settings.verticalDesc}
+								label={$_('section.settings.verticalDesc')}
+								size={$uiSettings.inputSize}
+								col={{ md: '6', xl: '12', xxl: '6' }}
+							/>
 
 							{#if !$settings.actCurrencies}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="fetchEurPrice"
-										bind:checked={$settings.fetchEurPrice}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.fetchEuroPrice')} ({$_('restartRequired')})"
-									/>
-								</Col>
+								<SettingsSwitch
+									id="fetchEurPrice"
+									bind:checked={$settings.fetchEurPrice}
+									label="{$_('section.settings.fetchEuroPrice')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+									col={{ md: '6', xl: '12', xxl: '6' }}
+								/>
 							{/if}
 						</Row>
 						<Row>
 							<h5>{$_('section.settings.screens')}</h5>
 							{#if $settings.screens}
 								{#each $settings.screens as s}
-									<Col md="6" xl="12" xxl="6">
-										<Input
-											id="screens_{s.id}"
-											bind:checked={s.enabled}
-											type="switch"
-											bsSize={$uiSettings.inputSize}
-											label={s.name}
-										/>
-									</Col>
+									<SettingsSwitch
+										id="screens_{s.id}"
+										bind:checked={s.enabled}
+										label={s.name}
+										size={$uiSettings.inputSize}
+										col={{ md: '6', xl: '12', xxl: '6' }}
+									/>
 								{/each}
 							{/if}
 						</Row>
@@ -401,217 +378,157 @@
 						header={$_('section.settings.section.displaysAndLed')}
 						isOpen={displaysAndLedIsOpen}
 					>
-						<Row>
-							<Label md={6} for="textColor" size={$uiSettings.inputSize}
-								>{$_('section.settings.textColor', { default: 'Text color' })}</Label
-							>
-							<Col md="6">
-								<Input
-									type="select"
-									bind:value={textColor}
-									name="select"
-									id="textColor"
-									on:change={setTextColor}
-									bsSize={$uiSettings.inputSize}
-									class={$uiSettings.selectClass}
-								>
-									<option value="0">{$_('colors.black')} on {$_('colors.white')}</option>
-									<option value="1">{$_('colors.white')} on {$_('colors.black')}</option>
-								</Input>
-							</Col>
-						</Row>
+						<SettingsSelect
+							id="textColor"
+							label={$_('section.settings.textColor')}
+							bind:value={textColor}
+							options={[
+								[$_('colors.black') + ' on ' + $_('colors.white'), '0'],
+								[$_('colors.white') + ' on ' + $_('colors.black'), '1']
+							]}
+							size={$uiSettings.inputSize}
+							selectClass={$uiSettings.selectClass}
+							onChange={setTextColor}
+						/>
+
+						<SettingsInput
+							id="timePerScreen"
+							label={$_('section.settings.timePerScreen')}
+							bind:value={$settings.timePerScreen}
+							type="number"
+							min={1}
+							step="1"
+							required={true}
+							suffix={$_('time.minutes')}
+							size={$uiSettings.inputSize}
+						/>
+
+						<SettingsInput
+							id="fullRefreshMin"
+							label={$_('section.settings.fullRefreshEvery')}
+							bind:value={$settings.fullRefreshMin}
+							type="number"
+							min={1}
+							step="1"
+							required={true}
+							suffix={$_('time.minutes')}
+							size={$uiSettings.inputSize}
+						/>
+
+						<SettingsInput
+							id="minSecPriceUpd"
+							label={$_('section.settings.timeBetweenPriceUpdates')}
+							bind:value={$settings.minSecPriceUpd}
+							type="number"
+							min={1}
+							step="1"
+							suffix={$_('time.seconds')}
+							helpText={$_('section.settings.shortAmountsWarning')}
+							size={$uiSettings.inputSize}
+						/>
+
+						<SettingsInput
+							id="ledBrightness"
+							label={$_('section.settings.ledBrightness')}
+							bind:value={$settings.ledBrightness}
+							type="range"
+							min={0}
+							max={255}
+							step={1}
+							size={$uiSettings.inputSize}
+						/>
+
+						{#if $settings.hasFrontlight && !$settings.flDisable}
+							<SettingsInput
+								id="flMaxBrightness"
+								label={$_('section.settings.flMaxBrightness')}
+								bind:value={$settings.flMaxBrightness}
+								type="range"
+								min={0}
+								max={4095}
+								step={1}
+								size={$uiSettings.inputSize}
+								onChange={onFlBrightnessChange}
+							/>
+
+							<SettingsInput
+								id="flEffectDelay"
+								label={$_('section.settings.flEffectDelay')}
+								bind:value={$settings.flEffectDelay}
+								type="range"
+								min={5}
+								max={300}
+								step={1}
+								size={$uiSettings.inputSize}
+							/>
+						{/if}
+
+						{#if !$settings.flDisable && $settings.hasLightLevel}
+							<SettingsInput
+								id="luxLightToggle"
+								label={`${$_('section.settings.luxLightToggle')} (${$settings.luxLightToggle})`}
+								bind:value={$settings.luxLightToggle}
+								type="range"
+								min={0}
+								max={1000}
+								step={1}
+								helpText={$_('section.settings.luxLightToggleText')}
+								size={$uiSettings.inputSize}
+							/>
+						{/if}
 
 						<Row>
-							<Label md={6} for="timePerScreen" size={$uiSettings.inputSize}
-								>{$_('section.settings.timePerScreen')}</Label
-							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="number"
-										id="timePerScreen"
-										min={1}
-										step="1"
-										required
-										bind:value={$settings.timePerScreen}
-									/>
-									<InputGroupText>{$_('time.minutes')}</InputGroupText>
-								</InputGroup>
-							</Col>
-						</Row>
-						<Row>
-							<Label md={6} for="fullRefreshMin" size={$uiSettings.inputSize}
-								>{$_('section.settings.fullRefreshEvery')}</Label
-							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="number"
-										id="fullRefreshMin"
-										min={1}
-										step="1"
-										required
-										bind:value={$settings.fullRefreshMin}
-									/>
-									<InputGroupText>{$_('time.minutes')}</InputGroupText>
-								</InputGroup>
-							</Col>
-						</Row>
-						<Row>
-							<Label md={6} for="minSecPriceUpd" size={$uiSettings.inputSize}
-								>{$_('section.settings.timeBetweenPriceUpdates')}</Label
-							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="number"
-										id="minSecPriceUpd"
-										min={1}
-										step="1"
-										bind:value={$settings.minSecPriceUpd}
-									/>
-									<InputGroupText>{$_('time.seconds')}</InputGroupText>
-								</InputGroup>
-								<FormText>{$_('section.settings.shortAmountsWarning')}</FormText>
-							</Col>
-						</Row>
-						<Row>
-							<Label md={6} for="ledBrightness" size={$uiSettings.inputSize}
-								>{$_('section.settings.ledBrightness')}</Label
-							>
-							<Col md="6">
-								<Input
-									type="range"
-									name="ledBrightness"
-									id="ledBrightness"
-									bind:value={$settings.ledBrightness}
-									min={0}
-									max={255}
-									step={1}
-								/>
-							</Col>
-						</Row>
-						{#if $settings.hasFrontlight && !$settings.flDisable}
-							<Row>
-								<Label md={6} for="flMaxBrightness" size={$uiSettings.inputSize}
-									>{$_('section.settings.flMaxBrightness')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="range"
-										name="flMaxBrightness"
-										id="flMaxBrightness"
-										bind:value={$settings.flMaxBrightness}
-										on:change={onFlBrightnessChange}
-										min={0}
-										max={4095}
-										step={1}
-									/>
-								</Col>
-							</Row>
-							<Row>
-								<Label md={6} for="flEffectDelay" size={$uiSettings.inputSize}
-									>{$_('section.settings.flEffectDelay')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="range"
-										name="flEffectDelay"
-										id="flEffectDelay"
-										bind:value={$settings.flEffectDelay}
-										min={5}
-										max={300}
-										step={1}
-									/>
-								</Col>
-							</Row>
-						{/if}
-						{#if !$settings.flDisable && $settings.hasLightLevel}
-							<Row>
-								<Label md={6} for="luxLightToggle" size={$uiSettings.inputSize}
-									>{$_('section.settings.luxLightToggle')} ({$settings.luxLightToggle})</Label
-								>
-								<Col md="6">
-									<Input
-										type="range"
-										name="luxLightToggle"
-										id="luxLightToggle"
-										bind:value={$settings.luxLightToggle}
-										min={0}
-										max={1000}
-										step={1}
-									/>
-									<FormText>{$_('section.settings.luxLightToggleText')}</FormText>
-								</Col>
-							</Row>
-						{/if}
-						<Row>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="ledTestOnPower"
-									bind:checked={$settings.ledTestOnPower}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.ledPowerOnTest')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="ledFlashOnUpd"
-									bind:checked={$settings.ledFlashOnUpd}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.ledFlashOnBlock')}
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="disableLeds"
-									bind:checked={$settings.disableLeds}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label={$_('section.settings.disableLeds')}
-								/>
-							</Col>
+							<SettingsSwitch
+								id="ledTestOnPower"
+								bind:checked={$settings.ledTestOnPower}
+								label={$_('section.settings.ledPowerOnTest')}
+								size={$uiSettings.inputSize}
+							/>
+
+							<SettingsSwitch
+								id="ledFlashOnUpd"
+								bind:checked={$settings.ledFlashOnUpd}
+								label={$_('section.settings.ledFlashOnBlock')}
+								size={$uiSettings.inputSize}
+							/>
+
+							<SettingsSwitch
+								id="disableLeds"
+								bind:checked={$settings.disableLeds}
+								label={$_('section.settings.disableLeds')}
+								size={$uiSettings.inputSize}
+							/>
+
 							{#if $settings.hasFrontlight}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="flDisable"
-										bind:checked={$settings.flDisable}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label={$_('section.settings.flDisable')}
-									/>
-								</Col>
+								<SettingsSwitch
+									id="flDisable"
+									bind:checked={$settings.flDisable}
+									label={$_('section.settings.flDisable')}
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
+
 							{#if $settings.hasFrontlight && !$settings.flDisable}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="flAlwaysOn"
-										bind:checked={$settings.flAlwaysOn}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label={$_('section.settings.flAlwaysOn')}
-									/>
-								</Col>
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="flFlashOnUpd"
-										bind:checked={$settings.flFlashOnUpd}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label={$_('section.settings.flFlashOnUpd')}
-									/>
-								</Col>
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="flOffWhenDark"
-										bind:checked={$settings.flOffWhenDark}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label={$_('section.settings.flOffWhenDark')}
-									/>
-								</Col>
+								<SettingsSwitch
+									id="flAlwaysOn"
+									bind:checked={$settings.flAlwaysOn}
+									label={$_('section.settings.flAlwaysOn')}
+									size={$uiSettings.inputSize}
+								/>
+
+								<SettingsSwitch
+									id="flFlashOnUpd"
+									bind:checked={$settings.flFlashOnUpd}
+									label={$_('section.settings.flFlashOnUpd')}
+									size={$uiSettings.inputSize}
+								/>
+
+								<SettingsSwitch
+									id="flOffWhenDark"
+									bind:checked={$settings.flOffWhenDark}
+									label={$_('section.settings.flOffWhenDark')}
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
 						</Row>
 					</ToggleHeader>
@@ -620,69 +537,40 @@
 						header={$_('section.settings.section.dataSource')}
 						isOpen={dataSourceIsOpen}
 					>
+						<SettingsInput
+							id="mempoolInstance"
+							label={$_('section.settings.mempoolnstance')}
+							bind:value={$settings.mempoolInstance}
+							disabled={$settings.ownDataSource}
+							required={true}
+							helpText={$_('section.settings.mempoolInstanceHelpText')}
+							size={$uiSettings.inputSize}
+						/>
+
 						<Row>
-							<Label md={6} for="mempoolInstance" size="sm"
-								>{$_('section.settings.mempoolnstance')}</Label
-							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="text"
-										bind:value={$settings.mempoolInstance}
-										name="mempoolInstance"
-										id="mempoolInstance"
-										disabled={$settings.ownDataSource}
-										bsSize="sm"
-										required
-									></Input>
-									<InputGroupText>
-										<Input
-											addon
-											type="checkbox"
-											bind:checked={$settings.mempoolSecure}
-											disabled={$settings.ownDataSource}
-											bsSize={$uiSettings.inputSize}
-										/>
-										HTTPS
-									</InputGroupText>
-								</InputGroup>
-								<FormText>{$_('section.settings.mempoolInstanceHelpText')}</FormText>
-							</Col>
-						</Row>
-						<Row>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="ownDataSource"
-									bind:checked={$settings.ownDataSource}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label="{$_('section.settings.ownDataSource')} ({$_('restartRequired')})"
-								/>
-							</Col>
+							<SettingsSwitch
+								id="ownDataSource"
+								bind:checked={$settings.ownDataSource}
+								label="{$_('section.settings.ownDataSource')} ({$_('restartRequired')})"
+								size={$uiSettings.inputSize}
+							/>
+
 							{#if $settings.nostrRelay}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="useNostr"
-										bind:checked={$settings.useNostr}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.useNostr')} ({$_('restartRequired')})"
-									></Input>
-									<Tooltip target="useNostr" placement="left">
-										{$_('section.settings.useNostrTooltip')}
-									</Tooltip>
-								</Col>
+								<SettingsSwitch
+									id="useNostr"
+									bind:checked={$settings.useNostr}
+									label="{$_('section.settings.useNostr')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
+
 							{#if 'stagingSource' in $settings}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="stagingSource"
-										bind:checked={$settings.stagingSource}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.stagingSource')} ({$_('restartRequired')})"
-									/>
-								</Col>
+								<SettingsSwitch
+									id="stagingSource"
+									bind:checked={$settings.stagingSource}
+									label="{$_('section.settings.stagingSource')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
 						</Row>
 					</ToggleHeader>
@@ -692,334 +580,213 @@
 						isOpen={extraFeaturesIsOpen}
 					>
 						{#if $settings.bitaxeEnabled}
-							<Row>
-								<Label md={6} for="bitaxeHostname" size={$uiSettings.inputSize}
-									>{$_('section.settings.bitaxeHostname')}</Label
+							<SettingsInput
+								id="bitaxeHostname"
+								label={$_('section.settings.bitaxeHostname')}
+								bind:value={$settings.bitaxeHostname}
+								required={true}
+								valid={validBitaxe}
+								size={$uiSettings.inputSize}
+							>
+								<Button type="button" color="success" on:click={testBitaxe}
+									>{$_('test', { default: 'Test' })}</Button
 								>
-								<Col md="6">
-									<InputGroup size={$uiSettings.inputSize}>
-										<Input
-											type="text"
-											bind:value={$settings.bitaxeHostname}
-											name="bitaxeHostname"
-											valid={validBitaxe}
-											id="bitaxeHostname"
-											required
-										></Input>
-										<Button type="button" color="success" on:click={testBitaxe}
-											>{$_('test', { default: 'Test' })}</Button
-										>
-									</InputGroup>
-								</Col>
-							</Row>
+							</SettingsInput>
 						{/if}
 						{#if $settings.miningPoolStats}
-							<Row>
-								<Label md={6} for="miningPoolName" size={$uiSettings.inputSize}
-									>{$_('section.settings.miningPoolName')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="select"
-										bind:value={$settings.miningPoolName}
-										name="miningPoolName"
-										id="miningPoolName"
-										bsSize={$uiSettings.inputSize}
-										class={$uiSettings.selectClass}
-									>
-										{#each $settings.availablePools as pool}
-											<option value={pool}>{getMiningPoolName(pool)}</option>
-										{/each}
-									</Input>
-								</Col>
-							</Row>
-							<Row>
-								<Label md={6} for="miningPoolUser" size={$uiSettings.inputSize}
-									>{$_('section.settings.miningPoolUser')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="text"
-										bind:value={$settings.miningPoolUser}
-										name="miningPoolUser"
-										id="miningPoolUser"
-										bsSize={$uiSettings.inputSize}
-										required
-									></Input>
-								</Col>
-							</Row>
+							<SettingsSelect
+								id="miningPoolName"
+								label={$_('section.settings.miningPoolName')}
+								bind:value={$settings.miningPoolName}
+								options={$settings.availablePools.map((pool) => [getMiningPoolName(pool), pool])}
+								size={$uiSettings.inputSize}
+								selectClass={$uiSettings.selectClass}
+							/>
+							<SettingsInput
+								id="miningPoolUser"
+								label={$_('section.settings.miningPoolUser')}
+								bind:value={$settings.miningPoolUser}
+								required={true}
+								size={$uiSettings.inputSize}
+							/>
 						{/if}
 						{#if 'nostrZapNotify' in $settings && $settings['nostrZapNotify']}
-							<Row>
-								<Label md={6} for="nostrZapPubkey" size={$uiSettings.inputSize}
-									>{$_('section.settings.nostrZapPubkey')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="text"
-										bind:value={$settings.nostrZapPubkey}
-										name="nostrZapPubkey"
-										id="nostrZapPubkey"
-										on:change={() => checkValidNostrPubkey('nostrZapPubkey')}
-										invalid={!isValidHexPubKey($settings.nostrZapPubkey)}
-										bsSize={$uiSettings.inputSize}
-										required
-										minlength="64"
-									></Input>
-									{#if !isValidHexPubKey($settings.nostrZapPubkey)}
-										<FormText>{$_('section.settings.invalidNostrPubkey')}</FormText>
-									{/if}
-								</Col>
-							</Row>
+							<SettingsInput
+								id="nostrZapPubkey"
+								label={$_('section.settings.nostrZapPubkey')}
+								bind:value={$settings.nostrZapPubkey}
+								required={true}
+								minlength="64"
+								invalid={!isValidHexPubKey($settings.nostrZapPubkey)}
+								helpText={!isValidHexPubKey($settings.nostrZapPubkey)
+									? $_('section.settings.invalidNostrPubkey')
+									: undefined}
+								size={$uiSettings.inputSize}
+								onChange={() => checkValidNostrPubkey('nostrZapPubkey')}
+							/>
 						{/if}
 						{#if $settings.useNostr}
-							<Row>
-								<Label md={6} for="nostrPubKey" size={$uiSettings.inputSize}
-									>{$_('section.settings.nostrPubKey')}</Label
-								>
-								<Col md="6">
-									<Input
-										type="text"
-										bind:value={$settings.nostrPubKey}
-										name="nostrPubKey"
-										id="nostrPubKey"
-										on:change={() => checkValidNostrPubkey('nostrPubKey')}
-										invalid={!isValidHexPubKey($settings.nostrPubKey)}
-										bsSize={$uiSettings.inputSize}
-									></Input>
-									{#if !isValidHexPubKey($settings.nostrPubKey)}
-										<FormText>{$_('section.settings.invalidNostrPubkey')}</FormText>
-									{/if}
-								</Col>
-							</Row>
+							<SettingsInput
+								id="nostrPubKey"
+								label={$_('section.settings.nostrPubKey')}
+								bind:value={$settings.nostrPubKey}
+								invalid={!isValidHexPubKey($settings.nostrPubKey)}
+								helpText={!isValidHexPubKey($settings.nostrPubKey)
+									? $_('section.settings.invalidNostrPubkey')
+									: undefined}
+								size={$uiSettings.inputSize}
+								onChange={() => checkValidNostrPubkey('nostrPubKey')}
+							/>
 						{/if}
 						{#if 'nostrZapNotify' in $settings || $settings.useNostr}
-							<Row>
-								<Label md={6} for="nostrRelay" size={$uiSettings.inputSize}
-									>{$_('section.settings.nostrRelay')}</Label
+							<SettingsInput
+								id="nostrRelay"
+								label={$_('section.settings.nostrRelay')}
+								bind:value={$settings.nostrRelay}
+								required={true}
+								valid={validNostrRelay}
+								size={$uiSettings.inputSize}
+							>
+								<Button type="button" color="success" on:click={testNostrRelay}
+									>{$_('test', { default: 'Test' })}</Button
 								>
-								<Col md="6">
-									<InputGroup size={$uiSettings.inputSize}>
-										<Input
-											type="text"
-											bind:value={$settings.nostrRelay}
-											name="nostrRelay"
-											id="nostrRelay"
-											valid={validNostrRelay}
-											bsSize={$uiSettings.inputSize}
-											required
-										></Input>
-										<Button type="button" color="success" on:click={testNostrRelay}
-											>{$_('test', { default: 'Test' })}</Button
-										>
-									</InputGroup>
-								</Col>
-							</Row>
+							</SettingsInput>
 						{/if}
 						<Row>
 							{#if 'bitaxeEnabled' in $settings}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="bitaxeEnabled"
-										bind:checked={$settings.bitaxeEnabled}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.bitaxeEnabled')} ({$_('restartRequired')})"
-									/>
-								</Col>
+								<SettingsSwitch
+									id="bitaxeEnabled"
+									bind:checked={$settings.bitaxeEnabled}
+									label="{$_('section.settings.bitaxeEnabled')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
 							{#if 'miningPoolStats' in $settings}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="miningPoolStats"
-										bind:checked={$settings.miningPoolStats}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.miningPoolStats')} ({$_('restartRequired')})"
-									/>
-								</Col>
+								<SettingsSwitch
+									id="miningPoolStats"
+									bind:checked={$settings.miningPoolStats}
+									label="{$_('section.settings.miningPoolStats')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+								/>
 							{/if}
 							{#if 'nostrZapNotify' in $settings}
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="nostrZapNotify"
-										bind:checked={$settings.nostrZapNotify}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label="{$_('section.settings.nostrZapNotify')} ({$_('restartRequired')})"
-									/>
-								</Col>
-								<Col md="6" xl="12" xxl="6">
-									<Input
-										id="ledFlashOnZap"
-										bind:checked={$settings.ledFlashOnZap}
-										type="switch"
-										bsSize={$uiSettings.inputSize}
-										label={$_('section.settings.ledFlashOnZap')}
-									/>
-								</Col>
+								<SettingsSwitch
+									id="nostrZapNotify"
+									bind:checked={$settings.nostrZapNotify}
+									label="{$_('section.settings.nostrZapNotify')} ({$_('restartRequired')})"
+									size={$uiSettings.inputSize}
+								/>
+								<SettingsSwitch
+									id="ledFlashOnZap"
+									bind:checked={$settings.ledFlashOnZap}
+									label={$_('section.settings.ledFlashOnZap')}
+									size={$uiSettings.inputSize}
+								/>
 								{#if $settings.hasFrontlight && !$settings.flDisable}
-									<Col md="6" xl="12" xxl="6">
-										<Input
-											id="flFlashOnZap"
-											bind:checked={$settings.flFlashOnZap}
-											type="switch"
-											bsSize={$uiSettings.inputSize}
-											label={$_('section.settings.flFlashOnZap')}
-										/>
-									</Col>
+									<SettingsSwitch
+										id="flFlashOnZap"
+										bind:checked={$settings.flFlashOnZap}
+										label={$_('section.settings.flFlashOnZap')}
+										size={$uiSettings.inputSize}
+									/>
 								{/if}
 							{/if}
 						</Row>
 					</ToggleHeader>
 				</Row><Row>
 					<ToggleHeader header={$_('section.settings.section.system')} isOpen={systemIsOpen}>
-						<Row>
-							<Label md={6} for="tzOffset" size={$uiSettings.inputSize}
-								>{$_('section.settings.timezoneOffset')}</Label
+						<SettingsInput
+							id="tzOffset"
+							label={$_('section.settings.timezoneOffset')}
+							bind:value={$settings.tzOffset}
+							type="number"
+							step="1"
+							required={true}
+							suffix={$_('time.minutes')}
+							helpText={$_('section.settings.tzOffsetHelpText')}
+							size={$uiSettings.inputSize}
+						>
+							<Button type="button" color="info" on:click={getTzOffsetFromSystem}
+								>{$_('auto-detect')}</Button
 							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="number"
-										step="1"
-										name="tzOffset"
-										id="tzOffset"
-										required
-										bind:value={$settings.tzOffset}
-									/>
-									<InputGroupText>{$_('time.minutes')}</InputGroupText>
-									<Button type="button" color="info" on:click={getTzOffsetFromSystem}
-										>{$_('auto-detect')}</Button
-									>
-								</InputGroup>
-								<FormText>{$_('section.settings.tzOffsetHelpText')}</FormText>
-							</Col>
-						</Row>
+						</SettingsInput>
+
 						{#if $settings.httpAuthEnabled}
-							<Row>
-								<Label md={6} for="httpAuthUser" size="sm"
-									>{$_('section.settings.httpAuthUser')}</Label
+							<SettingsInput
+								id="httpAuthUser"
+								label={$_('section.settings.httpAuthUser')}
+								bind:value={$settings.httpAuthUser}
+								required={true}
+								size={$uiSettings.inputSize}
+							/>
+							<SettingsInput
+								id="httpAuthPass"
+								label={$_('section.settings.httpAuthPass')}
+								bind:value={$settings.httpAuthPass}
+								type={showPassword ? 'text' : 'password'}
+								required={true}
+								size={$uiSettings.inputSize}
+							>
+								<Button
+									type="button"
+									on:click={() => (showPassword = !showPassword)}
+									color={showPassword ? 'success' : 'danger'}
 								>
-								<Col md="6">
-									<Input
-										type="text"
-										bind:value={$settings.httpAuthUser}
-										name="httpAuthUser"
-										id="httpAuthUser"
-										bsSize="sm"
-										required
-									></Input>
-								</Col>
-							</Row>
-							<Row>
-								<Label md={6} for="httpAuthPass" size="sm"
-									>{$_('section.settings.httpAuthPass')}</Label
-								>
-								<Col md="6">
-									<InputGroup size={$uiSettings.inputSize}>
-										<Input
-											type={showPassword ? 'text' : 'password'}
-											bind:value={$settings.httpAuthPass}
-											name="httpAuthPass"
-											id="httpAuthPass"
-											bsSize="sm"
-											required
-										></Input>
-										<Button
-											type="button"
-											on:click={() => (showPassword = !showPassword)}
-											color={showPassword ? 'success' : 'danger'}
-											>{#if !showPassword}<EyeIcon></EyeIcon>{:else}<EyeSlashIcon
-												></EyeSlashIcon>{/if}</Button
-										>
-									</InputGroup>
-									<FormText>{$_('section.settings.httpAuthText')}</FormText>
-								</Col>
-							</Row>
+									{#if !showPassword}<EyeIcon />{:else}<EyeSlashIcon />{/if}
+								</Button>
+							</SettingsInput>
 						{/if}
+
+						<SettingsInput
+							id="hostnamePrefix"
+							label={$_('section.settings.hostnamePrefix')}
+							bind:value={$settings.hostnamePrefix}
+							required={true}
+							minlength="1"
+							size={$uiSettings.inputSize}
+						/>
+
+						<SettingsSelect
+							id="wifiTxPower"
+							label={$_('section.settings.wifiTxPower', { default: 'WiFi Tx Power' })}
+							bind:value={$settings.txPower}
+							options={Array.from(wifiTxPowerMap.entries())}
+							size={$uiSettings.inputSize}
+							selectClass={$uiSettings.selectClass}
+							helpText={$_('section.settings.wifiTxPowerText')}
+						/>
+
+						<SettingsInput
+							id="wpTimeout"
+							label={$_('section.settings.wpTimeout')}
+							bind:value={$settings.wpTimeout}
+							type="number"
+							min={1}
+							step="1"
+							required={true}
+							suffix={$_('time.seconds')}
+							size={$uiSettings.inputSize}
+						/>
+
 						<Row>
-							<Label md={6} for="hostnamePrefix" size={$uiSettings.inputSize}
-								>{$_('section.settings.hostnamePrefix')}</Label
-							>
-							<Col md="6">
-								<Input
-									type="text"
-									bind:value={$settings.hostnamePrefix}
-									name="hostnamePrefix"
-									id="hostnamePrefix"
-									bsSize={$uiSettings.inputSize}
-									required
-									minlength="1"
-								></Input>
-							</Col>
-						</Row>
-						<Row>
-							<Label md={6} for="wifiTxPower" size={$uiSettings.inputSize}
-								>{$_('section.settings.wifiTxPower', { default: 'WiFi Tx Power' })}</Label
-							>
-							<Col md="6">
-								<Input
-									type="select"
-									bind:value={$settings.txPower}
-									name="select"
-									id="wifiTxPower"
-									bsSize={$uiSettings.inputSize}
-									class={$uiSettings.selectClass}
-								>
-									{#each wifiTxPowerMap as [key, value]}
-										<option {value}>{key}</option>
-									{/each}
-								</Input>
-								<FormText>{$_('section.settings.wifiTxPowerText')}</FormText>
-							</Col>
-						</Row>
-						<Row>
-							<Label md={6} for="wpTimeout" size={$uiSettings.inputSize}
-								>{$_('section.settings.wpTimeout')}</Label
-							>
-							<Col md="6">
-								<InputGroup size={$uiSettings.inputSize}>
-									<Input
-										type="number"
-										id="wpTimeout"
-										min={1}
-										step="1"
-										bind:value={$settings.wpTimeout}
-										required
-									/>
-									<InputGroupText>{$_('time.seconds')}</InputGroupText>
-								</InputGroup>
-							</Col>
-						</Row>
-						<Row>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="otaEnabled"
-									bind:checked={$settings.otaEnabled}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label="{$_('section.settings.otaUpdates')} ({$_('restartRequired')})"
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="mdnsEnabled"
-									bind:checked={$settings.mdnsEnabled}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label="{$_('section.settings.enableMdns')} ({$_('restartRequired')})"
-								/>
-							</Col>
-							<Col md="6" xl="12" xxl="6">
-								<Input
-									id="httpAuthEnabled"
-									bind:checked={$settings.httpAuthEnabled}
-									type="switch"
-									bsSize={$uiSettings.inputSize}
-									label="{$_('section.settings.httpAuthEnabled')} ({$_('restartRequired')})"
-								/>
-							</Col>
+							<SettingsSwitch
+								id="otaEnabled"
+								bind:checked={$settings.otaEnabled}
+								label="{$_('section.settings.otaUpdates')} ({$_('restartRequired')})"
+								size={$uiSettings.inputSize}
+							/>
+							<SettingsSwitch
+								id="mdnsEnabled"
+								bind:checked={$settings.mdnsEnabled}
+								label="{$_('section.settings.enableMdns')} ({$_('restartRequired')})"
+								size={$uiSettings.inputSize}
+							/>
+							<SettingsSwitch
+								id="httpAuthEnabled"
+								bind:checked={$settings.httpAuthEnabled}
+								label="{$_('section.settings.httpAuthEnabled')} ({$_('restartRequired')})"
+								size={$uiSettings.inputSize}
+							/>
 						</Row>
 					</ToggleHeader>
 				</Row>
