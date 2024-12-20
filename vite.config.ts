@@ -74,6 +74,7 @@ export default defineConfig({
 	build: {
 		minify: 'esbuild',
 		cssCodeSplit: false,
+		chunkSizeWarningLimit: 550,
 		rollupOptions: {
 			output: {
 				// assetFileNames: '[hash][extname]',
@@ -82,12 +83,8 @@ export default defineConfig({
 				assetFileNames: `[hash][extname]`,
 				preserveModules: false,
 
-				manualChunks: (id) => {
-					if (id.includes('node_modules')) {
-						return 'vendor';
-					} else {
-						return 'app';
-					}
+				manualChunks: () => {
+					return 'app';
 				}
 			}
 		}
