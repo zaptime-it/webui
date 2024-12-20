@@ -17,6 +17,7 @@
 	import { page } from '$app/stores';
 	import { locale, locales, isLoading } from 'svelte-i18n';
 	import { ColorSchemeSwitcher } from '$lib/components';
+	import { derived } from 'svelte/store';
 
 	export const setLocale = (lang: string) => () => {
 		locale.set(lang);
@@ -45,13 +46,14 @@
 
 	let languageNames = {};
 
-	locale.subscribe(() => {
-		if ($locale) {
-			let newLanguageNames = new Intl.DisplayNames([$locale], { type: 'language' });
+	const currentLocale = derived(locale, ($locale) => $locale || 'en');
 
-			for (let l of $locales) {
-				languageNames[l] = newLanguageNames.of(l);
-			}
+	locale.subscribe(() => {
+		const localeToUse = $locale || 'en';
+		let newLanguageNames = new Intl.DisplayNames([localeToUse], { type: 'language' });
+
+		for (let l of $locales) {
+			languageNames[l] = newLanguageNames.of(l) || l;
 		}
 	});
 
@@ -95,7 +97,10 @@
 		</Nav>
 		{#if !$isLoading}
 			<Dropdown id="nav-language-dropdown" inNavbar class="me-3">
-				<DropdownToggle nav caret>{getFlagEmoji($locale)} {languageNames[$locale]}</DropdownToggle>
+				<DropdownToggle nav caret
+					>{getFlagEmoji($currentLocale)}
+					{languageNames[$currentLocale] || 'English'}</DropdownToggle
+				>
 				<DropdownMenu end>
 					{#each $locales as locale}
 						<DropdownItem on:click={setLocale(locale)}

@@ -34,9 +34,17 @@ export default defineConfig({
 			}
 		},
 		{
-			name: 'MacBook Pro 14 inch',
+			name: 'MacBook Pro 14 inch NL locale',
 			use: {
-				viewport: { width: 1512, height: 982 }
+				viewport: { width: 1512, height: 982 },
+				locale: 'nl'
+			}
+		},
+		{
+			name: 'MacBook Pro 14 inch nl-NL locale',
+			use: {
+				viewport: { width: 1512, height: 982 },
+				locale: 'nl-NL'
 			}
 		},
 		{

@@ -4,11 +4,47 @@ import { initMock, settingsJson, statusJson } from '../shared';
 
 test.beforeEach(initMock);
 
+// Define the translations for the headings
+const headings = {
+	en: {
+		control: 'Control',
+		status: 'Status',
+		settings: 'Settings',
+		language: 'English'
+	},
+	de: {
+		control: 'Steuerung',
+		status: 'Status',
+		settings: 'Einstellungen',
+		language: 'Deutsch'
+	},
+	nl: {
+		control: 'Besturing',
+		status: 'Status',
+		settings: 'Instellingen',
+		language: 'Nederlands'
+	},
+	es: {
+		control: 'Control',
+		status: 'Estado',
+		settings: 'Ajustes',
+		language: 'Español'
+	}
+};
+
 test('capture screenshots across devices', async ({ page }, testInfo) => {
+	// Get the locale from the browser or default to 'en'
+	const locale = testInfo.project.use?.locale?.split('-')[0].toLowerCase() || 'en';
+	const translations = headings[locale] || headings.en;
+
 	await page.goto('/');
-	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
+	await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
+	await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+
+	if (await page.locator('#nav-language-dropdown').isVisible()) {
+		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
+	}
 
 	const screenshot = await page.screenshot({
 		path: `./test-results/screenshots/default-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`
@@ -21,6 +57,9 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 });
 
 test('capture screenshots across devices with bitaxe screens', async ({ page }, testInfo) => {
+	const locale = testInfo.project.use?.locale?.split('-')[0].toLowerCase() || 'en';
+	const translations = headings[locale] || headings.en;
+
 	settingsJson.screens = [
 		{
 			id: 0,
@@ -73,9 +112,14 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }, 
 	statusJson.rendered = ['mdi:bitaxe', '', 'mdi:pickaxe', '6', '3', '7', 'GH/S'];
 
 	await page.goto('/');
-	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
+	await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
+	await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+
+	if (await page.locator('#nav-language-dropdown').isVisible()) {
+		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
+	}
 
 	await page.screenshot({
 		path: `./test-results/screenshots/bitaxe-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`

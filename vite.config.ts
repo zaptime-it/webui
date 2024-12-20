@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import GithubActionsReporter from 'vitest-github-actions-reporter';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -102,5 +102,8 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'default'
+	},
+	define: {
+		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
 	}
 });
