@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import GithubActionsReporter from 'vitest-github-actions-reporter';
+// import { visualizer } from 'rollup-plugin-visualizer';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -65,14 +66,29 @@ export default defineConfig({
 				}
 			}
 		}
+		// visualizer({
+		// 	emitFile: true,
+		// 	filename: "stats.html",
+		//   })
 	],
 	build: {
-		minify: true,
+		minify: 'esbuild',
 		cssCodeSplit: false,
 		rollupOptions: {
 			output: {
-				manualChunks: () => 'app',
-				assetFileNames: '[name][extname]'
+				// assetFileNames: '[hash][extname]',
+				entryFileNames: `[hash][extname]`,
+				chunkFileNames: `[hash][extname]`,
+				assetFileNames: `[hash][extname]`,
+				preserveModules: false,
+
+				manualChunks: (id) => {
+					if (id.includes('node_modules')) {
+						return 'vendor';
+					} else {
+						return 'app';
+					}
+				}
 			}
 		}
 	},
