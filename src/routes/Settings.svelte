@@ -46,7 +46,7 @@
 
 	const miningPoolMap = new Map<string, string>([
 		['noderunners', 'pool.noderunners.network'],
-		['braiins', 'braiins pool'],
+		['braiins', 'Braiins Pool'],
 		['ocean', 'ocean.xyz']
 	]);
 
