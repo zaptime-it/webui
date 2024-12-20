@@ -45,9 +45,12 @@
 	]);
 
 	const miningPoolMap = new Map<string, string>([
-		['noderunners', 'pool.noderunners.network'],
+		['noderunners', 'Noderunners.network'],
 		['braiins', 'Braiins Pool'],
-		['ocean', 'ocean.xyz']
+		['ocean', 'ocean.xyz'],
+		['satoshi_radio', 'Satoshi Radio pool'],
+		['public_pool', 'public-pool.io'],
+		['gobrrr_pool', 'Go Brrr pool']
 	]);
 
 	const getMiningPoolName = (name: string) => {
