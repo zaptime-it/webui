@@ -3,8 +3,6 @@
 	import { PUBLIC_BASE_URL } from '$lib/config';
 	import { uiSettings } from '$lib/uiSettings';
 	import { createEventDispatcher } from 'svelte';
-	import SettingsSwitch from '../components/SettingsSwitch.svelte';
-
 	import { _ } from 'svelte-i18n';
 	import {
 		Button,
@@ -16,14 +14,10 @@
 		Form,
 		Row
 	} from '@sveltestrap/sveltestrap';
-
 	import EyeIcon from 'svelte-bootstrap-icons/lib/Eye.svelte';
 	import EyeSlashIcon from 'svelte-bootstrap-icons/lib/EyeSlash.svelte';
-
 	import { derived } from 'svelte/store';
-	import ToggleHeader from '../components/ToggleHeader.svelte';
-	import SettingsInput from '../components/SettingsInput.svelte';
-	import SettingsSelect from '../components/SettingsSelect.svelte';
+	import { SettingsSwitch, SettingsInput, SettingsSelect, ToggleHeader } from '$lib/components';
 
 	export let settings;
 

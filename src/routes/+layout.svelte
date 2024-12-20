@@ -16,7 +16,7 @@
 
 	import { page } from '$app/stores';
 	import { locale, locales, isLoading } from 'svelte-i18n';
-	import ColorSchemeSwitcher from '../components/ColorSchemeSwitcher.svelte';
+	import { ColorSchemeSwitcher } from '$lib/components';
 
 	export const setLocale = (lang: string) => () => {
 		locale.set(lang);
