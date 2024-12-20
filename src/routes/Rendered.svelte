@@ -72,6 +72,9 @@
 					{#if char.endsWith('bitaxe')}
 						<img src="/bitaxe.webp" class="bitaxelogo" alt="BitAxe logo" />
 					{/if}
+					{#if char.endsWith('miningpool')}
+						<span class="pool-logo">Mining Pool Logo</span>
+					{/if}
 				</div>
 			{:else if char === 'STS'}
 				<div class="digit sats">S</div>
@@ -103,5 +106,9 @@
 
 	.bitaxelogo {
 		transform: rotate(-90deg);
+	}
+
+	.pool-logo {
+		font-size: 0.75rem;
 	}
 </style>
