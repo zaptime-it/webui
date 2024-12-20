@@ -44,6 +44,18 @@
 		['5dBm', 20] // 5dBm
 	]);
 
+	const miningPoolMap = new Map<string, string>([
+		['noderunners', 'pool.noderunners.network'],
+		['braiins', 'braiins pool'],
+		['ocean', 'ocean.xyz']
+	]);
+
+	const getMiningPoolName = (name: string) => {
+		if (miningPoolMap.has(name)) return miningPoolMap.get(name);
+
+		return name;
+	};
+
 	const dispatch = createEventDispatcher();
 
 	const handleReset = (e: Event) => {
@@ -712,8 +724,9 @@
 										bsSize={$uiSettings.inputSize}
 										class={$uiSettings.selectClass}
 									>
-										<option value="braiins">Braiins Pool</option>
-										<option value="ocean">Ocean</option>
+										{#each $settings.availablePools as pool}
+											<option value={pool}>{getMiningPoolName(pool)}</option>
+										{/each}
 									</Input>
 								</Col>
 							</Row>
