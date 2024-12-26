@@ -47,7 +47,8 @@ jobs:
           path: |
             ~/.cache/pip
             ~/node_modules
-          key: ${{ runner.os }}-pio
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-pio-playwright-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/setup-python@v5
         with:
           python-version: '>=3.10'
@@ -67,6 +68,7 @@ jobs:
       - name: Run vitest tests
         run: yarn vitest run
       - name: Install Playwright Browsers
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test
