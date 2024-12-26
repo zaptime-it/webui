@@ -112,6 +112,25 @@
 		return binaryFilename;
 	};
 
+	const getWebUiBinaryName = () => {
+		let webuiFilename = '';
+		switch ($settings.hwRev) {
+			case 'REV_V8_EPD_2_13':
+				webuiFilename = 'littlefs_16MB.bin';
+				break;
+			case 'REV_B_EPD_2_13':
+				webuiFilename = 'littlefs_8MB.bin';
+				break;
+			case 'REV_A_EPD_2_13':
+				webuiFilename = 'littlefs_4MB.bin';
+				break;
+			default:
+				webuiFilename = 'Unsupported hardware, unable to determine WebUI binary filename';
+		}
+
+		return webuiFilename;
+	};
+
 	const onAutoUpdate = async (e: Event) => {
 		e.preventDefault();
 
@@ -217,7 +236,7 @@
 		>
 	</div>
 	<div class="col flex-fill">
-		<label for="webuiFile" class="form-label">WebUI file (littlefs.bin)</label>
+		<label for="webuiFile" class="form-label">WebUI file ({getWebUiBinaryName()})</label>
 		<input
 			type="file"
 			id="webuiFile"
