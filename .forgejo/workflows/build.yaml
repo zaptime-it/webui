@@ -1,4 +1,9 @@
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
 jobs:
   check-changes:
     runs-on: docker
@@ -67,10 +72,15 @@ jobs:
         run: npx playwright test
       - name: Build WebUI
         run: yarn build
+
+      # The following steps only run on push to main
       - name: Get current block
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: getBlockHeight
         run: echo "blockHeight=$(curl -s https://mempool.space/api/blocks/tip/height)" >> $GITHUB_OUTPUT
+
       - name: Write block height to file
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           BLOCK_HEIGHT: ${{ steps.getBlockHeight.outputs.blockHeight }}
         run: mkdir -p output && echo "$BLOCK_HEIGHT" > output/version.txt
@@ -94,12 +104,14 @@ jobs:
             echo "Directory size is within the threshold $DIRECTORY_SIZE"
           fi
       - name: Create tarball
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: tar czf webui.tgz --strip-components=1 dist
       - name: Build LittleFS
         run: |
           set -e
           /tmp/mklittlefs/mklittlefs -c build_gz -s 410000 output/littlefs.bin
       - name: Upload artifacts
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
           path: |
@@ -107,7 +119,7 @@ jobs:
             output/littlefs.bin
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: https://code.forgejo.org/actions/forgejo-release@v2.4.0
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.5.1
         with:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
