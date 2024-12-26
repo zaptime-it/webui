@@ -148,6 +148,7 @@
 	};
 
 	const checkValidNostrPubkey = (key: string) => {
+		$settings[key] = $settings[key].trim();
 		if (isValidNpub($settings[key])) {
 			dispatch('showToast', {
 				color: 'info',
@@ -617,6 +618,7 @@
 									: undefined}
 								size={$uiSettings.inputSize}
 								onChange={() => checkValidNostrPubkey('nostrZapPubkey')}
+								onInput={() => checkValidNostrPubkey('nostrZapPubkey')}
 							/>
 						{/if}
 						{#if $settings.useNostr}
@@ -630,6 +632,7 @@
 									: undefined}
 								size={$uiSettings.inputSize}
 								onChange={() => checkValidNostrPubkey('nostrPubKey')}
+								onInput={() => checkValidNostrPubkey('nostrPubKey')}
 							/>
 						{/if}
 						{#if 'nostrZapNotify' in $settings || $settings.useNostr}

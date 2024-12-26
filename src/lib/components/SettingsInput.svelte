@@ -25,6 +25,11 @@
 	export let invalid: boolean | undefined = undefined;
 	export let minlength: string | undefined = undefined;
 	export let onChange: (() => void) | undefined = undefined;
+	export let onInput: (() => void) | undefined = undefined;
+
+	const onInputHandler = () => {
+		onInput?.();
+	};
 </script>
 
 <Row>
@@ -45,6 +50,8 @@
 				{minlength}
 				bsSize={size}
 				on:change={onChange}
+				on:input={onInputHandler}
+				spellcheck={type === 'text' ? 'false' : undefined}
 			/>
 			{#if suffix}
 				<InputGroupText>{suffix}</InputGroupText>
