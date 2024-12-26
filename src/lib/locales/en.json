@@ -1,71 +1,150 @@
 {
-  "section": {
-    "settings": {
-      "title": "Settings",
-      "textColor": "Text color",
-      "backgroundColor": "Background color",
-      "ledPowerOnTest": "LED power-on test",
-      "ledFlashOnBlock": "LED flash on new block",
-      "timePerScreen": "Time per screen",
-      "ledBrightness": "LED brightness",
-      "timezoneOffset": "Timezone offset",
-      "timeBetweenPriceUpdates": "Time between price updates",
-      "fullRefreshEvery": "Full refresh every",
-      "mempoolnstance": "Mempool Instance",
-      "hostnamePrefix": "Hostname prefix",
-      "StealFocusOnNewBlock": "Steal focus on new block",
-      "useBigCharsMcap": "Use big characters for market cap",
-      "otaUpdates": "OTA updates",
-      "enableMdns": "mDNS",
-      "fetchEuroPrice": "Fetch € price",
-      "shortAmountsWarning": "Short amounts might shorten lifespan.",
-      "tzOffsetHelpText": "A restart is required to apply TZ offset.",
-      "screens": "Screens"
-    },
-    "control": {
-      "systemInfo": "System info",
-      "version": "Version",
-      "buildTime": "Build time",
-      "ledColor": "LED color",
-      "turnOff": "Turn off",
-      "setColor": "Set color",
-      "showText": "Show text",
-      "text": "Text",
-      "title": "Control",
-      "hostname": "Hostname"
-    },
-    "status": {
-      "title": "Status",
-      "screenCycle": "Screen cycle",
-      "memoryFree": "Memory free",
-      "wsPriceConnection": "WS Price connection",
-      "wsMempoolConnection": "WS Mempool.space connection",
-      "fetchEuroNote": "If you use \"Fetch € price\" the WS Price connection will show ❌  since it uses another data source.",
-      "uptime": "Uptime"
-    }
-  },
-  "colors": {
-    "black": "Black",
-    "white": "White"
-  },
-  "time": {
-    "minutes": "minutes",
-    "seconds": "seconds"
-  },
-  "restartRequired": "restart required",
-  "button": {
-    "save": "Save",
-    "reset": "Reset",
-    "restart": "Restart",
-    "forceFullRefresh": "Force full refresh"
-  },
-  "timer": {
-    "running": "running",
-    "stopped": "stopped"
-  },
-  "sections": {
-    "control": {
-      "keepSameColor": "Keep same color"
-    }
-  }
+	"section": {
+		"settings": {
+			"title": "Settings",
+			"textColor": "Text color",
+			"backgroundColor": "Background color",
+			"ledPowerOnTest": "LED power-on test",
+			"ledFlashOnBlock": "LED flash on new block",
+			"timePerScreen": "Time per screen",
+			"ledBrightness": "LED brightness",
+			"timezoneOffset": "Timezone offset",
+			"timeBetweenPriceUpdates": "Time between price updates",
+			"fullRefreshEvery": "Full refresh every",
+			"mempoolnstance": "Mempool Instance",
+			"hostnamePrefix": "Hostname prefix",
+			"StealFocusOnNewBlock": "Steal focus on new block",
+			"useBigCharsMcap": "Use big characters for market cap",
+			"useBlkCountdown": "Blocks countdown for halving",
+			"useSatsSymbol": "Use sats symbol",
+			"suffixPrice": "Suffix price format",
+			"disableLeds": "Disable all LEDs effects",
+			"otaUpdates": "OTA updates",
+			"enableMdns": "mDNS",
+			"fetchEuroPrice": "Fetch € price",
+			"shortAmountsWarning": "Short amounts might shorten lifespan of the displays",
+			"tzOffsetHelpText": "A restart is required to apply TZ offset.",
+			"screens": "Screens",
+			"wifiTxPowerText": "In most cases this does not need to be set.",
+			"wifiTxPower": "WiFi TX power",
+			"settingsSaved": "Settings saved",
+			"errorSavingSettings": "Error saving settings",
+			"ownDataSource": "Use BTClock data source",
+			"flMaxBrightness": "Frontlight brightness",
+			"flAlwaysOn": "Frontlight always on",
+			"flEffectDelay": "Frontlight effect speed",
+			"flFlashOnUpd": "Frontlight flash on new block",
+			"mempoolInstanceHelpText": "Only effective when BTClock data-source is disabled. A restart is required to apply.",
+			"luxLightToggle": "Auto toggle frontlight at lux",
+			"wpTimeout": "WiFi-config portal timeout",
+			"nostrPubKey": "Nostr source pubkey",
+			"nostrZapKey": "Nostr zap pubkey",
+			"nostrRelay": "Nostr Relay",
+			"nostrZapNotify": "Nostr Zap Notifications",
+			"useNostr": "Use Nostr data source",
+			"bitaxeHostname": "BitAxe hostname or IP",
+			"bitaxeEnabled": "Enable BitAxe",
+			"miningPoolStats": "Enable Mining Pool Stats",
+			"miningPoolName": "Mining Pool",
+			"miningPoolUser": "Mining Pool username or api key",
+			"nostrZapPubkey": "Nostr Zap pubkey",
+			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
+			"convertingValidNpub": "Converting valid npub to pubkey",
+			"flDisable": "Disable frontlight",
+			"httpAuthEnabled": "Require authentication for WebUI",
+			"httpAuthUser": "WebUI Username",
+			"httpAuthPass": "WebUI Password",
+			"httpAuthText": "Only password-protects WebUI, not API-calls.",
+			"currencies": "Currencies",
+			"stagingSource": "Use Staging data source (for development)",
+			"useNostrTooltip": "Very experimental and unstable. Nostr data source is not required for Nostr Zap notifications.",
+			"mowMode": "Mow Suffix Mode",
+			"suffixShareDot": "Suffix compact notation",
+			"section": {
+				"displaysAndLed": "Displays and LEDs",
+				"screenSettings": "Screen specific",
+				"dataSource": "Data source",
+				"extraFeatures": "Extra features",
+				"system": "System"
+			},
+			"ledFlashOnZap": "LED flash on Nostr Zap",
+			"flFlashOnZap": "Frontlight flash on Nostr Zap",
+			"showAll": "Show all",
+			"hideAll": "Hide all",
+			"flOffWhenDark": "Frontlight off when dark",
+			"luxLightToggleText": "Set to 0 to disable",
+			"verticalDesc": "Use vertical screen description"
+		},
+		"control": {
+			"systemInfo": "System info",
+			"version": "Version",
+			"buildTime": "Build time",
+			"ledColor": "LED color",
+			"turnOff": "Turn off",
+			"setColor": "Set color",
+			"showText": "Show text",
+			"text": "Text",
+			"title": "Control",
+			"hostname": "Hostname",
+			"frontlight": "Frontlight",
+			"turnOn": "Turn on",
+			"flashFrontlight": "Flash",
+			"firmwareUpdate": "Firmware update",
+			"fwCommit": "Firmware commit"
+		},
+		"status": {
+			"title": "Status",
+			"screenCycle": "Screen cycle",
+			"memoryFree": "Memory free",
+			"wsPriceConnection": "WS Price connection",
+			"wsMempoolConnection": "WS {instance} connection",
+			"fetchEuroNote": "If you use \"Fetch € price\" the WS Price connection will show ❌  since it uses another data source.",
+			"uptime": "Uptime",
+			"wifiSignalStrength": "WiFi Signal strength",
+			"wsDataConnection": "BTClock data-source connection",
+			"lightSensor": "Light sensor",
+			"nostrConnection": "Nostr Relay connection"
+		},
+		"firmwareUpdater": {
+			"fileUploadFailed": "File upload failed. Make sure you have selected the correct file and try again.",
+			"fileUploadSuccess": "File uploaded successfully, restarting device and reloading WebUI in {countdown} seconds",
+			"uploading": "Uploading",
+			"firmwareUpdateText": "When you use the firmware upload functionality, make sure you use the correct files. Uploading the wrong files can result in a non-working device. If it goes wrong, you can restore firmware by uploading the full image after setting the device in BOOT-mode.",
+			"swUpdateAvailable": "A newer version is available!",
+			"swUpToDate": "You are up to date.",
+			"latestVersion": "Latest Version",
+			"releaseDate": "Release Date",
+			"viewRelease": "View Release",
+			"autoUpdate": "Install update (experimental)"
+		}
+	},
+	"colors": {
+		"black": "Black",
+		"white": "White"
+	},
+	"time": {
+		"minutes": "minutes",
+		"seconds": "seconds"
+	},
+	"restartRequired": "restart required",
+	"button": {
+		"save": "Save",
+		"reset": "Reset",
+		"restart": "Restart",
+		"forceFullRefresh": "Force full refresh"
+	},
+	"timer": {
+		"running": "running",
+		"stopped": "stopped"
+	},
+	"sections": {
+		"control": {
+			"keepSameColor": "Keep same color"
+		}
+	},
+	"rssiBar": {
+		"tooltip": "Values > -67 dBm are considered good. > -30 dBm is amazing"
+	},
+	"warning": "Warning",
+	"auto-detect": "Auto-detect"
 }

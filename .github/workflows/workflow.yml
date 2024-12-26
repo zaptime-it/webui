@@ -3,35 +3,56 @@ name: BTClock WebUI CI
 on: [push]
 
 env:
-  PUBLIC_BASE_URL: ""
+  PUBLIC_BASE_URL: ''
 
 jobs:
-  build:
+  check-changes:
     runs-on: ubuntu-latest
+    outputs:
+      all_changed_and_modified_files_count: ${{ steps.changed-files.outputs.all_changed_and_modified_files_count }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get changed files count
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files_ignore: 'doc/**,README.md,Dockerfile,.*'
+          files_ignore_separator: ','
+      - name: Print changed files count
+        run: >
+          echo "Changed files count: ${{ 
+            steps.changed-files.outputs.all_changed_and_modified_files_count }}"
+
+  build:
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: ${{ needs.check-changes.outputs.all_changed_and_modified_files_count >= 1 }}
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: yarn
           cache-dependency-path: '**/yarn.lock'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cache/pip
             ~/node_modules
           key: ${{ runner.os }}-pio
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
       - name: Get current date
         id: dateAndTime
-        run: echo "dateAndTime=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_OUTPUT
+        run: echo "dateAndTime=$(date +'%Y-%m-%d-%H:%M')" >> $GITHUB_OUTPUT
       - name: Install mklittlefs
         run: >
           git clone https://github.com/earlephilhower/mklittlefs.git /tmp/mklittlefs &&
@@ -40,27 +61,76 @@ jobs:
           make dist
       - name: Install yarn
         run: yarn && yarn postinstall
+      - name: Run linter
+        run: yarn lint
+      - name: Run vitest tests
+        run: yarn vitest run
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
       - name: Build WebUI
         run: yarn build
+      - name: Get current block
+        id: getBlockHeight
+        run: echo "blockHeight=$(curl -s https://mempool.space/api/blocks/tip/height)" >> $GITHUB_OUTPUT
+      - name: Write block height to file
+        env:
+          BLOCK_HEIGHT: ${{ steps.getBlockHeight.outputs.blockHeight }}
+        run: mkdir -p output && echo "$BLOCK_HEIGHT" > output/version.txt
       - name: gzip build for LittleFS
         run: find dist -type f ! -name ".*" -exec sh -c 'mkdir -p "build_gz/$(dirname "${1#dist/}")" && gzip -k "$1" -c > "build_gz/${1#dist/}".gz' _ {} \;
+      - name: Write git rev to file
+        run: echo "$GITHUB_SHA" > build_gz/fs_hash.txt && echo "$GITHUB_SHA" > output/commit.txt
+      - name: Check GZipped directory size
+        run: |
+          # Set the threshold size in bytes
+          THRESHOLD=409600
+
+          # Calculate the total size of files in the directory
+          DIRECTORY_SIZE=$(du -b -s build_gz | awk '{print $1}')
+
+          # Fail the workflow if the size exceeds the threshold
+          if [ "$DIRECTORY_SIZE" -gt "$THRESHOLD" ]; then
+            echo "Directory size exceeds the threshold of $THRESHOLD bytes"
+            exit 1
+          else
+            echo "Directory size is within the threshold $DIRECTORY_SIZE"
+          fi
       - name: Create tarball
         run: tar czf webui.tgz --strip-components=1 dist
       - name: Build LittleFS
-        run: /tmp/mklittlefs/mklittlefs -c build_gz -s 409600 littlefs.bin 
+        run: |
+          set -e
+          /tmp/mklittlefs/mklittlefs -c build_gz -s 409600 output/littlefs.bin
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: |
             webui.tgz
-            littlefs.bin
+            output/littlefs.bin
       - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: ncipollo/release-action@v1
         with:
-          tag: main
+          tag: ${{ steps.getBlockHeight.outputs.blockHeight }}
           commit: main
-          name: release-${{ steps.date.outputs.dateAndTime }}
-          artifacts: "littlefs.bin,webui.tgz"
+          name: release-${{ steps.getBlockHeight.outputs.blockHeight }}
+          artifacts: 'output/littlefs.bin,webui.tgz'
           allowUpdates: true
           removeArtifacts: true
           makeLatest: true
+      - name: Pushes littlefs.bin to web flasher
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: output/
+          target-directory: webui/
+          destination-github-username: 'btclock'
+          destination-repository-name: 'web-flasher'
+          target-branch: main
+          user-name: ${{github.actor}}
+          user-email: ${{github.actor}}@users.noreply.github.com

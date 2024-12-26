@@ -1,0 +1,133 @@
+{
+	"section": {
+		"settings": {
+			"title": "Einstellungen",
+			"textColor": "Textfarbe",
+			"backgroundColor": "Hintergrundfarbe",
+			"ledPowerOnTest": "LED-Einschalttest",
+			"ledFlashOnBlock": "LED blinkt bei neuem Block",
+			"timePerScreen": "Zeit pro Bildschirm",
+			"ledBrightness": "LED-Helligkeit",
+			"flMaxBrightness": "Displaybeleuchtung Helligkeit",
+			"timezoneOffset": "Zeitzonenoffset",
+			"timeBetweenPriceUpdates": "Zeit zwischen Preisaktualisierungen",
+			"fullRefreshEvery": "Vollständige Aktualisierung alle",
+			"mempoolnstance": "Mempool Instance",
+			"hostnamePrefix": "Hostnamen-Präfix",
+			"StealFocusOnNewBlock": "Steal focus on new block",
+			"useBigCharsMcap": "Verwende große Zeichen für die Marktkapitalisierung",
+			"useBlkCountdown": "Blocks Countdown zur Halbierung",
+			"useSatsSymbol": "Sats-Symbol verwenden",
+			"suffixPrice": "Suffix-Preisformat",
+			"disableLeds": "Alle LED-Effekte deaktivieren",
+			"otaUpdates": "OTA updates",
+			"enableMdns": "mDNS",
+			"fetchEuroPrice": "€-Preis abrufen",
+			"shortAmountsWarning": "Geringe Beträge können die Lebensdauer der Displays verkürzen",
+			"tzOffsetHelpText": "Ein Neustart ist erforderlich, um den TZ-Offset anzuwenden.",
+			"screens": "Bildschirme",
+			"wifiTxPowerText": "In den meisten Fällen muss dies nicht eingestellt werden.",
+			"wifiTxPower": "WiFi-TX-Leistung",
+			"settingsSaved": "Einstellungen gespeichert",
+			"errorSavingSettings": "Fehler beim Speichern der Einstellungen",
+			"ownDataSource": "BTClock-Datenquelle verwenden",
+			"flAlwaysOn": "Displaybeleuchtung immer an",
+			"flEffectDelay": "Displaybeleuchtungeffekt Geschwindigkeit",
+			"flFlashOnUpd": "Displaybeleuchting bei neuem Block",
+			"mempoolInstanceHelpText": "Nur wirksam, wenn die BTClock-Datenquelle deaktiviert ist. \nZur Anwendung ist ein Neustart erforderlich.",
+			"luxLightToggle": "Automatisches Umschalten des Frontlichts bei Lux",
+			"wpTimeout": "WiFi-Konfigurationsportal timeout",
+			"useNostr": "Nostr-Datenquelle verwenden",
+			"flDisable": "Displaybeleuchtung deaktivieren",
+			"httpAuthUser": "WebUI-Benutzername",
+			"httpAuthPass": "WebUI-Passwort",
+			"httpAuthText": "Schützt nur die WebUI mit einem Passwort, nicht API-Aufrufe.",
+			"currencies": "Währungen",
+			"mowMode": "Mow suffixmodus",
+			"suffixShareDot": "Kompakte Suffix-Notation",
+			"section": {
+				"displaysAndLed": "Anzeigen und LEDs",
+				"screenSettings": "Infospezifisch",
+				"dataSource": "Datenquelle",
+				"extraFeatures": "Zusätzliche Funktionen",
+				"system": "System"
+			},
+			"ledFlashOnZap": "LED blinkt bei Nostr Zap",
+			"flFlashOnZap": "Displaybeleuchting bei Nostr Zap",
+			"showAll": "Alle anzeigen",
+			"hideAll": "Alles ausblenden",
+			"flOffWhenDark": "Displaybeleuchtung aus, wenn es dunkel ist",
+			"luxLightToggleText": "Zum Deaktivieren auf 0 setzen",
+			"verticalDesc": "Vrtikale Bildschirmbeschreibung"
+		},
+		"control": {
+			"systemInfo": "Systeminfo",
+			"version": "Version",
+			"buildTime": "Build time",
+			"ledColor": "LED-Farbe",
+			"turnOff": "Ausschalten",
+			"setColor": "Farbe festlegen",
+			"showText": "Text anzeigen",
+			"text": "Text",
+			"title": "Kontrolle",
+			"hostname": "Hostname",
+			"frontlight": "Displaybeleuchtung",
+			"turnOn": "Einschalten",
+			"flashFrontlight": "Blinken"
+		},
+		"status": {
+			"title": "Status",
+			"screenCycle": "Bildschirmzyklus",
+			"memoryFree": "Speicher frei",
+			"wsPriceConnection": "WS-Preisverbindung",
+			"wsMempoolConnection": "WS {instance}-Verbindung",
+			"fetchEuroNote": "If you use \"Fetch € price\" the WS Price connection will show ❌  since it uses another data source.",
+			"uptime": "Betriebszeit",
+			"wifiSignalStrength": "WiFi-Signalstärke",
+			"wsDataConnection": "BTClock-Datenquelle verbindung",
+			"lightSensor": "Lichtsensor",
+			"nostrConnection": "Nostr Relay-Verbindung"
+		},
+		"firmwareUpdater": {
+			"fileUploadSuccess": "Datei erfolgreich hochgeladen, Gerät neu gestartet. WebUI in {countdown} Sekunden neu geladen",
+			"fileUploadFailed": "Das Hochladen der Datei ist fehlgeschlagen. \nStellen Sie sicher, dass Sie die richtige Datei ausgewählt haben, und versuchen Sie es erneut.",
+			"uploading": "Hochladen",
+			"firmwareUpdateText": "Wenn Sie die Firmware-Upload-Funktion verwenden, stellen Sie sicher, dass Sie die richtigen Dateien verwenden. \nDas Hochladen der falschen Dateien kann dazu führen, dass das Gerät nicht mehr funktioniert. \nWenn es schief geht, können Sie die Firmware wiederherstellen, indem Sie das vollständige Image hochladen, nachdem Sie das Gerät in den BOOT-Modus versetzt haben.",
+			"swUpToDate": "Du hast die neueste Version.",
+			"swUpdateAvailable": "Eine neuere Version ist verfügbar!",
+			"latestVersion": "Letzte Version",
+			"releaseDate": "Veröffentlichungsdatum",
+			"viewRelease": "Veröffentlichung anzeigen",
+			"autoUpdate": "Update installieren (experimentell)"
+		}
+	},
+	"colors": {
+		"black": "Schwarz",
+		"white": "Weiss"
+	},
+	"time": {
+		"minutes": "Minuten",
+		"seconds": "Sekunden"
+	},
+	"restartRequired": "Neustart erforderlich",
+	"button": {
+		"save": "Speichern",
+		"reset": "Zurücksetzen",
+		"restart": "Neustart",
+		"forceFullRefresh": "Vollständige Aktualisierung erzwingen"
+	},
+	"timer": {
+		"running": "läuft",
+		"stopped": "gestoppt"
+	},
+	"sections": {
+		"control": {
+			"keepSameColor": "Gleiche Farbe beibehalten"
+		}
+	},
+	"rssiBar": {
+		"tooltip": "Werte > -67 dBm gelten als gut. > -30 dBm ist erstaunlich"
+	},
+	"warning": "Achtung",
+	"auto-detect": "Automatische Erkennung"
+}

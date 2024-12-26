@@ -1,70 +1,132 @@
 {
-  "section": {
-    "settings": {
-      "title": "Instellingen",
-      "textColor": "Tekstkleur",
-      "backgroundColor": "Achtergrondkleur",
-      "timeBetweenPriceUpdates": "Tijd tussen prijs updates",
-      "timezoneOffset": "Tijdzone afwijking",
-      "ledBrightness": "LED helderheid",
-      "timePerScreen": "Tijd per scherm",
-      "fullRefreshEvery": "Volledig verversen elke",
-      "shortAmountsWarning": "Lage waardes verkorten levensduur",
-      "tzOffsetHelpText": "Herstart nodig voor toepassen afwijking.",
-      "enableMdns": "mDNS",
-      "ledPowerOnTest": "LED test bij aanzetten",
-      "StealFocusOnNewBlock": "Pak aandacht bij nieuw blok",
-      "ledFlashOnBlock": "Knipper led bij nieuw blok",
-      "useBigCharsMcap": "Gebruik grote tekens bij market cap",
-      "fetchEuroPrice": "Toon € prijs",
-      "screens": "Schermen",
-      "hostnamePrefix": "Hostnaam voorvoegsel",
-      "mempoolnstance": "Mempool instantie",
-      "otaUpdates": "OTA updates"
-    },
-    "control": {
-      "systemInfo": "Systeeminformatie",
-      "version": "Versie",
-      "buildTime": "Bouwtijd",
-      "setColor": "Kleur instellen",
-      "turnOff": "Uitzetten",
-      "ledColor": "LED kleur",
-      "showText": "Toon tekst",
-      "text": "Tekst",
-      "title": "Besturing"
-    },
-    "status": {
-      "title": "Status",
-      "memoryFree": "Geheugen vrij",
-      "screenCycle": "Scherm cyclus",
-      "wsPriceConnection": "WS Prijs verbinding",
-      "wsMempoolConnection": "WS Mempool.space verbinding",
-      "fetchEuroNote": "Wanneer je \"Toon € prijs\" aanzet, zal de prijsverbinding als ❌ verbroken getoond worden vanwege het gebruik van een andere bron.",
-      "uptime": "Uptime"
-    }
-  },
-  "colors": {
-    "black": "Zwart",
-    "white": "Wit"
-  },
-  "time": {
-    "minutes": "minuten",
-    "seconds": "seconden"
-  },
-  "restartRequired": "herstart nodig",
-  "button": {
-    "save": "Opslaan",
-    "reset": "Herstel",
-    "restart": "Herstart",
-    "forceFullRefresh": "Forceer scherm verversen"
-  },
-  "timer": {
-    "running": "actief",
-    "stopped": "gestopt"
-  },
-  "sections": {
-    "control": {
-      "keepSameColor": "Behoud zelfde kleur"
-    }
-  }
+	"section": {
+		"settings": {
+			"title": "Instellingen",
+			"textColor": "Tekstkleur",
+			"backgroundColor": "Achtergrondkleur",
+			"timeBetweenPriceUpdates": "Tijd tussen prijs updates",
+			"timezoneOffset": "Tijdzone afwijking",
+			"ledBrightness": "LED helderheid",
+			"timePerScreen": "Tijd per scherm",
+			"fullRefreshEvery": "Volledig verversen elke",
+			"shortAmountsWarning": "Lage waardes verkorten mogelijk levensduur schermen",
+			"tzOffsetHelpText": "Herstart nodig voor toepassen afwijking.",
+			"enableMdns": "mDNS",
+			"ledPowerOnTest": "LED test bij aanzetten",
+			"StealFocusOnNewBlock": "Pak aandacht bij nieuw blok",
+			"ledFlashOnBlock": "Knipper led bij nieuw blok",
+			"useBigCharsMcap": "Gebruik grote tekens bij market cap",
+			"useBlkCountdown": "Blocks aftellen voor halving",
+			"useSatsSymbol": "Gebruik sats symbol",
+			"fetchEuroPrice": "Toon € prijs",
+			"screens": "Schermen",
+			"hostnamePrefix": "Hostnaam voorvoegsel",
+			"mempoolnstance": "Mempool instantie",
+			"suffixPrice": "Achtervoegsel prijs formaat",
+			"disableLeds": "Alle LEDs effecten uit",
+			"otaUpdates": "OTA updates",
+			"wifiTxPower": "WiFi TX power",
+			"wifiTxPowerText": "Meestal hoeft dit niet aangepast te worden.",
+			"settingsSaved": "Instellingen opgeslagen",
+			"errorSavingSettings": "Fout bij opslaan instellingen",
+			"ownDataSource": "BTClock-gegevensbron gebruiken",
+			"flMaxBrightness": "Displaylicht helderheid",
+			"flAlwaysOn": "Displaylicht altijd aan",
+			"flEffectDelay": "Displaylicht effect snelheid",
+			"flFlashOnUpd": "Knipper displaylicht bij nieuw blok",
+			"mempoolInstanceHelpText": "Alleen effectief als de BTClock-gegevensbron is uitgeschakeld. \nOm toe te passen is een herstart nodig.",
+			"luxLightToggle": "Schakelen displaylicht op lux",
+			"wpTimeout": "WiFi-config-portal timeout",
+			"useNostr": "Gebruik Nostr-gegevensbron",
+			"flDisable": "Schakel Displaylicht uit",
+			"httpAuthUser": "WebUI-gebruikersnaam",
+			"httpAuthPass": "WebUI-wachtwoord",
+			"httpAuthText": "Beveiligd enkel WebUI, niet de API.",
+			"currencies": "Valuta's",
+			"mowMode": "Mow achtervoegsel",
+			"suffixShareDot": "Achtervoegsel compacte notatie",
+			"section": {
+				"displaysAndLed": "Displays en LED's",
+				"screenSettings": "Schermspecifiek",
+				"dataSource": "Gegevensbron",
+				"extraFeatures": "Extra functies",
+				"system": "Systeem"
+			},
+			"ledFlashOnZap": "Knipper LED bij Nostr Zap",
+			"flFlashOnZap": "Knipper displaylicht bij Nostr Zap",
+			"showAll": "Toon alles",
+			"hideAll": "Alles verbergen",
+			"flOffWhenDark": "Displaylicht uit als het donker is",
+			"luxLightToggleText": "Stel in op 0 om uit te schakelen",
+			"verticalDesc": "Verticale schermbeschrijving"
+		},
+		"control": {
+			"systemInfo": "Systeeminformatie",
+			"version": "Versie",
+			"buildTime": "Bouwtijd",
+			"setColor": "Kleur instellen",
+			"turnOff": "Uitzetten",
+			"ledColor": "LED kleur",
+			"showText": "Toon tekst",
+			"text": "Tekst",
+			"title": "Besturing",
+			"frontlight": "Displaylicht",
+			"turnOn": "Aanzetten",
+			"flashFrontlight": "Knipper"
+		},
+		"status": {
+			"title": "Status",
+			"memoryFree": "Geheugen vrij",
+			"screenCycle": "Scherm cyclus",
+			"wsPriceConnection": "WS Prijs verbinding",
+			"wsMempoolConnection": "WS {instance} verbinding",
+			"fetchEuroNote": "Wanneer je \"Toon € prijs\" aanzet, zal de prijsverbinding als ❌ verbroken getoond worden vanwege het gebruik van een andere bron.",
+			"uptime": "Uptime",
+			"wifiSignalStrength": "WiFi signaalsterkte",
+			"wsDataConnection": "BTClock-gegevensbron verbinding",
+			"lightSensor": "Licht sensor",
+			"nostrConnection": "Nostr Relay-verbinding"
+		},
+		"firmwareUpdater": {
+			"fileUploadSuccess": "Bestand geüpload, apparaat herstart. WebUI opnieuw geladen over {countdown} seconden",
+			"fileUploadFailed": "Bestandsupload mislukt. \nZorg ervoor dat het juiste bestand is geselecteerd en probeer het opnieuw.",
+			"uploading": "Uploaden",
+			"firmwareUpdateText": "Zorg bij het gebruiken van de firmware upload dat de juiste bestanden gebruikt worden. \nHet uploaden van de verkeerde bestanden kan resulteren in een niet-werkend apparaat. \nAls het misgaat, kunt u de firmware herstellen door de volledige afbeelding te uploaden nadat u het apparaat in de BOOT-modus hebt gezet.",
+			"swUpToDate": "Je hebt de nieuwste versie.",
+			"swUpdateAvailable": "Een nieuwere versie is beschikbaar!",
+			"latestVersion": "Laatste versie",
+			"releaseDate": "Datum van publicatie",
+			"viewRelease": "Bekijk publicatie",
+			"autoUpdate": "Update installeren (experimenteel)"
+		}
+	},
+	"colors": {
+		"black": "Zwart",
+		"white": "Wit"
+	},
+	"time": {
+		"minutes": "minuten",
+		"seconds": "seconden"
+	},
+	"restartRequired": "herstart nodig",
+	"button": {
+		"save": "Opslaan",
+		"reset": "Herstel",
+		"restart": "Herstart",
+		"forceFullRefresh": "Forceer scherm verversen"
+	},
+	"timer": {
+		"running": "actief",
+		"stopped": "gestopt"
+	},
+	"sections": {
+		"control": {
+			"keepSameColor": "Behoud zelfde kleur"
+		}
+	},
+	"rssiBar": {
+		"tooltip": "Waarden > -67 dBm zijn goed. > -30 dBm is verbazingwekkend"
+	},
+	"warning": "Waarschuwing",
+	"auto-detect": "Automatische detectie"
 }

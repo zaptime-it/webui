@@ -1,38 +1,45 @@
-# create-svelte
+# BTClock WebUI
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+[![BTClock CI](https://github.com/btclock/webui/actions/workflows/workflow.yml/badge.svg)](https://github.com/btclock/webui2/actions/workflows/workflow.yml)
 
-## Creating a project
+The web user-interface for the BTClock, based on Svelte-kit. It uses Bootstrap for the lay-out.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+![Screenshot](doc/screenshot.webp)
+![Screenshot Dark](doc/screenshot-dark.webp)
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+After installed dependencies with `yarn`, start a development server:
 
 ```bash
-npm run dev
+yarn dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+yarn dev -- --open
 ```
 
 ## Building
 
-To create a production version of your app:
+To create a production version of the WebUI:
 
 ```bash
-npm run build
+yarn build
 ```
 
-You can preview the production build with `npm run preview`.
+Make sure the postinstall script is ran, because otherwise the filenames are to long for the LittleFS filesystem.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Deploying
+
+To upload the firmware to the BTClock, you need to GZIP all the files. You can use the python script `gzip_build.py` for that:
+
+```bash
+python3 gzip_build.py
+```
+
+Then you can make a `LittleFS.bin` with mklittlefs:
+
+```bash
+mklittlefs -c build_gz -s 409600 littlefs.bin
+```
+
+You can preview the production build with `yarn preview`.

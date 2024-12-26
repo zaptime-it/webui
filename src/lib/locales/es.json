@@ -1,71 +1,132 @@
 {
-  "section": {
-    "settings": {
-      "title": "Configuración",
-      "textColor": "Color de texto",
-      "backgroundColor": "Color de fondo",
-      "ledBrightness": "Brillo LED",
-      "screens": "Pantallas",
-      "shortAmountsWarning": "Cantidades pequeñas pueden acortar la vida útil.",
-      "fullRefreshEvery": "Actualización completa cada",
-      "timePerScreen": "Tiempo por pantalla",
-      "tzOffsetHelpText": "Es necesario reiniciar para aplicar la compensación.",
-      "timezoneOffset": "Compensación de zona horaria",
-      "StealFocusOnNewBlock": "Presta atención al nuevo bloque",
-      "ledFlashOnBlock": "El LED parpadea con un bloque nuevo",
-      "useBigCharsMcap": "Utilice caracteres grandes para la market cap",
-      "fetchEuroPrice": "Obtener precio en €",
-      "timeBetweenPriceUpdates": "Tiempo entre actualizaciones de precios",
-      "ledPowerOnTest": "Prueba de encendido del LED",
-      "enableMdns": "mDNS",
-      "hostnamePrefix": "Prefijo de nombre de host",
-      "mempoolnstance": "Instancia de Mempool",
-      "otaUpdates": "Actualización por aire"
-    },
-    "control": {
-      "turnOff": "Apagar",
-      "setColor": "Establecer el color",
-      "version": "Versión",
-      "ledColor": "color del LED",
-      "systemInfo": "Info del sistema",
-      "showText": "Poner texto",
-      "text": "Texto",
-      "title": "Control",
-      "buildTime": "Tiempo de construcción",
-      "hostname": "Nombre de host"
-    },
-    "status": {
-      "memoryFree": "Memoria RAM libre",
-      "wsPriceConnection": "Conexión WebSocket Precio",
-      "wsMempoolConnection": "Conexión WebSocket Mempool.space",
-      "screenCycle": "Rotacion de pantalla",
-      "uptime": "Tiempo de funcionamiento",
-      "fetchEuroNote": "Si utiliza \"Obtener precio en €\", la conexión de Precio WS mostrará ❌ ya que utiliza otra fuente de datos.",
-      "title": "Estado"
-    }
-  },
-  "button": {
-    "save": "Guardar",
-    "reset": "Restaurar",
-    "restart": "Reiniciar",
-    "forceFullRefresh": "Forzar refresco"
-  },
-  "colors": {
-    "black": "Negro",
-    "white": "Blanco"
-  },
-  "restartRequired": "reinicio requerido",
-  "time": {
-    "minutes": "minutos",
-    "seconds": "segundos"
-  },
-  "timer": {
-    "running": "funcionando",
-    "stopped": "detenido"
-  },
-  "sections": {
-    "control": {
-      "keepSameColor": "Mantén el mismo color"
-    }
-  }
+	"section": {
+		"settings": {
+			"title": "Configuración",
+			"textColor": "Color de texto",
+			"backgroundColor": "Color de fondo",
+			"ledBrightness": "Brillo LED",
+			"screens": "Pantallas",
+			"shortAmountsWarning": "Pequeñas cantidades pueden acortar la vida útil de los displays",
+			"fullRefreshEvery": "Actualización completa cada",
+			"timePerScreen": "Tiempo por pantalla",
+			"tzOffsetHelpText": "Es necesario reiniciar para aplicar la compensación.",
+			"timezoneOffset": "Compensación de zona horaria",
+			"StealFocusOnNewBlock": "Presta atención al nuevo bloque",
+			"ledFlashOnBlock": "El LED parpadea con un bloque nuevo",
+			"useBigCharsMcap": "Utilice caracteres grandes para la market cap",
+			"useBlkCountdown": "Cuenta regresiva en bloques",
+			"useSatsSymbol": "Usar símbolo sats",
+			"fetchEuroPrice": "Obtener precio en €",
+			"timeBetweenPriceUpdates": "Tiempo entre actualizaciones de precios",
+			"ledPowerOnTest": "Prueba de encendido del LED",
+			"enableMdns": "mDNS",
+			"hostnamePrefix": "Prefijo de nombre de host",
+			"mempoolnstance": "Instancia de Mempool",
+			"suffixPrice": "Precio con sufijos",
+			"disableLeds": "Desactivar efectos de LED",
+			"otaUpdates": "Actualización por aire",
+			"wifiTxPowerText": "En la mayoría de los casos no es necesario configurar esto.",
+			"settingsSaved": "Configuración guardada",
+			"errorSavingSettings": "Error al guardar la configuración",
+			"ownDataSource": "Utilice la fuente de datos BTClock",
+			"flMaxBrightness": "Brillo de luz de la pantalla",
+			"flAlwaysOn": "Luz de la pantalla siempre encendida",
+			"flEffectDelay": "Velocidad del efecto de luz de la pantalla",
+			"flFlashOnUpd": "Luz de la pantalla parpadea con un nuevo bloque",
+			"mempoolInstanceHelpText": "Solo es efectivo cuando la fuente de datos BTClock está deshabilitada. \nEs necesario reiniciar para aplicar.",
+			"luxLightToggle": "Cambio automático de luz frontal en lux",
+			"wpTimeout": "Portal de configuración WiFi timeout",
+			"useNostr": "Utilice la fuente de datos Nostr",
+			"flDisable": "Desactivar luz de la pantalla",
+			"httpAuthUser": "Nombre de usuario WebUI",
+			"httpAuthPass": "Contraseña WebUI",
+			"httpAuthText": "Solo la WebUI está protegida con contraseña, no las llamadas API.",
+			"currencies": "Monedas",
+			"mowMode": "Modo de sufijo Mow",
+			"suffixShareDot": "Notación compacta de sufijo",
+			"section": {
+				"displaysAndLed": "Pantallas y LED",
+				"screenSettings": "Específico de la pantalla",
+				"dataSource": "fuente de datos",
+				"extraFeatures": "Funciones adicionales",
+				"system": "Sistema"
+			},
+			"ledFlashOnZap": "LED parpadeante con Nostr Zap",
+			"flFlashOnZap": "Flash de luz frontal con Nostr Zap",
+			"showAll": "Mostrar todo",
+			"hideAll": "Ocultar todo",
+			"flOffWhenDark": "Luz de la pantalla cuando está oscuro",
+			"luxLightToggleText": "Establecer en 0 para desactivar",
+			"verticalDesc": "Descripción de pantalla vertical"
+		},
+		"control": {
+			"turnOff": "Apagar",
+			"setColor": "Establecer el color",
+			"version": "Versión",
+			"ledColor": "color del LED",
+			"systemInfo": "Info del sistema",
+			"showText": "Mostrar texto",
+			"text": "Texto",
+			"title": "Control",
+			"buildTime": "Tiempo de compilación",
+			"hostname": "Nombre del host",
+			"turnOn": "Encender",
+			"frontlight": "Luz de la pantalla",
+			"flashFrontlight": "Luz intermitente"
+		},
+		"status": {
+			"memoryFree": "Memoria RAM libre",
+			"wsPriceConnection": "Conexión WebSocket Precio",
+			"wsMempoolConnection": "Conexión WebSocket {instance}",
+			"screenCycle": "Ciclo de pantalla",
+			"uptime": "Tiempo de funcionamiento",
+			"fetchEuroNote": "Si utiliza \"Obtener precio en €\", la conexión de Precio WS mostrará ❌ ya que utiliza otra fuente de datos.",
+			"title": "Estado",
+			"wifiSignalStrength": "Fuerza de la señal WiFi",
+			"wsDataConnection": "Conexión de fuente de datos BTClock",
+			"lightSensor": "Sensor de luz",
+			"nostrConnection": "Conexión de relé Nostr"
+		},
+		"firmwareUpdater": {
+			"fileUploadSuccess": "Archivo cargado exitosamente, reiniciando el dispositivo. Recargando WebUI en {countdown} segundos",
+			"fileUploadFailed": "Error al cargar el archivo. \nAsegúrese de haber seleccionado el archivo correcto e inténtelo nuevamente.",
+			"uploading": "Subiendo",
+			"firmwareUpdateText": "Cuando utilice la función de carga de firmware, asegúrese de utilizar los archivos correctos. \nCargar archivos incorrectos puede provocar que el dispositivo no funcione. \nSi sale mal, puede restaurar el firmware cargando la imagen completa después de configurar el dispositivo en modo BOOT.",
+			"swUpToDate": "Tienes la ultima version.",
+			"swUpdateAvailable": "¡Una nueva versión está disponible!",
+			"latestVersion": "Ultima versión",
+			"releaseDate": "Fecha de lanzamiento",
+			"viewRelease": "Ver lanzamiento",
+			"autoUpdate": "Instalar actualización (experimental)"
+		}
+	},
+	"button": {
+		"save": "Guardar",
+		"reset": "Restaurar",
+		"restart": "Reiniciar",
+		"forceFullRefresh": "Forzar refresco"
+	},
+	"colors": {
+		"black": "Negro",
+		"white": "Blanco"
+	},
+	"restartRequired": "reinicio requerido",
+	"time": {
+		"minutes": "minutos",
+		"seconds": "segundos"
+	},
+	"timer": {
+		"running": "funcionando",
+		"stopped": "detenido"
+	},
+	"sections": {
+		"control": {
+			"keepSameColor": "Mantén el mismo color"
+		}
+	},
+	"rssiBar": {
+		"tooltip": "Se consideran buenos valores > -67 dBm. > -30 dBm es increíble"
+	},
+	"warning": "Aviso",
+	"auto-detect": "Detección automática"
 }

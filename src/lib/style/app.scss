@@ -1,188 +1,319 @@
-@import "../node_modules/bootstrap/scss/functions";
-@import "../node_modules/bootstrap/scss/variables";
-@import "../node_modules/bootstrap/scss/variables-dark";
+@use '@fontsource/ubuntu/scss/mixins' as Ubuntu;
+@use '@fontsource/antonio/scss/mixins' as Antonio;
+
+@import '../node_modules/bootstrap/scss/functions';
 
 //@import "@fontsource/antonio/latin-400.css";
-@import "@fontsource/ubuntu/latin-400.css";
-@import "@fontsource/oswald/latin-400.css";
 
-$form-range-track-bg: #fff;
-$color-mode-type: media-query;
-$font-family-base: "Ubuntu";
+@include Ubuntu.faces(
+	$subsets: latin,
+	$weights: 400,
+	$formats: 'woff2',
+	$directory: '@fontsource/ubuntu/files'
+);
+
+@include Antonio.faces(
+	$subsets: latin,
+	$weights: 400,
+	$formats: 'woff2',
+	$directory: '@fontsource/antonio/files'
+);
+
+@import './satsymbol';
+
+$color-mode-type: data;
+$font-family-base: 'Ubuntu';
 $font-size-base: 0.9rem;
-//$font-size-sm: $font-size-base * .875 !default;
-//$form-label-font-size: $font-size-base * .575 !default;
-//$input-btn-font-size-sm: 0.4rem;
-//$form-label-font-size: 0.4rem;
-$input-font-size-sm: $font-size-base * .875;
+$input-font-size-sm: $font-size-base * 0.875;
 
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/variables-dark';
 // $border-radius:               .675rem;
 
-@import "../node_modules/bootstrap/scss/mixins";
-@import "../node_modules/bootstrap/scss/maps";
-@import "../node_modules/bootstrap/scss/utilities";
+@import '../node_modules/bootstrap/scss/mixins';
+@import '../node_modules/bootstrap/scss/maps';
+@import '../node_modules/bootstrap/scss/utilities';
 
-@import "../node_modules/bootstrap/scss/root";
-@import "../node_modules/bootstrap/scss/reboot";
-@import "../node_modules/bootstrap/scss/type";
-@import "../node_modules/bootstrap/scss/containers";
-@import "../node_modules/bootstrap/scss/grid";
-@import "../node_modules/bootstrap/scss/forms";
-@import "../node_modules/bootstrap/scss/buttons";
-@import "../node_modules/bootstrap/scss/button-group";
-@import "../node_modules/bootstrap/scss/pagination";
+@import '../node_modules/bootstrap/scss/root';
+@import '../node_modules/bootstrap/scss/reboot';
+@import '../node_modules/bootstrap/scss/type';
+@import '../node_modules/bootstrap/scss/containers';
+@import '../node_modules/bootstrap/scss/grid';
+@import '../node_modules/bootstrap/scss/forms';
+@import '../node_modules/bootstrap/scss/buttons';
+@import '../node_modules/bootstrap/scss/button-group';
+//@import '../node_modules/bootstrap/scss/pagination';
 
-@import "../node_modules/bootstrap/scss/dropdown";
+@import '../node_modules/bootstrap/scss/dropdown';
 
-@import "../node_modules/bootstrap/scss/navbar";
-@import "../node_modules/bootstrap/scss/nav";
-@import "../node_modules/bootstrap/scss/card";
-@import "../node_modules/bootstrap/scss/progress";
+@import '../node_modules/bootstrap/scss/navbar';
+@import '../node_modules/bootstrap/scss/nav';
+@import '../node_modules/bootstrap/scss/card';
+@import '../node_modules/bootstrap/scss/progress';
+@import '../node_modules/bootstrap/scss/tooltip';
+@import '../node_modules/bootstrap/scss/toasts';
+@import '../node_modules/bootstrap/scss/alert';
 
-@import "../node_modules/bootstrap/scss/helpers";
-@import "../node_modules/bootstrap/scss/utilities/api";
+@import '../node_modules/bootstrap/scss/helpers';
+@import '../node_modules/bootstrap/scss/utilities/api';
 
-@include media-breakpoint-down(xl) {
-    html {
-        font-size: 85%;
-    }
-
-    button.btn,
-    input[type="button"].btn,
-    input[type="submit"].btn,
-    input[type="reset"].btn {
-        @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-sm, $btn-border-radius-sm);
-    }
+/* Default state (xs) - sticky */
+.sticky-xs-top {
+	position: sticky;
+	top: 0;
+	z-index: 1020;
 }
 
-@include media-breakpoint-down(lg) {
-    html {
-        font-size: 75%;
-    }
+@media (max-width: 576px) {
+	main {
+		margin-top: 25px;
+	}
 }
 
+/* Remove sticky behavior for larger screens */
+@media (min-width: 576px) {
+	.sticky-xs-top {
+		position: relative;
+	}
+}
+
+@include color-mode(dark) {
+	.navbar {
+		--bs-navbar-color: $light;
+		background-color: $dark;
+	}
+}
+
+@include color-mode(light) {
+	.navbar {
+		--bs-navbar-color: $dark;
+		background-color: $light;
+	}
+}
 
 nav {
-    margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
-.splitText div:first-child::after {
-    display: block;
-    content: '';
-    margin-top: 0px;
-    border-bottom: 2px solid;
-    margin-bottom: 3px;
+#btclock-wrapper {
+	margin: 0 auto;
 }
 
-#btcclock-wrapper {
-    margin: 0 auto;
+.btn-group-sm .btn {
+	font-size: 0.8rem;
+	// text-overflow: ellipsis;
+	// white-space: nowrap;
+	// overflow: hidden;
+	// width: 4rem;
 }
 
-.btclock {
-    border: 1px solid darkgray;
-    background: #000;
-    border-radius: 5px;
-    padding: 10px;
-    max-width: 700px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    align-content: stretch;
-    font-family: 'Oswald', sans-serif;
-
-    >div {
-        padding: 5px;
-    }
-
-    .digit,
-    .splitText,
-    .mediumText {
-        border: 2px solid gold;
-        border-radius: 8px;
-
-        @include media-breakpoint-up(sm) {
-            min-width: 10px;
-        }
-
-        @include media-breakpoint-up(xxl) {
-            min-width: 70px;
-        }
-
-        text-align: center;
-        color: #fff;
-    }
+.btn-group-sm {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.25rem !important;
 }
 
-.darkMode .btclock>div {
-    color: #fff;
-    border-color: #fff;
-}
-
-.lightMode .btclock>div {
-    background: #fff;
-}
-
-.lightMode .btclock>div {
-    color: #000;
-}
-
-.darkMode .btclock>div {
-    background: #000;
-}
-
-.splitText {
-    @include media-breakpoint-up(sm) {
-        font-size: 1.0rem;
-        padding-top: 8px !important;
-        padding-bottom: 9px !important;
-    }
-    @include media-breakpoint-up(xxl) {
-        font-size: 1.8rem;
-        padding-top: 19px !important;
-        padding-bottom: 20px !important;
-    }
-
-    text-align: center;
-}
-
-.mediumText {
-    font-size: 3rem;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 20px !important;
-    padding-bottom: 20px !important;
-}
-
-.digit {
-    font-size: 5rem;
-    @include media-breakpoint-up(sm) {
-        font-size: 2.5rem;
-    }
-    @include media-breakpoint-up(xxl) {
-        font-size: 5rem;
-    }
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.digit-blank {
-    content: "abc";
+/* Remove the border radius override that Bootstrap applies */
+.btn-group-sm > .btn {
+	border-radius: 0.25rem !important;
+	margin: 0 !important;
+	position: relative !important;
 }
 
 #customText {
-    text-transform: uppercase;
+	text-transform: uppercase;
 }
-.system_info {
-    padding: 0;
 
-    li {
-        list-style: none;
-    }
+.btclock-wrapper {
+	.btclock {
+		background: #000;
+		display: flex;
+		font-size: calc(2vw + 2vh);
+		font-family: 'Antonio', sans-serif;
+		font-weight: 400;
+		padding: 10px;
+		gap: 10px;
+
+		.digit,
+		.splitText,
+		.mediumText {
+			border: 2px solid gold;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			padding: 10px 10px 15px 10px;
+			width: calc(12vw + 12vh); /* Set a dynamic width based on viewport */
+			aspect-ratio: 1 / 1.5; /* Maintain a 1:1 aspect ratio */
+
+			hr {
+				width: 75%; /* Line width relative to digit square */
+				border: 0;
+				border-top: 2px solid #fff;
+				margin: 0; /* Remove default margin */
+				padding: 0;
+				opacity: 1;
+			}
+		}
+
+		.digit.sats {
+			padding-top: 35px;
+		}
+
+		.mediumText {
+			font-size: calc(1.25vw + 1.25vh);
+		}
+
+		.splitText {
+			flex-direction: column; /* Stack the text and line vertically */
+			align-items: center;
+			justify-content: space-around; /* Distribute items with space between */
+			padding: 5px;
+		}
+
+		&.verticalDesc > .splitText:first-child {
+			.textcontainer {
+				transform: rotate(-90deg);
+			}
+		}
+
+		.splitText .textcontainer :first-child::after {
+			display: block;
+			content: '';
+			margin-top: 0px;
+			border-bottom: 2px solid;
+			// margin-bottom: 3px;
+		}
+
+		.splitText {
+			font-size: calc(0.3vw + 1vh);
+
+			.top-text,
+			.bottom-text {
+				margin: 0;
+				line-height: 1;
+			}
+
+			.top-text {
+				margin-bottom: -45px;
+			}
+
+			.bottom-text {
+				margin-top: -45px;
+			}
+		}
+
+		.digit-blank {
+			content: 'abc';
+		}
+
+		.digit.icon {
+			content: 'abc';
+
+			svg {
+				width: 100%;
+			}
+		}
+	}
+
+	.digit.sats {
+		font-family: 'Satoshi Symbol', sans-serif;
+		content: 'a';
+	}
+
+	@media (max-width: 576px) {
+		.btclock {
+			font-size: calc(2vw + 2vh); /* Adjust for small screens if necessary */
+
+			.digit,
+			.splitText,
+			.mediumText {
+				padding: 5px;
+			}
+
+			.splitText {
+				font-size: calc(1.2vw + 1.2vh);
+
+				.top-text,
+				.bottom-text {
+					margin: 0;
+					line-height: 1;
+				}
+
+				.top-text {
+					margin-bottom: -10px;
+				}
+
+				.bottom-text {
+					margin-top: -10px;
+				}
+			}
+		}
+	}
+}
+
+.darkMode .btclock > div {
+	color: #fff;
+	border-color: #fff;
+}
+
+.darkMode .btclock > div {
+	background: #000;
+	color: #fff;
+}
+
+.lightMode .btclock {
+	& > div {
+		background: #fff;
+		color: #000;
+	}
+
+	.splitText hr {
+		border-top: 2px solid #000;
+	}
+}
+
+.lightMode .btclock > div {
+	color: #000;
+}
+
+.system_info {
+	padding: 0;
+
+	li {
+		list-style: none;
+	}
 }
 
 .card-title {
-    margin-bottom: 0;
+	margin-bottom: 0;
+}
+
+.navbar-brand {
+	font-style: italic;
+	font-weight: 600;
+}
+
+.firmwareUploadStatusAlert,
+#firmwareUploadProgress {
+	@extend .my-2;
+}
+
+.sats {
+	font-family: 'Satoshi Symbol';
+}
+
+.currencyCode {
+	width: 20%;
+	text-align: center;
+	display: inline-block;
+}
+
+input[type='number'] {
+	text-align: right;
+}
+
+.lightMode .bitaxelogo {
+	filter: brightness(0) saturate(100%);
 }

@@ -1,0 +1,30 @@
+diff --git a/node_modules/@sveltejs/kit/src/exports/vite/index.js b/node_modules/@sveltejs/kit/src/exports/vite/index.js
+index 21bc3d4..eef2db3 100644
+--- a/node_modules/@sveltejs/kit/src/exports/vite/index.js
++++ b/node_modules/@sveltejs/kit/src/exports/vite/index.js
+@@ -648,9 +648,9 @@ async function kit({ svelte_config }) {
+ 							output: {
+ 								format: inline ? 'iife' : 'esm',
+ 								name: `__sveltekit_${version_hash}.app`,
+-								entryFileNames: ssr ? '[name].js' : `${prefix}/[name].[hash].${ext}`,
+-								chunkFileNames: ssr ? 'chunks/[name].js' : `${prefix}/chunks/[name].[hash].${ext}`,
+-								assetFileNames: `${prefix}/assets/[name].[hash][extname]`,
++								entryFileNames: ssr ? '[name].js' : `${prefix}/[hash].${ext}`,
++								chunkFileNames: ssr ? 'chunks/[name].js' : `${prefix}/chunks/[hash].${ext}`,
++								assetFileNames: `${prefix}/assets/[hash][extname]`,
+ 								hoistTransitiveImports: false,
+ 								sourcemapIgnoreList,
+ 								manualChunks: split ? undefined : () => 'bundle',
+@@ -665,9 +665,9 @@ async function kit({ svelte_config }) {
+ 					worker: {
+ 						rollupOptions: {
+ 							output: {
+-								entryFileNames: `${prefix}/workers/[name]-[hash].js`,
+-								chunkFileNames: `${prefix}/workers/chunks/[name]-[hash].js`,
+-								assetFileNames: `${prefix}/workers/assets/[name]-[hash][extname]`,
++								entryFileNames: `${prefix}/workers/[hash].js`,
++								chunkFileNames: `${prefix}/workers/chunks/[hash].js`,
++								assetFileNames: `${prefix}/workers/assets/[hash][extname]`,
+ 								hoistTransitiveImports: false
+ 							}
+ 						}

@@ -12,3 +12,4 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 yarn-error.log
+test-results/
