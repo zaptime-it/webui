@@ -80,7 +80,6 @@ jobs:
         run: echo "blockHeight=$(curl -s https://mempool.space/api/blocks/tip/height)" >> $GITHUB_OUTPUT
 
       - name: Write block height to file
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           BLOCK_HEIGHT: ${{ steps.getBlockHeight.outputs.blockHeight }}
         run: mkdir -p output && echo "$BLOCK_HEIGHT" > output/version.txt
