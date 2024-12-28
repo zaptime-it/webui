@@ -14,7 +14,8 @@
 
 	let settings = writable({
 		fgColor: '0',
-		bgColor: '0'
+		bgColor: '0',
+		isLoaded: false
 	});
 
 	let status = writable({
@@ -25,34 +26,45 @@
 			price: false,
 			blocks: false
 		},
-		leds: []
+		leds: [],
+		isUpdating: false
 	});
 
-	const fetchStatusData = () => {
-		fetch(`${PUBLIC_BASE_URL}/api/status`, { credentials: 'same-origin' })
-			.then((res) => res.json())
-			.then((data) => {
-				status.set(data);
-			});
+	const fetchStatusData = async () => {
+		const res = await fetch(`${PUBLIC_BASE_URL}/api/status`, { credentials: 'same-origin' });
+
+		if (!res.ok) {
+			console.error('Error fetching status data:', res.statusText);
+			return false;
+		}
+
+		const data = await res.json();
+		status.set(data);
+		return true;
 	};
 
-	const fetchSettingsData = () => {
-		fetch(PUBLIC_BASE_URL + `/api/settings`, { credentials: 'same-origin' })
-			.then((res) => res.json())
-			.then((data) => {
-				data.fgColor = String(data.fgColor);
-				data.bgColor = String(data.bgColor);
-				data.timePerScreen = data.timerSeconds / 60;
+	const fetchSettingsData = async () => {
+		const res = await fetch(PUBLIC_BASE_URL + `/api/settings`, { credentials: 'same-origin' });
 
-				if (data.fgColor > 65535) {
-					data.fgColor = '65535';
-				}
+		if (!res.ok) {
+			console.error('Error fetching settings data:', res.statusText);
+			return;
+		}
 
-				if (data.bgColor > 65535) {
-					data.bgColor = '65535';
-				}
-				settings.set(data);
-			});
+		const data = await res.json();
+
+		data.fgColor = String(data.fgColor);
+		data.bgColor = String(data.bgColor);
+		data.timePerScreen = data.timerSeconds / 60;
+
+		if (data.fgColor > 65535) {
+			data.fgColor = '65535';
+		}
+
+		if (data.bgColor > 65535) {
+			data.bgColor = '65535';
+		}
+		settings.set(data);
 	};
 
 	let sections: (HTMLElement | null)[];
@@ -89,18 +101,45 @@
 		}
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		setupObserver();
 
-		fetchSettingsData();
-		fetchStatusData();
+		const connectEventSource = () => {
+			console.log('Connecting to EventSource');
+			const evtSource = new EventSource(`${PUBLIC_BASE_URL}/events`);
 
-		const evtSource = new EventSource(`${PUBLIC_BASE_URL}/events`);
+			evtSource.addEventListener('status', (e) => {
+				let dataObj = JSON.parse(e.data);
+				status.update((s) => ({ ...s, isUpdating: true }));
+				status.set(dataObj);
+			});
 
-		evtSource.addEventListener('status', (e) => {
-			let dataObj = JSON.parse(e.data);
-			status.set(dataObj);
-		});
+			evtSource.addEventListener('message', (e) => {
+				if (e.data == 'closing') {
+					console.log('EventSource closing');
+					status.update((s) => ({ ...s, isUpdating: false }));
+					evtSource.close(); // Close the current connection
+					setTimeout(connectEventSource, 5000);
+				}
+			});
+
+			evtSource.addEventListener('error', (e) => {
+				console.error('EventSource failed:', e);
+				status.update((s) => ({ ...s, isUpdating: false }));
+				evtSource.close(); // Close the current connection
+				setTimeout(connectEventSource, 1000);
+			});
+		};
+
+		try {
+			await fetchSettingsData();
+			if (await fetchStatusData()) {
+				settings.update((s) => ({ ...s, isLoaded: true }));
+				connectEventSource();
+			}
+		} catch (error) {
+			console.log('Error fetching data:', error);
+		}
 
 		function handleResize() {
 			if (observer) {
@@ -159,7 +198,7 @@
 </svelte:head>
 
 <Container fluid>
-	<Row>
+	<Row class="placeholder-glow">
 		<Control bind:settings on:showToast={showToast} bind:status lg="3" xxl="4"></Control>
 
 		<Status bind:settings bind:status lg="6" xxl="4"></Status>

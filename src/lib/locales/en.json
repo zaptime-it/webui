@@ -126,7 +126,8 @@
 			"latestVersion": "Latest Version",
 			"releaseDate": "Release Date",
 			"viewRelease": "View Release",
-			"autoUpdate": "Install update (experimental)"
+			"autoUpdate": "Install update (experimental)",
+			"autoUpdateInProgress": "Auto-update in progress, please wait..."
 		}
 	},
 	"colors": {

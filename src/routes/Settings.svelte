@@ -122,29 +122,36 @@
 			<CardTitle>{$_('section.settings.title')}</CardTitle>
 		</CardHeader>
 		<CardBody>
-			<Form on:submit={onSave}>
-				<ScreenSpecificSettings {settings} bind:isOpen={screenSettingsIsOpen} />
-				<DisplaySettings {settings} bind:isOpen={displaySettingsIsOpen} />
-				<DataSourceSettings {settings} bind:isOpen={dataSourceIsOpen} on:showToast />
-				<ExtraFeaturesSettings
-					{settings}
-					bind:isOpen={extraFeaturesIsOpen}
-					{miningPoolMap}
-					on:showToast
-				/>
-				<SystemSettings {settings} bind:isOpen={systemIsOpen} />
+			{#if $settings.isLoaded === false}
+				<div class="d-flex align-items-center">
+					<strong role="status">Loading...</strong>
+					<div class="spinner-border ms-auto" aria-hidden="true"></div>
+				</div>
+			{:else}
+				<Form on:submit={onSave}>
+					<ScreenSpecificSettings {settings} bind:isOpen={screenSettingsIsOpen} />
+					<DisplaySettings {settings} bind:isOpen={displaySettingsIsOpen} />
+					<DataSourceSettings {settings} bind:isOpen={dataSourceIsOpen} on:showToast />
+					<ExtraFeaturesSettings
+						{settings}
+						bind:isOpen={extraFeaturesIsOpen}
+						{miningPoolMap}
+						on:showToast
+					/>
+					<SystemSettings {settings} bind:isOpen={systemIsOpen} />
 
-				<Row class="mt-4">
-					<Col>
-						<Button type="submit" color="primary" class="me-2">
-							{$_('button.save')}
-						</Button>
-						<Button type="button" color="secondary" on:click={handleReset}>
-							{$_('button.reset')}
-						</Button>
-					</Col>
-				</Row>
-			</Form>
+					<Row class="mt-4">
+						<Col>
+							<Button type="submit" color="primary" class="me-2">
+								{$_('button.save')}
+							</Button>
+							<Button type="button" color="secondary" on:click={handleReset}>
+								{$_('button.reset')}
+							</Button>
+						</Col>
+					</Row>
+				</Form>
+			{/if}
 		</CardBody>
 	</Card>
 </Col>

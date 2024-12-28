@@ -53,6 +53,8 @@ $input-font-size-sm: $font-size-base * 0.875;
 @import '../node_modules/bootstrap/scss/tooltip';
 @import '../node_modules/bootstrap/scss/toasts';
 @import '../node_modules/bootstrap/scss/alert';
+@import '../node_modules/bootstrap/scss/placeholders';
+@import '../node_modules/bootstrap/scss/spinners';
 
 @import '../node_modules/bootstrap/scss/helpers';
 @import '../node_modules/bootstrap/scss/utilities/api';
@@ -316,4 +318,35 @@ input[type='number'] {
 
 .lightMode .bitaxelogo {
 	filter: brightness(0) saturate(100%);
+}
+
+.connection-lost-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.75);
+	z-index: 1050;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	.overlay-content {
+		background-color: rgba(255, 255, 255, 0.75);
+
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		text-align: center;
+
+		i {
+			font-size: 1rem;
+			color: $danger;
+			margin-bottom: 1rem;
+		}
+
+		h4 {
+			margin-bottom: 0.5rem;
+		}
+	}
 }

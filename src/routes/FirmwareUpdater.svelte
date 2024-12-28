@@ -4,11 +4,12 @@
 	import { _ } from 'svelte-i18n';
 	import { writable } from 'svelte/store';
 	import { Progress, Alert, Button } from '@sveltestrap/sveltestrap';
+	import HourglassSplitIcon from 'svelte-bootstrap-icons/lib/HourglassSplit.svelte';
 
 	const dispatch = createEventDispatcher();
 
 	export let settings = { hwRev: '' };
-
+	export let status = writable({ isOTAUpdating: false });
 	let currentVersion: string = $settings.gitTag; // Replace with your current version
 
 	let latestVersion: string = '';
@@ -207,8 +208,12 @@
 		)}: {releaseDate} -
 		<a href={releaseUrl} target="_blank">{$_('section.firmwareUpdater.viewRelease')}</a><br />
 		{#if isNewerVersionAvailable}
-			{$_('section.firmwareUpdater.swUpdateAvailable')} -
-			<a href="/" on:click={onAutoUpdate}>{$_('section.firmwareUpdater.autoUpdate')}</a>.
+			{#if !$status.isOTAUpdating}
+				{$_('section.firmwareUpdater.swUpdateAvailable')} -
+				<a href="/" on:click={onAutoUpdate}>{$_('section.firmwareUpdater.autoUpdate')}</a>.
+			{:else}
+				<HourglassSplitIcon /> {$_('section.firmwareUpdater.autoUpdateInProgress')}
+			{/if}
 		{:else}
 			{$_('section.firmwareUpdater.swUpToDate')}
 		{/if}
@@ -218,57 +223,59 @@
 {:else}
 	<p>Loading...</p>
 {/if}
-<section class="row row-cols-lg-auto align-items-end">
-	<div class="col flex-fill">
-		<label for="firmwareFile" class="form-label">Firmware file ({getFirmwareBinaryName()})</label>
-		<input
-			type="file"
-			id="firmwareFile"
-			on:change={(e) => handleFileChange(e, (file) => (firmwareUploadFile = file))}
-			name="update"
-			class="form-control"
-			accept=".bin"
-		/>
-	</div>
-	<div class="flex-fill">
-		<Button block on:click={uploadFirmwareFile} color="primary" disabled={!firmwareUploadFile}
-			>Update firmware</Button
+{#if !$status.isOTAUpdating}
+	<section class="row row-cols-lg-auto align-items-end">
+		<div class="col flex-fill">
+			<label for="firmwareFile" class="form-label">Firmware file ({getFirmwareBinaryName()})</label>
+			<input
+				type="file"
+				id="firmwareFile"
+				on:change={(e) => handleFileChange(e, (file) => (firmwareUploadFile = file))}
+				name="update"
+				class="form-control"
+				accept=".bin"
+			/>
+		</div>
+		<div class="flex-fill">
+			<Button block on:click={uploadFirmwareFile} color="primary" disabled={!firmwareUploadFile}
+				>Update firmware</Button
+			>
+		</div>
+		<div class="col flex-fill">
+			<label for="webuiFile" class="form-label">WebUI file ({getWebUiBinaryName()})</label>
+			<input
+				type="file"
+				id="webuiFile"
+				name="update"
+				class="form-control"
+				placeholder="littlefs.bin"
+				on:change={(e) => handleFileChange(e, (file) => (firmwareWebUiFile = file))}
+				accept=".bin"
+			/>
+		</div>
+		<div class="flex-fill">
+			<Button block on:click={uploadWebUiFile} color="secondary" disabled={!firmwareWebUiFile}
+				>Update WebUI</Button
+			>
+		</div>
+	</section>
+	{#if firmwareUploadProgress > 0}
+		<Progress striped value={firmwareUploadProgress} class="progress" id="firmwareUploadProgress"
+			>{$_('section.firmwareUpdater.uploading')}... {firmwareUploadProgress}%</Progress
 		>
-	</div>
-	<div class="col flex-fill">
-		<label for="webuiFile" class="form-label">WebUI file ({getWebUiBinaryName()})</label>
-		<input
-			type="file"
-			id="webuiFile"
-			name="update"
-			class="form-control"
-			placeholder="littlefs.bin"
-			on:change={(e) => handleFileChange(e, (file) => (firmwareWebUiFile = file))}
-			accept=".bin"
-		/>
-	</div>
-	<div class="flex-fill">
-		<Button block on:click={uploadWebUiFile} color="secondary" disabled={!firmwareWebUiFile}
-			>Update WebUI</Button
-		>
-	</div>
-</section>
-{#if firmwareUploadProgress > 0}
-	<Progress striped value={firmwareUploadProgress} class="progress" id="firmwareUploadProgress"
-		>{$_('section.firmwareUpdater.uploading')}... {firmwareUploadProgress}%</Progress
-	>
-{/if}
-{#if firmwareUploadSuccess}
-	<Alert color="success" class="firmwareUploadStatusAlert"
-		>{$_('section.firmwareUpdater.fileUploadSuccess', { values: { countdown: $countdown } })}
-	</Alert>
-{/if}
+	{/if}
+	{#if firmwareUploadSuccess}
+		<Alert color="success" class="firmwareUploadStatusAlert"
+			>{$_('section.firmwareUpdater.fileUploadSuccess', { values: { countdown: $countdown } })}
+		</Alert>
+	{/if}
 
-{#if firmwareUploadError}
-	<Alert color="danger" class="firmwareUploadStatusAlert"
-		>{$_('section.firmwareUpdater.fileUploadFailed')}</Alert
+	{#if firmwareUploadError}
+		<Alert color="danger" class="firmwareUploadStatusAlert"
+			>{$_('section.firmwareUpdater.fileUploadFailed')}</Alert
+		>
+	{/if}
+	<small
+		>⚠️ <strong>{$_('warning')}</strong>: {$_('section.firmwareUpdater.firmwareUpdateText')}</small
 	>
 {/if}
-<small
-	>⚠️ <strong>{$_('warning')}</strong>: {$_('section.firmwareUpdater.firmwareUpdateText')}</small
->

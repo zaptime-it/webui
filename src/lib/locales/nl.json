@@ -97,7 +97,8 @@
 			"latestVersion": "Laatste versie",
 			"releaseDate": "Datum van publicatie",
 			"viewRelease": "Bekijk publicatie",
-			"autoUpdate": "Update installeren (experimenteel)"
+			"autoUpdate": "Update installeren (experimenteel)",
+			"autoUpdateInProgress": "Automatische update wordt uitgevoerd. Even geduld a.u.b...."
 		}
 	},
 	"colors": {

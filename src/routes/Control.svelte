@@ -17,6 +17,7 @@
 	} from '@sveltestrap/sveltestrap';
 	import FirmwareUpdater from './FirmwareUpdater.svelte';
 	import { uiSettings } from '$lib/uiSettings';
+	import { Placeholder } from '$lib/components';
 
 	export let settings = {};
 
@@ -214,15 +215,16 @@
 					</li>
 				{/if}
 				<li>
-					{$_('section.control.buildTime')}: {new Date(
-						$settings.lastBuildTime * 1000
-					).toLocaleString()}
+					{$_('section.control.buildTime')}: <Placeholder
+						value={new Date($settings.lastBuildTime * 1000).toLocaleString()}
+						checkValue={$settings.lastBuildTime}
+					/>
 				</li>
-				<li>IP: {$settings.ip}</li>
-				<li>HW revision: {$settings.hwRev}</li>
-				<li>{$_('section.control.fwCommit')}: {$settings.gitRev}</li>
-				<li>WebUI commit: {$settings.fsRev}</li>
-				<li>{$_('section.control.hostname')}: {$settings.hostname}</li>
+				<li>IP: <Placeholder value={$settings.ip} /></li>
+				<li>HW revision: <Placeholder value={$settings.hwRev} /></li>
+				<li>{$_('section.control.fwCommit')}: <Placeholder value={$settings.gitRev} /></li>
+				<li>WebUI commit: <Placeholder value={$settings.fsRev} /></li>
+				<li>{$_('section.control.hostname')}: <Placeholder value={$settings.hostname} /></li>
 			</ul>
 			<Row>
 				<Col class="d-flex justify-content-end">
@@ -239,7 +241,7 @@
 			{#if $settings.otaEnabled}
 				<hr />
 				<h3>{$_('section.control.firmwareUpdate')}</h3>
-				<FirmwareUpdater on:showToast bind:settings />
+				<FirmwareUpdater on:showToast bind:settings bind:status />
 			{/if}
 		</CardBody>
 	</Card>

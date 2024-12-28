@@ -106,7 +106,8 @@
 			"latestVersion": "Ultima versión",
 			"releaseDate": "Fecha de lanzamiento",
 			"viewRelease": "Ver lanzamiento",
-			"autoUpdate": "Instalar actualización (experimental)"
+			"autoUpdate": "Instalar actualización (experimental)",
+			"autoUpdateInProgress": "Actualización automática en progreso, espere..."
 		}
 	},
 	"button": {

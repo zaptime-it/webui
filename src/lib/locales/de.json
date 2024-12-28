@@ -107,7 +107,8 @@
 			"latestVersion": "Letzte Version",
 			"releaseDate": "Veröffentlichungsdatum",
 			"viewRelease": "Veröffentlichung anzeigen",
-			"autoUpdate": "Update installieren (experimentell)"
+			"autoUpdate": "Update installieren (experimentell)",
+			"autoUpdateInProgress": "Automatische Aktualisierung läuft, bitte warten..."
 		}
 	},
 	"colors": {
