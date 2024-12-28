@@ -17,6 +17,7 @@
 		Row
 	} from '@sveltestrap/sveltestrap';
 	import Rendered from './Rendered.svelte';
+	import { DataSourceType } from '$lib/types/dataSource';
 
 	export let settings;
 	export let status: writable<object>;
@@ -74,7 +75,7 @@
 	});
 
 	settings.subscribe((value: object) => {
-		lightMode = value.bgColor > value.fgColor;
+		lightMode = !value.invertedColor;
 
 		if (value.screens) buttonChunks = chunkArray(value.screens, 5);
 	});
@@ -218,7 +219,7 @@
 			{$_('section.status.uptime')}: {toUptimestring($status.espUptime)}
 			<br />
 			<p>
-				{#if $settings.useNostr || $settings.nostrZapNotify}
+				{#if $settings.dataSource == DataSourceType.NOSTR_SOURCE || $settings.nostrZapNotify}
 					{$_('section.status.nostrConnection')}:
 					<span>
 						{#if $status.connectionStatus && $status.connectionStatus.nostr}
@@ -228,8 +229,8 @@
 						{/if}
 					</span>
 				{/if}
-				{#if !$settings.useNostr}
-					{#if !$settings.ownDataSource}
+				{#if $settings.dataSource != DataSourceType.NOSTR_SOURCE}
+					{#if $settings.dataSource == DataSourceType.THIRD_PARTY_SOURCE}
 						{$_('section.status.wsPriceConnection')}:
 						<span>
 							{#if $status.connectionStatus && $status.connectionStatus.price}

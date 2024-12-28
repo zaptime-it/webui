@@ -30,7 +30,7 @@
 			"wifiTxPower": "WiFi-TX-Leistung",
 			"settingsSaved": "Einstellungen gespeichert",
 			"errorSavingSettings": "Fehler beim Speichern der Einstellungen",
-			"ownDataSource": "BTClock-Datenquelle verwenden",
+			"ownDataSource": "BTClock-Datenquelle",
 			"flAlwaysOn": "Displaybeleuchtung immer an",
 			"flEffectDelay": "Displaybeleuchtungeffekt Geschwindigkeit",
 			"flFlashOnUpd": "Displaybeleuchting bei neuem Block",
@@ -58,7 +58,16 @@
 			"hideAll": "Alles ausblenden",
 			"flOffWhenDark": "Displaybeleuchtung aus, wenn es dunkel ist",
 			"luxLightToggleText": "Zum Deaktivieren auf 0 setzen",
-			"verticalDesc": "Vrtikale Bildschirmbeschreibung"
+			"verticalDesc": "Vrtikale Bildschirmbeschreibung",
+			"enableDebugLog": "Debug-Protokoll aktivieren",
+			"bitaxeEnabled": "BitAxe-Integration aktivieren",
+			"miningPoolStats": "Mining-Pool-Statistiken Integration Aktivieren",
+			"nostrZapNotify": "Nostr Zap-Benachrichtigungen aktivieren",
+			"thirdPartySource": "mempool.space/coincap.io Verwenden",
+			"dataSource": {
+				"nostr": "Nostr-Verlag",
+				"custom": "Benutzerdefinierter dataquelle"
+			}
 		},
 		"control": {
 			"systemInfo": "Systeminfo",
