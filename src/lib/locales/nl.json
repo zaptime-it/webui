@@ -58,7 +58,8 @@
 			"hideAll": "Alles verbergen",
 			"flOffWhenDark": "Displaylicht uit als het donker is",
 			"luxLightToggleText": "Stel in op 0 om uit te schakelen",
-			"verticalDesc": "Verticale schermbeschrijving"
+			"verticalDesc": "Verticale schermbeschrijving",
+			"fontName": "Lettertype"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

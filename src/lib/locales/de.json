@@ -67,7 +67,8 @@
 			"dataSource": {
 				"nostr": "Nostr-Verlag",
 				"custom": "Benutzerdefinierter dataquelle"
-			}
+			},
+			"fontName": "Schriftart"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

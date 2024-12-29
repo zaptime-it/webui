@@ -114,9 +114,13 @@
 		<CardHeader>
 			<div class="float-end">
 				<small>
-					<button type="button" on:click={showAll}>{$_('section.settings.showAll')}</button>
+					<button type="button" on:click={showAll} id="showAllBtn"
+						>{$_('section.settings.showAll')}</button
+					>
 					|
-					<button type="button" on:click={hideAll}>{$_('section.settings.hideAll')}</button>
+					<button type="button" on:click={hideAll} id="hideAllBtn"
+						>{$_('section.settings.hideAll')}</button
+					>
 				</small>
 			</div>
 			<CardTitle>{$_('section.settings.title')}</CardTitle>

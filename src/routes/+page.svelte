@@ -105,7 +105,6 @@
 		setupObserver();
 
 		const connectEventSource = () => {
-			console.log('Connecting to EventSource');
 			const evtSource = new EventSource(`${PUBLIC_BASE_URL}/events`);
 
 			evtSource.addEventListener('status', (e) => {

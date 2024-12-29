@@ -20,14 +20,19 @@
 
 	const setTextColor = () => {
 		$settings.invertedColor = !$settings.invertedColor;
-		$settings.fgColor = $settings.invertedColor ? 65535 : 0;
-		$settings.bgColor = $settings.invertedColor ? 0 : 65535;
 	};
 
 	const textColorOptions: [string, boolean][] = [
 		[$_('colors.black') + ' on ' + $_('colors.white'), false],
 		[$_('colors.white') + ' on ' + $_('colors.black'), true]
 	];
+
+	const fontPreferenceOptions: [string, string][] = $settings.availableFonts?.map((font) => [
+		$_(`fonts.${font}`) !== `fonts.${font}`
+			? $_(`fonts.${font}`)
+			: font.charAt(0).toUpperCase() + font.slice(1),
+		font
+	]);
 </script>
 
 <Row>
@@ -43,6 +48,14 @@
 			options={textColorOptions}
 			size={$uiSettings.inputSize}
 			on:change={setTextColor}
+		/>
+
+		<SettingsSelect
+			id="fontName"
+			label={$_('section.settings.fontName')}
+			bind:value={$settings.fontName}
+			options={fontPreferenceOptions}
+			size={$uiSettings.inputSize}
 		/>
 
 		<SettingsInput

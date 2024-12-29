@@ -108,8 +108,10 @@ export const settingsJson = {
 		'ckpool',
 		'eu_ckpool'
 	],
+	availableFonts: ['antonio', 'oswald'],
 	invertedColor: false,
-	isLoaded: true
+	isLoaded: true,
+	isFake: true
 };
 
 export const latestReleaseFake = {
@@ -167,16 +169,31 @@ export const initMock = async ({ page }) => {
 		await route.fulfill({ json: settingsJson });
 	});
 
-	await page.route('**/events', (route) => {
+	await page.route('**/events', async (route) => {
 		const newStatus = statusJson;
 		newStatus.data = ['BLOCK/HEIGHT', '8', '0', '0', '8', '1', '5'];
 		newStatus.isUpdating = true;
 
-		// Respond with a custom SSE message
-		route.fulfill({
+		// Format the SSE message correctly
+		const sseMessage = `data: ${JSON.stringify(newStatus)}\n\n`;
+
+		// Create a readable stream for SSE
+		const stream = new ReadableStream({
+			start(controller) {
+				controller.enqueue(new TextEncoder().encode(sseMessage));
+				// Keep the connection open
+				// controller.close(); // Don't close if you want to send more events
+			}
+		});
+
+		await route.fulfill({
 			status: 200,
-			contentType: 'text/event-stream',
-			json: `${JSON.stringify(newStatus)}\n\n`
+			headers: {
+				'Content-Type': 'text/event-stream',
+				'Cache-Control': 'no-cache',
+				Connection: 'keep-alive'
+			},
+			body: stream
 		});
 	});
 

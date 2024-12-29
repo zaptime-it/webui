@@ -84,7 +84,8 @@
 			},
 			"thirdPartySource": "Use mempool.space/coincap.io",
 			"ceDisableSSL": "Disable SSL",
-			"ceEndpoint": "Endpoint hostname"
+			"ceEndpoint": "Endpoint hostname",
+			"fontName": "Font"
 		},
 		"control": {
 			"systemInfo": "System info",

@@ -6,7 +6,7 @@ const config: PlaywrightTestConfig = {
 		timezoneId: 'Europe/Amsterdam'
 	},
 	webServer: {
-		command: 'npm run build && npm run preview',
+		command: 'npm run build:test && npm run preview',
 		port: 4173
 	},
 	reporter: process.env.CI ? 'github' : 'list',
