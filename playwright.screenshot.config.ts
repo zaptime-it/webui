@@ -54,6 +54,14 @@ export default defineConfig({
 		{
 			name: 'MacBook Pro 14 inch Safari',
 			use: { ...devices['Desktop Safari'], viewport: { width: 1512, height: 982 } }
+		},
+		{
+			name: 'MacBook Pro 14 inch Safari Dark Mode',
+			use: {
+				...devices['Desktop Safari'],
+				viewport: { width: 1512, height: 982 },
+				colorScheme: 'dark'
+			}
 		}
 	]
 });

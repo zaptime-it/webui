@@ -1,33 +1,39 @@
 export const statusJson = {
-	currentScreen: 0,
+	currentScreen: 20,
 	numScreens: 7,
 	timerRunning: true,
+	isOTAUpdating: false,
 	espUptime: 4479,
 	espFreeHeap: 58508,
 	espHeapSize: 342108,
-	connectionStatus: { price: true, blocks: true },
+	connectionStatus: {
+		price: false,
+		blocks: false,
+		V2: true,
+		nostr: true
+	},
 	rssi: -66,
-	data: ['BLOCK/HEIGHT', '8', '1', '8', '0', '2', '6'],
-	rendered: ['BLOCK/HEIGHT', '8', '1', '8', '0', '2', '6'],
+	data: ['BLOCK/HEIGHT', '8', '7', '6', '5', '4', '3'],
+	currency: 'USD',
 	leds: [
 		{ red: 0, green: 0, blue: 0, hex: '#000000' },
 		{ red: 0, green: 0, blue: 0, hex: '#000000' },
 		{ red: 0, green: 0, blue: 0, hex: '#000000' },
 		{ red: 0, green: 0, blue: 0, hex: '#000000' }
-	]
+	],
+	isUpdating: true,
+	isFake: true
 };
 
 export const settingsJson = {
 	numScreens: 7,
-	fgColor: 415029,
-	bgColor: 0,
 	timerSeconds: 1800,
 	timerRunning: true,
 	minSecPriceUpd: 30,
 	fullRefreshMin: 60,
 	wpTimeout: 600,
 	tzOffset: 0,
-	useBitcoinNode: false,
+	dataSource: 0,
 	mempoolInstance: 'mempool.space',
 	ledTestOnPower: true,
 	ledFlashOnUpd: true,
@@ -42,7 +48,7 @@ export const settingsJson = {
 	ip: '192.168.20.231',
 	txPower: 78,
 	gitRev: '25d8b92bcbc8938417c140355ea3ba99ff9eb4b7',
-	gitTag: '3.1.9',
+	gitTag: '3.2.23',
 	bitaxeEnabled: false,
 	bitaxeHostname: 'bitaxe1',
 	miningPoolStats: false,
@@ -50,9 +56,9 @@ export const settingsJson = {
 	miningPoolUser: '38Qkkei3SuF1Eo45BaYmRHUneRD54yyTFy',
 	nostrZapNotify: true,
 	hwRev: 'REV_A_EPD_2_13',
-	fsRev: '4c5d9616212b27e3f05c35370f0befcf2c5a04b2',
+	fsRev: '64e518bf58f89749753167a8b6826e10bb6455c5',
 	nostrZapPubkey: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422',
-	lastBuildTime: '1700666677',
+	lastBuildTime: Math.round(new Date().getTime() / 1000),
 	screens: [
 		{
 			id: 0,
@@ -62,17 +68,17 @@ export const settingsJson = {
 		{
 			id: 3,
 			name: 'Time',
-			enabled: true
+			enabled: false
 		},
 		{
 			id: 4,
 			name: 'Halving countdown',
-			enabled: true
+			enabled: false
 		},
 		{
 			id: 6,
 			name: 'Block Fee Rate',
-			enabled: true
+			enabled: false
 		},
 		{
 			id: 10,
@@ -87,11 +93,47 @@ export const settingsJson = {
 		{
 			id: 30,
 			name: 'Market Cap',
-			enabled: true
+			enabled: false
 		}
 	],
 	actCurrencies: ['USD', 'EUR'],
-	availableCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD']
+	availableCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD'],
+	availablePools: [
+		'ocean',
+		'noderunners',
+		'satoshi_radio',
+		'braiins',
+		'public_pool',
+		'gobrrr_pool',
+		'ckpool',
+		'eu_ckpool'
+	],
+	invertedColor: false,
+	isLoaded: true
+};
+
+export const latestReleaseFake = {
+	id: 782,
+	tag_name: '3.2.24',
+	target_commitish: '',
+	name: '3.2.24',
+	body: '',
+	url: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/782',
+	html_url: 'https://git.btclock.dev/btclock/btclock_v3/releases/tag/3.2.24',
+	tarball_url: 'https://git.btclock.dev/btclock/btclock_v3/archive/3.2.24.tar.gz',
+	zipball_url: 'https://git.btclock.dev/btclock/btclock_v3/archive/3.2.24.zip',
+	hide_archive_links: false,
+	upload_url: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/782/assets',
+	draft: false,
+	prerelease: false,
+	created_at: '2024-12-28T17:48:05Z',
+	published_at: '2024-12-28T17:48:05Z',
+	author: {},
+	assets: [],
+	archive_download_count: {
+		zip: 0,
+		tar_gz: 0
+	}
 };
 
 export const initMock = async ({ page }) => {
@@ -99,20 +141,17 @@ export const initMock = async ({ page }) => {
 		await route.fulfill({ json: statusJson });
 	});
 
-	await page.route('*/**/api/show/screen/1', async (route) => {
+	await page.route('*/**/api/show/screen/10', async (route) => {
 		//if (route.request().url().includes('*/**/api/show/screen/1')) {
 		statusJson.currentScreen = 1;
 		statusJson.data = ['MSCW/TIME', ' ', ' ', '2', '6', '4', '4'];
-		statusJson.rendered = statusJson.data;
-		//}
 
 		await route.fulfill({ json: statusJson });
 	});
 
-	await page.route('*/**/api/show/screen/2', async (route) => {
+	await page.route('*/**/api/show/screen/20', async (route) => {
 		statusJson.currentScreen = 2;
 		statusJson.data = ['BTC/USD', '$', '3', '7', '8', '2', '4'];
-		statusJson.rendered = statusJson.data;
 
 		await route.fulfill({ json: statusJson });
 	});
@@ -120,7 +159,6 @@ export const initMock = async ({ page }) => {
 	await page.route('*/**/api/show/screen/4', async (route) => {
 		statusJson.currentScreen = 4;
 		statusJson.data = ['BIT/COIN', 'HALV/ING', '0/YRS', '149/DAYS', '8/HRS', '30/MINS', 'TO/GO'];
-		statusJson.rendered = statusJson.data;
 
 		await route.fulfill({ json: statusJson });
 	});
@@ -132,6 +170,7 @@ export const initMock = async ({ page }) => {
 	await page.route('**/events', (route) => {
 		const newStatus = statusJson;
 		newStatus.data = ['BLOCK/HEIGHT', '8', '0', '0', '8', '1', '5'];
+		newStatus.isUpdating = true;
 
 		// Respond with a custom SSE message
 		route.fulfill({
@@ -139,5 +178,9 @@ export const initMock = async ({ page }) => {
 			contentType: 'text/event-stream',
 			json: `${JSON.stringify(newStatus)}\n\n`
 		});
+	});
+
+	await page.route('**/api/v1/repos/btclock/btclock_v3/releases/latest', async (route) => {
+		await route.fulfill({ json: latestReleaseFake });
 	});
 };

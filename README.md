@@ -4,7 +4,7 @@
 
 The web user-interface for the BTClock, based on Svelte-kit. It uses Bootstrap for the lay-out.
 
-![Screenshot](doc/screenshot.webp)
+![Screenshot](doc/screenshot-light.webp)
 ![Screenshot Dark](doc/screenshot-dark.webp)
 
 ## Developing

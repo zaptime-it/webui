@@ -158,7 +158,7 @@
 					<hr />
 					{#if $status.data}
 						<section class={lightMode ? 'lightMode' : 'darkMode'} style="position: relative;">
-							{#if $status.isUpdating === false}
+							{#if $status.isUpdating === false && $status.isFake === false}
 								<div class="connection-lost-overlay">
 									<div class="overlay-content">
 										<i class="bi bi-wifi-off"></i>

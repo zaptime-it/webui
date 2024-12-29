@@ -132,7 +132,7 @@ test('screens should be able to change', async ({ page }) => {
 
 	await page.getByRole('button', { name: 'Sats per Dollar' }).click();
 	const response = await responsePromise;
-	expect(response.url()).toContain('api/show/screen/1');
+	expect(response.url()).toContain('api/show/screen/10');
 });
 
 test('parse all types of EPD content correctly', async ({ page }) => {
