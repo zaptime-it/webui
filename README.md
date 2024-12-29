@@ -1,6 +1,7 @@
 # BTClock WebUI
 
-[![BTClock CI](https://github.com/btclock/webui/actions/workflows/workflow.yml/badge.svg)](https://github.com/btclock/webui2/actions/workflows/workflow.yml)
+[![Latest release](https://git.btclock.dev/btclock/webui/badges/release.svg)](https://git.btclock.dev/btclock/webui/releases/latest)
+[![BTClock CI](https://git.btclock.dev/btclock/webui/badges/workflows/build.yaml/badge.svg)](https://git.btclock.dev/btclock/webui/actions?workflow=build.yaml&actor=0&status=0)
 
 The web user-interface for the BTClock, based on Svelte-kit. It uses Bootstrap for the lay-out.
 
