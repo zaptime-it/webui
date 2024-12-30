@@ -85,7 +85,12 @@
 			"thirdPartySource": "Use mempool.space/coincap.io",
 			"ceDisableSSL": "Disable SSL",
 			"ceEndpoint": "Endpoint hostname",
-			"fontName": "Font"
+			"fontName": "Font",
+			"timeBasedDnd": "Enable Do Not Disturb time schedule",
+			"dndStartHour": "Start hour",
+			"dndStartMinute": "Start minute",
+			"dndEndHour": "End hour",
+			"dndEndMinute": "End minute"
 		},
 		"control": {
 			"systemInfo": "System info",
@@ -115,7 +120,9 @@
 			"wifiSignalStrength": "WiFi Signal strength",
 			"wsDataConnection": "BTClock data-source connection",
 			"lightSensor": "Light sensor",
-			"nostrConnection": "Nostr Relay connection"
+			"nostrConnection": "Nostr Relay connection",
+			"doNotDisturb": "Do not disturb",
+			"timeBasedDnd": "Time-based schedule"
 		},
 		"firmwareUpdater": {
 			"fileUploadFailed": "File upload failed. Make sure you have selected the correct file and try again.",

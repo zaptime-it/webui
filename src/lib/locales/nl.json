@@ -59,7 +59,12 @@
 			"flOffWhenDark": "Displaylicht uit als het donker is",
 			"luxLightToggleText": "Stel in op 0 om uit te schakelen",
 			"verticalDesc": "Verticale schermbeschrijving",
-			"fontName": "Lettertype"
+			"fontName": "Lettertype",
+			"timeBasedDnd": "Schakel het tijdschema Niet storen in",
+			"dndStartHour": "Begin uur",
+			"dndStartMinute": "Beginminuut",
+			"dndEndHour": "Eind uur",
+			"dndEndMinute": "Einde minuut"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",
@@ -86,7 +91,9 @@
 			"wifiSignalStrength": "WiFi signaalsterkte",
 			"wsDataConnection": "BTClock-gegevensbron verbinding",
 			"lightSensor": "Licht sensor",
-			"nostrConnection": "Nostr Relay-verbinding"
+			"nostrConnection": "Nostr Relay-verbinding",
+			"doNotDisturb": "Niet storen",
+			"timeBasedDnd": "Op tijd gebaseerd schema"
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Bestand geüpload, apparaat herstart. WebUI opnieuw geladen over {countdown} seconden",

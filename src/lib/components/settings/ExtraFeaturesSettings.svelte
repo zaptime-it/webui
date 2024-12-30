@@ -69,6 +69,64 @@
 		bind:isOpen
 		defaultOpen={false}
 	>
+		<!--- Time based do not disturb settings -->
+		<SettingsSwitch
+			id="timeBasedDnd"
+			label={$_('section.settings.timeBasedDnd')}
+			bind:checked={$settings.dnd.timeBasedEnabled}
+			size={$uiSettings.inputSize}
+		/>
+		{#if $settings.dnd.timeBasedEnabled}
+			<Row>
+				<Col>
+					<SettingsInput
+						id="dndStartHour"
+						type="number"
+						min="0"
+						max="23"
+						label={$_('section.settings.dndStartHour')}
+						bind:value={$settings.dnd.startHour}
+						size={$uiSettings.inputSize}
+					/>
+				</Col>
+				<Col>
+					<SettingsInput
+						id="dndStartMinute"
+						type="number"
+						min="0"
+						max="59"
+						label={$_('section.settings.dndStartMinute')}
+						bind:value={$settings.dnd.startMinute}
+						size={$uiSettings.inputSize}
+					/>
+				</Col>
+			</Row>
+			<Row>
+				<Col>
+					<SettingsInput
+						id="dndEndHour"
+						type="number"
+						min="0"
+						max="23"
+						label={$_('section.settings.dndEndHour')}
+						bind:value={$settings.dnd.endHour}
+						size={$uiSettings.inputSize}
+					/>
+				</Col>
+				<Col>
+					<SettingsInput
+						id="dndEndMinute"
+						type="number"
+						min="0"
+						max="59"
+						label={$_('section.settings.dndEndMinute')}
+						bind:value={$settings.dnd.endMinute}
+						size={$uiSettings.inputSize}
+					/>
+				</Col>
+			</Row>
+		{/if}
+
 		<!-- BitAxe Settings -->
 		{#if 'bitaxeEnabled' in $settings}
 			<Row class="mb-3">

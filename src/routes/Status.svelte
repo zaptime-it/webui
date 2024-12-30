@@ -97,6 +97,16 @@
 		}
 	};
 
+	const toggleDoNotDisturb = (currentStatus: boolean) => (e: Event) => {
+		e.preventDefault();
+		console.log(currentStatus);
+		if (!currentStatus) {
+			fetch(`${PUBLIC_BASE_URL}/api/dnd/enable`);
+		} else {
+			fetch(`${PUBLIC_BASE_URL}/api/dnd/disable`);
+		}
+	};
+
 	export let xs = 12;
 	export let sm = xs;
 	export let md = sm;
@@ -185,7 +195,27 @@
 							>{#if $status.timerRunning}&#9205; {$_('timer.running')}{:else}&#9208; {$_(
 									'timer.stopped'
 								)}{/if}</a
+						><br />
+
+						{$_('section.status.doNotDisturb')}:
+						<a
+							id="dndStatusText"
+							href={'#'}
+							style="cursor: pointer"
+							tabindex="0"
+							role="button"
+							aria-pressed="false"
+							on:click={toggleDoNotDisturb($status.dnd?.enabled)}
 						>
+							{#if $status.dnd?.active}&#9205; {$_('on')}{:else}&#9208; {$_('off')}{/if}</a
+						>
+						<small>
+							{#if $status.dnd?.timeBasedEnabled}
+								{$_('section.status.timeBasedDnd')} ( {$settings.dnd
+									.startHour}:{$settings.dnd.startMinute.toString().padStart(2, '0')} - {$settings
+									.dnd.endHour}:{$settings.dnd.endMinute.toString().padStart(2, '0')} )
+							{/if}
+						</small>
 					{/if}
 				{/if}
 				<hr />

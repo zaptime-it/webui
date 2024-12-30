@@ -22,7 +22,14 @@ export const statusJson = {
 		{ red: 0, green: 0, blue: 0, hex: '#000000' }
 	],
 	isUpdating: true,
-	isFake: true
+	isFake: true,
+	dnd: {
+		enabled: true,
+		timeBasedEnabled: true,
+		startTime: '23:00',
+		endTime: '7:00',
+		active: true
+	}
 };
 
 export const settingsJson = {
@@ -108,6 +115,14 @@ export const settingsJson = {
 		'ckpool',
 		'eu_ckpool'
 	],
+	dnd: {
+		enabled: false,
+		timeBasedEnabled: true,
+		startHour: 23,
+		startMinute: 0,
+		endHour: 7,
+		endMinute: 0
+	},
 	availableFonts: ['antonio', 'oswald'],
 	invertedColor: false,
 	isLoaded: true,

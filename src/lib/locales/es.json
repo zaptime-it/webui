@@ -67,7 +67,12 @@
 				"nostr": "editorial nostr",
 				"custom": "Punto final personalizado"
 			},
-			"fontName": "Fuente"
+			"fontName": "Fuente",
+			"timeBasedDnd": "Habilitar el horario de No molestar",
+			"dndStartHour": "Hora de inicio",
+			"dndStartMinute": "Minuto de inicio",
+			"dndEndHour": "Hora final",
+			"dndEndMinute": "Minuto final"
 		},
 		"control": {
 			"turnOff": "Apagar",
@@ -95,7 +100,9 @@
 			"wifiSignalStrength": "Fuerza de la señal WiFi",
 			"wsDataConnection": "Conexión de fuente de datos BTClock",
 			"lightSensor": "Sensor de luz",
-			"nostrConnection": "Conexión de relé Nostr"
+			"nostrConnection": "Conexión de relé Nostr",
+			"doNotDisturb": "No molestar",
+			"timeBasedDnd": "Horario basado en el tiempo"
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Archivo cargado exitosamente, reiniciando el dispositivo. Recargando WebUI en {countdown} segundos",

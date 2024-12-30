@@ -68,7 +68,12 @@
 				"nostr": "Nostr-Verlag",
 				"custom": "Benutzerdefinierter dataquelle"
 			},
-			"fontName": "Schriftart"
+			"fontName": "Schriftart",
+			"timeBasedDnd": "Aktivieren Sie den Zeitplan „Bitte nicht stören“.",
+			"dndStartHour": "Startstunde",
+			"dndStartMinute": "Startminute",
+			"dndEndHour": "Endstunde",
+			"dndEndMinute": "Schlussminute"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",
@@ -96,7 +101,9 @@
 			"wifiSignalStrength": "WiFi-Signalstärke",
 			"wsDataConnection": "BTClock-Datenquelle verbindung",
 			"lightSensor": "Lichtsensor",
-			"nostrConnection": "Nostr Relay-Verbindung"
+			"nostrConnection": "Nostr Relay-Verbindung",
+			"doNotDisturb": "Bitte nicht stören",
+			"timeBasedDnd": "Zeitbasierter Zeitplan"
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Datei erfolgreich hochgeladen, Gerät neu gestartet. WebUI in {countdown} Sekunden neu geladen",
