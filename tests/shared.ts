@@ -1,3 +1,38 @@
+interface Page {
+	route: (url: string, handler: (route: Route) => Promise<void>) => Promise<void>;
+}
+
+interface Route {
+	fulfill: (response: {
+		json?: typeof statusJson | typeof settingsJson | typeof latestReleaseFake;
+		status?: number;
+		headers?: Record<string, string>;
+		body?: ReadableStream;
+	}) => Promise<void>;
+}
+
+export const fetchLatestBlockHeight = async () => {
+	const response = await fetch('https://ws.btclock.dev/api/lastblock');
+	const blockHeight = await response.text();
+	return ['BLOCK/HEIGHT', ...blockHeight.trim().split('')];
+};
+
+export const fetchLatestRelease = async () => {
+	try {
+		const response = await fetch(
+			'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest'
+		);
+		if (!response.ok) throw new Error('Failed to fetch latest release');
+		const data = await response.json();
+		settingsJson.gitTag = data.tag_name;
+		return data;
+	} catch (error) {
+		console.warn('Failed to fetch latest release, using fallback:', error);
+		settingsJson.gitTag = latestReleaseFake.tag_name;
+		return latestReleaseFake;
+	}
+};
+
 export const statusJson = {
 	currentScreen: 20,
 	numScreens: 7,
@@ -13,7 +48,7 @@ export const statusJson = {
 		nostr: true
 	},
 	rssi: -66,
-	data: ['BLOCK/HEIGHT', '8', '7', '6', '5', '4', '3'],
+	data: ['BLOCK/HEIGHT', '0', '0', '0', '0', '0', '0'],
 	currency: 'USD',
 	leds: [
 		{ red: 0, green: 0, blue: 0, hex: '#000000' },
@@ -55,7 +90,7 @@ export const settingsJson = {
 	ip: '192.168.20.231',
 	txPower: 78,
 	gitRev: '25d8b92bcbc8938417c140355ea3ba99ff9eb4b7',
-	gitTag: '3.2.23',
+	gitTag: '3.2.27',
 	bitaxeEnabled: false,
 	bitaxeHostname: 'bitaxe1',
 	miningPoolStats: false,
@@ -153,7 +188,11 @@ export const latestReleaseFake = {
 	}
 };
 
-export const initMock = async ({ page }) => {
+export const initMock = async ({ page }: { page: Page }) => {
+	// Update status with latest block height
+	statusJson.data = await fetchLatestBlockHeight();
+	const latestRelease = await fetchLatestRelease();
+
 	await page.route('*/**/api/status', async (route) => {
 		await route.fulfill({ json: statusJson });
 	});
@@ -213,6 +252,6 @@ export const initMock = async ({ page }) => {
 	});
 
 	await page.route('**/api/v1/repos/btclock/btclock_v3/releases/latest', async (route) => {
-		await route.fulfill({ json: latestReleaseFake });
+		await route.fulfill({ json: latestRelease });
 	});
 };
