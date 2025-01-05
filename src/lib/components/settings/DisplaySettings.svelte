@@ -115,7 +115,7 @@
 				max={4095}
 				step={1}
 				size={$uiSettings.inputSize}
-				on:change={onFlBrightnessChange}
+				onChange={onFlBrightnessChange}
 			/>
 
 			<SettingsInput
