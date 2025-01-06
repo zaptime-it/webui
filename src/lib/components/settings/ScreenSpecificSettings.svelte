@@ -4,6 +4,7 @@
 	import { Row, Col } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
+	import { DataSourceType } from '$lib/types/dataSource';
 
 	export let settings;
 	export let isOpen = false;
@@ -99,7 +100,7 @@
 				{/each}
 			{/if}
 		</Row>
-		{#if $settings.actCurrencies && $settings.useNostr !== true}
+		{#if $settings.actCurrencies && $settings.dataSource == DataSourceType.BTCLOCK_SOURCE}
 			<Row>
 				<h5>{$_('section.settings.currencies')}</h5>
 				<small>{$_('restartRequired')}</small>
