@@ -13,6 +13,7 @@
 	export let miningPoolMap: Map<string, string>;
 
 	let validBitaxe = false;
+	let validLocalPool = false;
 	const testBitaxe = async () => {
 		try {
 			const response = await fetch(`http://${$settings.bitaxeHostname}/api/system/info`);
@@ -61,6 +62,49 @@
 		miningPoolMap.get(pool) || pool,
 		pool
 	]);
+
+	const testLocalPool = async () => {
+		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+			const response = await fetch(
+				`http://${$settings.localPoolEndpoint}/api/client/${$settings.miningPoolUser}`,
+				{ signal: controller.signal }
+			);
+			clearTimeout(timeoutId);
+
+			if (!response.ok) {
+				dispatch('showToast', {
+					color: 'danger',
+					text: `Failed to connect to local pool! status: ${response.status}`
+				});
+				validLocalPool = false;
+				throw new Error();
+			}
+
+			const poolInfo = await response.json();
+			dispatch('showToast', {
+				color: 'success',
+				text: `Can connect to local public pool, ${poolInfo.workersCount} workers`
+			});
+			validLocalPool = true;
+		} catch (error) {
+			if (error.name === 'AbortError') {
+				dispatch('showToast', {
+					color: 'danger',
+					text: `Connection to local pool timed out after 1 second`
+				});
+			} else {
+				dispatch('showToast', {
+					color: 'danger',
+					text: `Failed to connect to local pool, check the endpoint and make sure you are connected to the same network.`
+				});
+			}
+			console.error('Failed to fetch local pool info:', error);
+			validLocalPool = false;
+		}
+	};
 </script>
 
 <Row>
@@ -178,6 +222,21 @@
 							size={$uiSettings.inputSize}
 							selectClass={$uiSettings.selectClass}
 						/>
+						{#if $settings.miningPoolName === 'local_public_pool'}
+							<SettingsInput
+								id="localPoolEndpoint"
+								label={$_('section.settings.localPoolEndpoint', { default: 'Local Pool Endpoint' })}
+								bind:value={$settings.localPoolEndpoint}
+								placeholder="umbrel.local:2019"
+								required={true}
+								valid={validLocalPool}
+								size={$uiSettings.inputSize}
+							>
+								<Button type="button" color="success" on:click={testLocalPool}>
+									{$_('test', { default: 'Test' })}
+								</Button>
+							</SettingsInput>
+						{/if}
 						<SettingsInput
 							id="miningPoolUser"
 							label={$_('section.settings.miningPoolUser')}

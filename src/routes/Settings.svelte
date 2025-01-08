@@ -30,7 +30,8 @@
 		['public_pool', 'public-pool.io'],
 		['gobrrr_pool', 'Go Brrr pool'],
 		['ckpool', 'CKPool'],
-		['eu_ckpool', 'EU CKPool']
+		['eu_ckpool', 'EU CKPool'],
+		['local_public_pool', 'Public Pool (local)']
 	]);
 
 	const dispatch = createEventDispatcher();
