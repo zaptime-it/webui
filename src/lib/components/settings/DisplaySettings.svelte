@@ -190,12 +190,14 @@
 					size={$uiSettings.inputSize}
 				/>
 
-				<SettingsSwitch
-					id="flOffWhenDark"
-					bind:checked={$settings.flOffWhenDark}
-					label={$_('section.settings.flOffWhenDark')}
-					size={$uiSettings.inputSize}
-				/>
+				{#if $settings.hasLightLevel}
+					<SettingsSwitch
+						id="flOffWhenDark"
+						bind:checked={$settings.flOffWhenDark}
+						label={$_('section.settings.flOffWhenDark')}
+						size={$uiSettings.inputSize}
+					/>
+				{/if}
 			{/if}
 		</Row>
 	</ToggleHeader>
