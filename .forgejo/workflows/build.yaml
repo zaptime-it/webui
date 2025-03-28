@@ -120,7 +120,7 @@ jobs:
             output/littlefs.bin
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: https://code.forgejo.org/actions/forgejo-release@v2.5.1
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.5.3
         with:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
