@@ -39,6 +39,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
+          token: ${{ secrets.GH_TOKEN }}
           node-version: lts/*
           cache: yarn
           cache-dependency-path: '**/yarn.lock'
