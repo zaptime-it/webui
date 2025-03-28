@@ -50,9 +50,6 @@ jobs:
             ~/node_modules
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-pio-playwright-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '>=3.10'
       - name: Get current date
         id: dateAndTime
         run: echo "dateAndTime=$(date +'%Y-%m-%d-%H:%M')" >> $GITHUB_OUTPUT
