@@ -6,36 +6,21 @@
 	import { uiSettings } from '$lib/uiSettings';
 	import EyeIcon from 'svelte-bootstrap-icons/lib/Eye.svelte';
 	import EyeSlashIcon from 'svelte-bootstrap-icons/lib/EyeSlash.svelte';
+	import TimezoneSelector from './TimezoneSelector.svelte';
 
 	export let settings;
 	export let isOpen = false;
 
 	let showPassword = false;
-
-	const getTzOffsetFromSystem = () => {
-		const dt = new Date();
-		let diffTZ = dt.getTimezoneOffset();
-		$settings.tzOffset = diffTZ * -1;
-	};
 </script>
 
 <Row>
 	<ToggleHeader header={$_('section.settings.section.system')} bind:isOpen defaultOpen={false}>
-		<SettingsInput
-			id="tzOffset"
-			label={$_('section.settings.timezoneOffset')}
-			bind:value={$settings.tzOffset}
-			type="number"
-			step={1}
-			required={true}
-			suffix={$_('time.minutes')}
-			helpText={$_('section.settings.tzOffsetHelpText')}
+		<TimezoneSelector
+			value={$settings.tzString}
+			onChange={(value) => ($settings.tzString = value)}
 			size={$uiSettings.inputSize}
-		>
-			<Button type="button" color="info" on:click={getTzOffsetFromSystem}>
-				{$_('auto-detect')}
-			</Button>
-		</SettingsInput>
+		/>
 
 		{#if $settings.httpAuthEnabled}
 			<SettingsInput

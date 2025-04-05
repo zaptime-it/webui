@@ -28,19 +28,19 @@ test('api page has expected load button', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'Load' })).toBeVisible();
 });
 
-test('timezone can be negative, zero and positive', async ({ page }) => {
-	await page.goto('/');
-	await page.getByRole('button', { name: 'Show all' }).click();
+// test('timezone can be negative, zero and positive', async ({ page }) => {
+// 	await page.goto('/');
+// 	await page.getByRole('button', { name: 'Show all' }).click();
 
-	const tzOffsetField = 'input#tzOffset';
+// 	const tzOffsetField = 'input#tzOffset';
 
-	for (const val of ['-10', '0', '42']) {
-		await page.fill(tzOffsetField, val);
-		const resultValue = await page.$eval(tzOffsetField, (input: HTMLInputElement) => input.value);
-		expect(resultValue).toBe(val);
-		await page.getByRole('button', { name: 'Save' }).click();
-	}
-});
+// 	for (const val of ['-10', '0', '42']) {
+// 		await page.fill(tzOffsetField, val);
+// 		const resultValue = await page.$eval(tzOffsetField, (input: HTMLInputElement) => input.value);
+// 		expect(resultValue).toBe(val);
+// 		await page.getByRole('button', { name: 'Save' }).click();
+// 	}
+// });
 
 test('time values can not be zero or negative', async ({ page }) => {
 	await page.goto('/');
