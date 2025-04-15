@@ -6,7 +6,7 @@
 	import { uiSettings } from '$lib/uiSettings';
 	import { DataSourceType } from '$lib/types/dataSource';
 	import { onMount } from 'svelte';
-
+	import MultiSelect from 'svelte-multiselect';
 	export let settings;
 	export let isOpen = false;
 
@@ -29,14 +29,23 @@
 		}
 	}
 
+	let activeCurrencies: { label: string; value: string }[] = [];
+
 	onMount(() => {
 		prevLnbitsEnabled = $settings.lnbitsEnabled;
 		updateCurrencies($settings.lnbitsEnabled);
 	});
 
-	$: if (prevLnbitsEnabled !== $settings.lnbitsEnabled) {
-		prevLnbitsEnabled = $settings.lnbitsEnabled;
-		updateCurrencies($settings.lnbitsEnabled);
+	$: {
+		if (prevLnbitsEnabled !== $settings.lnbitsEnabled) {
+			prevLnbitsEnabled = $settings.lnbitsEnabled;
+			updateCurrencies($settings.lnbitsEnabled);
+		}
+		if (!activeCurrencies.length) {
+			activeCurrencies = $settings.actCurrencies;
+		} else {
+			$settings.actCurrencies = activeCurrencies;
+		}
 	}
 </script>
 
@@ -124,22 +133,14 @@
 			<Row>
 				<h5>{$_('section.settings.currencies')}</h5>
 				<small>{$_('restartRequired')}</small>
-				{#if availableCurrencies}
-					{#each availableCurrencies as c}
-						<Col md="6" xl="3" xxl="3">
-							<div class="form-check form-control-{$uiSettings.inputSize}">
-								<input
-									id="currency_{c}"
-									bind:group={$settings.actCurrencies}
-									value={c}
-									type="checkbox"
-									class="form-check-input"
-								/>
-								<label class="form-check-label" for="currency_{c}">{c}</label>
-							</div>
-						</Col>
-					{/each}
-				{/if}
+				<Col>
+					<MultiSelect
+						options={availableCurrencies}
+						bind:value={activeCurrencies}
+						placeholder={$_('section.settings.currencies')}
+						--sms-options-bg="var(--bs-body-bg, #212529)"
+					/>
+				</Col>
 			</Row>
 		{/if}
 	</ToggleHeader>
