@@ -5,9 +5,39 @@
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { DataSourceType } from '$lib/types/dataSource';
+	import { onMount } from 'svelte';
 
 	export let settings;
 	export let isOpen = false;
+
+	let availableCurrencies: string[] = [];
+	let prevLnbitsEnabled: boolean;
+
+	function updateCurrencies(enabled: boolean) {
+		if (enabled) {
+			fetch(`https://${$settings.lnbitsInstance}/api/v1/currencies`)
+				.then((res) => res.json())
+				.then((data) => {
+					availableCurrencies = data;
+				});
+		} else {
+			// Remove any currencies from actCurrencies that aren't in availableCurrencies
+			$settings.actCurrencies = $settings.actCurrencies.filter((curr: string) =>
+				$settings.availableCurrencies.includes(curr)
+			);
+			availableCurrencies = $settings.availableCurrencies;
+		}
+	}
+
+	onMount(() => {
+		prevLnbitsEnabled = $settings.lnbitsEnabled;
+		updateCurrencies($settings.lnbitsEnabled);
+	});
+
+	$: if (prevLnbitsEnabled !== $settings.lnbitsEnabled) {
+		prevLnbitsEnabled = $settings.lnbitsEnabled;
+		updateCurrencies($settings.lnbitsEnabled);
+	}
 </script>
 
 <Row>
@@ -104,9 +134,9 @@
 			<Row>
 				<h5>{$_('section.settings.currencies')}</h5>
 				<small>{$_('restartRequired')}</small>
-				{#if $settings.availableCurrencies}
-					{#each $settings.availableCurrencies as c}
-						<Col md="6" xl="12" xxl="6">
+				{#if availableCurrencies}
+					{#each availableCurrencies as c}
+						<Col md="6" xl="3" xxl="3">
 							<div class="form-check form-control-{$uiSettings.inputSize}">
 								<input
 									id="currency_{c}"

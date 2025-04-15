@@ -90,7 +90,9 @@
 			"dndStartHour": "Start hour",
 			"dndStartMinute": "Start minute",
 			"dndEndHour": "End hour",
-			"dndEndMinute": "End minute"
+			"dndEndMinute": "End minute",
+			"lnbitsEnabled": "LNBits multi-currency integration",
+			"lnbitsInstance": "LNbits instance hostname"
 		},
 		"control": {
 			"systemInfo": "System info",

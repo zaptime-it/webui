@@ -138,5 +138,31 @@
 				size={$uiSettings.inputSize}
 			/>
 		{/if}
+		<Row>
+			<SettingsSwitch
+				id="lnbitsEnabled"
+				bind:checked={$settings.lnbitsEnabled}
+				label="{$_('section.settings.lnbitsEnabled')} ({$_('restartRequired')})"
+				size={$uiSettings.inputSize}
+			/>
+		</Row>
+		{#if $settings.lnbitsEnabled}
+			<SettingsInput
+				id="lnbitsInstance"
+				label={$_('section.settings.lnbitsInstance')}
+				bind:value={$settings.lnbitsInstance}
+				required={true}
+				size={$uiSettings.inputSize}
+			>
+				<InputGroupText>
+					<Input
+						type="checkbox"
+						bind:checked={$settings.lnbitsHttps}
+						bsSize={$uiSettings.inputSize}
+					/>
+					HTTPS
+				</InputGroupText>
+			</SettingsInput>
+		{/if}
 	</ToggleHeader>
 </Row>
