@@ -84,7 +84,6 @@ export const settingsJson = {
 	mcapBigChar: true,
 	mdnsEnabled: true,
 	otaEnabled: true,
-	fetchEurPrice: false,
 	hostnamePrefix: 'btclock',
 	hostname: 'btclock-d60b14',
 	ip: '192.168.20.231',

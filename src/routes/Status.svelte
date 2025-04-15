@@ -306,9 +306,6 @@
 							</span>
 						{/if}
 					{/if}
-					{#if $settings.fetchEurPrice}
-						<small>{$_('section.status.fetchEuroNote')}</small>
-					{/if}
 				</p>
 			{/if}
 		</CardBody>

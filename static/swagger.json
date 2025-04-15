@@ -343,10 +343,6 @@
 			"Settings": {
 				"type": "object",
 				"properties": {
-					"fetchEurPrice": {
-						"type": "boolean",
-						"description": "Fetch EUR price instead of USD"
-					},
 					"fgColor": {
 						"type": "string",
 						"default": 16777215,

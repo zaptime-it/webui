@@ -73,28 +73,6 @@ test('time values can not be zero or negative', async ({ page }) => {
 	}
 });
 
-test('info message when fetch eur price is enabled', async ({ page }) => {
-	delete (settingsJson as { actCurrencies?: string[] }).actCurrencies;
-
-	await page.goto('/');
-	await page.getByRole('button', { name: 'Show all' }).click();
-
-	const inputField = 'input#fetchEurPrice';
-	const switchElement = await page.locator(inputField);
-
-	expect(switchElement).toBeTruthy();
-	const isSwitchEnabled = await switchElement.isChecked();
-	expect(isSwitchEnabled).toBe(false);
-
-	await expect(page.getByText('the WS Price connection will show')).toBeHidden();
-
-	await switchElement.click();
-	const isSwitchNowEnabled = await switchElement.isChecked();
-	expect(isSwitchNowEnabled).toBe(true);
-
-	await expect(page.getByText('the WS Price connection will show')).toBeVisible();
-});
-
 test('npub values will be converted to hex pubkeys', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: 'Show all' }).click();

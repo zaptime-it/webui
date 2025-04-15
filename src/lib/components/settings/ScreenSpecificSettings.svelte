@@ -105,16 +105,6 @@
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
-
-			{#if !$settings.actCurrencies}
-				<SettingsSwitch
-					id="fetchEurPrice"
-					bind:checked={$settings.fetchEurPrice}
-					label="{$_('section.settings.fetchEuroPrice')} ({$_('restartRequired')})"
-					size={$uiSettings.inputSize}
-					col={{ md: '6', xl: '12', xxl: '6' }}
-				/>
-			{/if}
 		</Row>
 		<Row>
 			<h5>{$_('section.settings.screens')}</h5>
