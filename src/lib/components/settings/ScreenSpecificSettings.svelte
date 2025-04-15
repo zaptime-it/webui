@@ -25,6 +25,7 @@
 			$settings.actCurrencies = $settings.actCurrencies.filter((curr: string) =>
 				$settings.availableCurrencies.includes(curr)
 			);
+			activeCurrencies = $settings.actCurrencies;
 			availableCurrencies = $settings.availableCurrencies;
 		}
 	}
