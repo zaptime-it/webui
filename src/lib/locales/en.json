@@ -78,7 +78,7 @@
 			"dataSource": {
 				"label": "Data Source",
 				"btclock": "BTClock Data Source",
-				"thirdParty": "mempool.space/coincap.io",
+				"thirdParty": "mempool.space/Kraken",
 				"nostr": "Nostr publisher",
 				"custom": "Custom Endpoint"
 			},

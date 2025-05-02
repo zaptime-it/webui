@@ -25,10 +25,10 @@
 	export let invalid: boolean | undefined = undefined;
 	export let minlength: string | undefined = undefined;
 	export let onChange: (() => void) | undefined = undefined;
-	export let onInput: (() => void) | undefined = undefined;
+	export let onInput: ((e: Event) => void) | undefined = undefined;
 
-	const onInputHandler = () => {
-		onInput?.();
+	const onInputHandler = (e: Event) => {
+		onInput?.(e);
 	};
 </script>
 

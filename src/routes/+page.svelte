@@ -13,9 +13,8 @@
 	import { uiSettings } from '$lib/uiSettings';
 
 	let settings = writable({
-		fgColor: '0',
-		bgColor: '0',
-		isLoaded: false
+		isLoaded: false,
+		timePerScreen: 0
 	});
 
 	let status = writable({

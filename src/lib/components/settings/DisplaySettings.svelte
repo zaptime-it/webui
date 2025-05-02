@@ -33,6 +33,8 @@
 			: font.charAt(0).toUpperCase() + font.slice(1),
 		font
 	]);
+
+	let timePerScreen = $settings.timePerScreen;
 </script>
 
 <Row>
@@ -61,7 +63,8 @@
 		<SettingsInput
 			id="timePerScreen"
 			label={$_('section.settings.timePerScreen')}
-			bind:value={$settings.timePerScreen}
+			bind:value={timePerScreen}
+			onInput={(e) => ($settings.timePerScreen = Number(e.target.value))}
 			type="number"
 			min={1}
 			step={1}
@@ -69,7 +72,6 @@
 			suffix={$_('time.minutes')}
 			size={$uiSettings.inputSize}
 		/>
-
 		<SettingsInput
 			id="fullRefreshMin"
 			label={$_('section.settings.fullRefreshEvery')}
