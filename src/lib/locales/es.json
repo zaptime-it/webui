@@ -88,7 +88,8 @@
 			"hostname": "Nombre del host",
 			"turnOn": "Encender",
 			"frontlight": "Luz de la pantalla",
-			"flashFrontlight": "Luz intermitente"
+			"flashFrontlight": "Luz intermitente",
+			"fwCommitMismatch": "La versión de firmware es diferente de la versión WebUI, esto podría causar problemas."
 		},
 		"status": {
 			"memoryFree": "Memoria RAM libre",

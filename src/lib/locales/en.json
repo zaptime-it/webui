@@ -108,7 +108,8 @@
 			"turnOn": "Turn on",
 			"flashFrontlight": "Flash",
 			"firmwareUpdate": "Firmware update",
-			"fwCommit": "Firmware commit"
+			"fwCommit": "Firmware commit",
+			"fwCommitMismatch": "The firmware version is different from the WebUI version, this might cause problems. "
 		},
 		"status": {
 			"title": "Status",

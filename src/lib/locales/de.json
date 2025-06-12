@@ -89,7 +89,8 @@
 			"hostname": "Hostname",
 			"frontlight": "Displaybeleuchtung",
 			"turnOn": "Einschalten",
-			"flashFrontlight": "Blinken"
+			"flashFrontlight": "Blinken",
+			"fwCommitMismatch": "Die Firmware -Version unterscheidet sich von der WebUI -Version, dies kann zu Problemen führen."
 		},
 		"status": {
 			"title": "Status",

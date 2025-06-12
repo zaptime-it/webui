@@ -13,7 +13,8 @@
 		Form,
 		Input,
 		Label,
-		Row
+		Row,
+		Alert
 	} from '@sveltestrap/sveltestrap';
 	import FirmwareUpdater from './FirmwareUpdater.svelte';
 	import { uiSettings } from '$lib/uiSettings';
@@ -226,6 +227,11 @@
 				<li>WebUI commit: <Placeholder value={$settings.fsRev} /></li>
 				<li>{$_('section.control.hostname')}: <Placeholder value={$settings.hostname} /></li>
 			</ul>
+			{#if $settings.gitRev != $settings.fsRev}
+				<Alert color="warning">
+					⚠️ <strong>{$_('warning')}</strong>: {$_('section.control.fwCommitMismatch')}
+				</Alert>
+			{/if}
 			<Row>
 				<Col class="d-flex justify-content-end">
 					<Button color="danger" id="restartBtn" on:click={restartClock}

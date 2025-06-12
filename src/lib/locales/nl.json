@@ -79,7 +79,8 @@
 			"title": "Besturing",
 			"frontlight": "Displaylicht",
 			"turnOn": "Aanzetten",
-			"flashFrontlight": "Knipper"
+			"flashFrontlight": "Knipper",
+			"fwCommitMismatch": "De firmwareversie verschilt van de WebUI -versie, dit kan problemen veroorzaken."
 		},
 		"status": {
 			"title": "Status",
