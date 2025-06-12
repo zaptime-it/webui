@@ -47,7 +47,7 @@
 			"section": {
 				"displaysAndLed": "Pantallas y LED",
 				"screenSettings": "Específico de la pantalla",
-				"dataSource": "fuente de datos",
+				"dataSource": "Fuente de datos",
 				"extraFeatures": "Funciones adicionales",
 				"system": "Sistema"
 			},
@@ -72,7 +72,8 @@
 			"dndStartHour": "Hora de inicio",
 			"dndStartMinute": "Minuto de inicio",
 			"dndEndHour": "Hora final",
-			"dndEndMinute": "Minuto final"
+			"dndEndMinute": "Minuto final",
+			"screenRestoreZap": "Restaurar el estado de pantalla anterior después de Zap (Usa la configuración {setting})"
 		},
 		"control": {
 			"turnOff": "Apagar",

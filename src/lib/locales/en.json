@@ -90,7 +90,8 @@
 			"dndStartHour": "Start hour",
 			"dndStartMinute": "Start minute",
 			"dndEndHour": "End hour",
-			"dndEndMinute": "End minute"
+			"dndEndMinute": "End minute",
+			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)"
 		},
 		"control": {
 			"systemInfo": "System info",

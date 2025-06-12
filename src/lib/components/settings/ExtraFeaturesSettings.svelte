@@ -285,6 +285,20 @@
 								/>
 							{/if}
 						</Row>
+						<Row>
+							<SettingsSwitch
+								id="screenRestoreZap"
+								bind:checked={$settings.scrnRestoreZap}
+								label={$_('section.settings.screenRestoreZap', {
+									default: 'Restore previous screen state after zap (Uses {setting} setting)',
+									values: {
+										setting: $_('section.settings.timePerScreen')
+									}
+								})}
+								size={$uiSettings.inputSize}
+								col={{ md: '12', xl: '12', xxl: '12' }}
+							/>
+						</Row>
 						<SettingsInput
 							id="nostrZapPubkey"
 							label={$_('section.settings.nostrZapPubkey')}

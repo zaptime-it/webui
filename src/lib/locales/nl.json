@@ -64,7 +64,8 @@
 			"dndStartHour": "Begin uur",
 			"dndStartMinute": "Beginminuut",
 			"dndEndHour": "Eind uur",
-			"dndEndMinute": "Einde minuut"
+			"dndEndMinute": "Einde minuut",
+			"screenRestoreZap": "Herstel vorige schermstatus na zap (Gebruikt {setting} instelling)"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

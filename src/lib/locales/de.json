@@ -73,7 +73,8 @@
 			"dndStartHour": "Startstunde",
 			"dndStartMinute": "Startminute",
 			"dndEndHour": "Endstunde",
-			"dndEndMinute": "Schlussminute"
+			"dndEndMinute": "Schlussminute",
+			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",
