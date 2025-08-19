@@ -137,6 +137,7 @@
 				id="luxLightToggle"
 				label={`${$_('section.settings.luxLightToggle')} (${$settings.luxLightToggle})`}
 				bind:value={$settings.luxLightToggle}
+				onInput={(e) => ($settings.luxLightToggle = Number(e.target.value))}
 				type="range"
 				min={0}
 				max={1000}
