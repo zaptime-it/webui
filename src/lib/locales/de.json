@@ -60,7 +60,7 @@
 			"luxLightToggleText": "Zum Deaktivieren auf 0 setzen",
 			"verticalDesc": "Vrtikale Bildschirmbeschreibung",
 			"enableDebugLog": "Debug-Protokoll aktivieren",
-			"bitaxeEnabled": "BitAxe-Integration aktivieren",
+			"bitaxeEnabled": "Bitaxe-Integration aktivieren",
 			"miningPoolStats": "Mining-Pool-Statistiken Integration Aktivieren",
 			"nostrZapNotify": "Nostr Zap-Benachrichtigungen aktivieren",
 			"thirdPartySource": "mempool.space/coincap.io Verwenden",

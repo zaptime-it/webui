@@ -59,7 +59,7 @@
 			"luxLightToggleText": "Establecer en 0 para desactivar",
 			"verticalDesc": "Descripción de pantalla vertical",
 			"enableDebugLog": "Habilitar registro de depuración",
-			"bitaxeEnabled": "Habilitar la integración de BitAxe",
+			"bitaxeEnabled": "Habilitar la integración de Bitaxe",
 			"miningPoolStats": "Habilitar la integración de estadísticas del grupo minero",
 			"nostrZapNotify": "Habilitar notificaciones de Nostr Zap",
 			"thirdPartySource": "Utilice mempool.space/coincap.io",

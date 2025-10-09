@@ -70,7 +70,7 @@
 						<ZapIcon></ZapIcon>
 					{/if}
 					{#if char.endsWith('bitaxe')}
-						<img src="/bitaxe.webp" class="bitaxelogo" alt="BitAxe logo" />
+						<img src="/bitaxe.webp" class="bitaxelogo" alt="Bitaxe logo" />
 					{/if}
 					{#if char.endsWith('miningpool')}
 						<span class="pool-logo">Mining Pool Logo</span>
