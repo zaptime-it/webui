@@ -22,7 +22,7 @@
 
 	export let settings = {};
 
-	export let customText: string;
+	let customText: string;
 	export let status: Writable<{ leds: [] }>;
 	let ledStatus = [];
 	let keepLedsSameColor = false;
@@ -227,7 +227,7 @@
 				<li>WebUI commit: <Placeholder value={$settings.fsRev} /></li>
 				<li>{$_('section.control.hostname')}: <Placeholder value={$settings.hostname} /></li>
 			</ul>
-			{#if $settings.gitRev != $settings.fsRev}
+			{#if $settings.gitRev && $settings.fsRev && $settings.gitRev != $settings.fsRev}
 				<Alert color="warning">
 					⚠️ <strong>{$_('warning')}</strong>: {$_('section.control.fwCommitMismatch')}
 				</Alert>
