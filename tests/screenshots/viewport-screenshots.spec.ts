@@ -98,12 +98,12 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }, 
 		},
 		{
 			id: 80,
-			name: 'BitAxe Hashrate',
+			name: 'Bitaxe Hashrate',
 			enabled: true
 		},
 		{
 			id: 81,
-			name: 'BitAxe Best Difficulty',
+			name: 'Bitaxe Best Difficulty',
 			enabled: true
 		}
 	];

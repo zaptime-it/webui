@@ -21,7 +21,7 @@
 			if (!response.ok) {
 				dispatch('showToast', {
 					color: 'danger',
-					text: `Failed to connect to BitAxe HTTP error! status: ${response.status}`
+					text: `Failed to connect to Bitaxe HTTP error! status: ${response.status}`
 				});
 				validBitaxe = false;
 				throw new Error();
@@ -30,14 +30,14 @@
 			const systemInfo = await response.json();
 			dispatch('showToast', {
 				color: 'success',
-				text: `Connected to BitAxe ${systemInfo.ASICModel} (Board version ${systemInfo.boardVersion}) running firmware ${systemInfo.version}.\r\nCurrent hashrate ${Math.round(systemInfo.hashRate)} GH/s`
+				text: `Connected to Bitaxe ${systemInfo.ASICModel} (Board version ${systemInfo.boardVersion}) running firmware ${systemInfo.version}.\r\nCurrent hashrate ${Math.round(systemInfo.hashRate)} GH/s`
 			});
 			validBitaxe = true;
 		} catch (error) {
 			if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
 				dispatch('showToast', {
 					color: 'danger',
-					text: `Failed to connect to BitAxe, make sure you are connected to the same network.`
+					text: `Failed to connect to Bitaxe, make sure you are connected to the same network.`
 				});
 			}
 			console.error('Failed to fetch Bitaxe system info:', error);
@@ -171,11 +171,11 @@
 			</Row>
 		{/if}
 
-		<!-- BitAxe Settings -->
+		<!-- Bitaxe Settings -->
 		{#if 'bitaxeEnabled' in $settings}
 			<Row class="mb-3">
 				<Col>
-					<h5>BitAxe</h5>
+					<h5>Bitaxe</h5>
 					<SettingsSwitch
 						id="bitaxeEnabled"
 						bind:checked={$settings.bitaxeEnabled}
