@@ -66,7 +66,8 @@
 			"dndEndHour": "Eind uur",
 			"dndEndMinute": "Einde minuut",
 			"screenRestoreZap": "Herstel vorige schermstatus na zap (Gebruikt {setting} instelling)",
-			"blockFeeDec": "Toon block fee decimalen"
+			"blockFeeDec": "Toon block fee decimalen",
+			"blockFlashColor": "LED kleur bij nieuw blok"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { SettingsInput, SettingsSwitch, SettingsSelect } from '$lib/components';
+	import {
+		SettingsInput,
+		SettingsSwitch,
+		SettingsSelect,
+		SettingsInputColor
+	} from '$lib/components';
 	import { _ } from 'svelte-i18n';
 	import { Row } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
@@ -105,6 +110,12 @@
 			max={255}
 			step={1}
 			size={$uiSettings.inputSize}
+		/>
+
+		<SettingsInputColor
+			id="blockFlashColor"
+			label={$_('section.settings.blockFlashColor')}
+			bind:value={$settings.blockFlashColor}
 		/>
 
 		{#if $settings.hasFrontlight && !$settings.flDisable}

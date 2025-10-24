@@ -223,6 +223,10 @@ export const initMock = async ({ page }: { page: Page }) => {
 		await route.fulfill({ json: settingsJson });
 	});
 
+	await page.route('*/**/api/json/settings', async (route) => {
+		await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/json' } });
+	});
+
 	await page.route('**/events', async (route) => {
 		const newStatus = statusJson;
 		newStatus.data = ['BLOCK/HEIGHT', '8', '0', '0', '8', '1', '5'];

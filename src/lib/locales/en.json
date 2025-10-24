@@ -92,7 +92,8 @@
 			"dndEndHour": "End hour",
 			"dndEndMinute": "End minute",
 			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)",
-			"blockFeeDec": "Show block fee decimals"
+			"blockFeeDec": "Show block fee decimals",
+			"blockFlashColor": "LED color on new block"
 		},
 		"control": {
 			"systemInfo": "System info",

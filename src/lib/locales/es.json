@@ -74,7 +74,8 @@
 			"dndEndHour": "Hora final",
 			"dndEndMinute": "Minuto final",
 			"screenRestoreZap": "Restaurar el estado de pantalla anterior después de Zap (Usa la configuración {setting})",
-			"blockFeeDec": "Mostrar decimales de tarifa por bloque"
+			"blockFeeDec": "Mostrar decimales de tarifa por bloque",
+			"blockFlashColor": "Color del LED en el nuevo bloque"
 		},
 		"control": {
 			"turnOff": "Apagar",

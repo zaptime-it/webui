@@ -75,7 +75,8 @@
 			"dndEndHour": "Endstunde",
 			"dndEndMinute": "Schlussminute",
 			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)",
-			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen"
+			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen",
+			"blockFlashColor": "LED farbe bei neuem Block"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",
