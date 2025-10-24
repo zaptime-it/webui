@@ -99,7 +99,15 @@ export default defineConfig({
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		globals: true,
-		environment: 'jsdom'
+		environment: 'jsdom',
+		server: {
+			deps: {
+				inline: ['@sveltestrap/sveltestrap', '@sveltejs/kit']
+			}
+		},
+		alias: {
+			$app: path.resolve('./src/mocks/$app')
+		}
 	},
 	define: {
 		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
