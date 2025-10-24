@@ -92,7 +92,9 @@ export default defineConfig({
 		preprocessorOptions: {
 			scss: {
 				quietDeps: true,
-				silenceDeprecations: ['import']
+				silenceDeprecations: ['import'],
+				api: 'modern-compiler',
+				loadPaths: [path.resolve(__dirname, 'node_modules')]
 			}
 		}
 	},
@@ -108,6 +110,9 @@ export default defineConfig({
 		alias: {
 			$app: path.resolve('./src/mocks/$app')
 		}
+	},
+	resolve: {
+		conditions: ['browser']
 	},
 	define: {
 		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)

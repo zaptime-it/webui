@@ -102,7 +102,7 @@
 					{languageNames[$currentLocale] || 'English'}</DropdownToggle
 				>
 				<DropdownMenu end>
-					{#each $locales as locale}
+					{#each $locales as locale (locale)}
 						<DropdownItem on:click={setLocale(locale)}
 							>{getFlagEmoji(locale)} {languageNames[locale]}</DropdownItem
 						>

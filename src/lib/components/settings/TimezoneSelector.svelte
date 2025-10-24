@@ -41,7 +41,7 @@
 	<Col md="6" {size}>
 		<InputGroup>
 			<Input type="select" {size} bind:value={selectedTimezone} on:change={handleTimezoneChange}>
-				{#each timezones as tz}
+				{#each timezones as tz (tz)}
 					<option value={tz}>
 						{tz}
 					</option>

@@ -127,7 +127,7 @@
 					on:input={(e) => updateValues('sats', e.target.value)}
 				/>
 			</InputGroup>
-			{#each Object.entries(exchangeRates) as [cur]}
+			{#each Object.entries(exchangeRates) as [cur] (cur)}
 				<InputGroup size="lg" class="mb-2">
 					<InputGroupText class="currencyCode">{cur}</InputGroupText>
 					<Input

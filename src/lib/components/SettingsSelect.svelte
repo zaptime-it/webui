@@ -23,7 +23,7 @@
 			class={selectClass}
 			on:change={onChange}
 		>
-			{#each options as [key, val]}
+			{#each options as [key, val] (key)}
 				<option value={val}>{key}</option>
 			{/each}
 		</Input>

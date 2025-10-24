@@ -129,9 +129,9 @@
 			{:else}
 				{#if $settings.screens}
 					<div class=" d-block d-sm-none mx-auto text-center">
-						{#each buttonChunks as chunk}
+						{#each buttonChunks as chunk (chunk)}
 							<ButtonGroup size="sm" class="mx-auto mb-1">
-								{#each chunk as s}
+								{#each chunk as s (s.id)}
 									<Button
 										color="outline-primary"
 										active={$status.currentScreen == s.id}
@@ -143,7 +143,7 @@
 					</div>
 					<div class="d-flex justify-content-center d-none d-sm-flex">
 						<ButtonGroup size="sm">
-							{#each $settings.screens as s}
+							{#each $settings.screens as s (s.id)}
 								<Button
 									color="outline-primary"
 									active={$status.currentScreen == s.id}
@@ -155,7 +155,7 @@
 					{#if $settings.actCurrencies && ($settings.dataSource == DataSourceType.BTCLOCK_SOURCE || $settings.dataSource == DataSourceType.CUSTOM_SOURCE)}
 						<div class="d-flex justify-content-center d-sm-flex mt-2">
 							<ButtonGroup size="sm">
-								{#each $settings.actCurrencies as c}
+								{#each $settings.actCurrencies as c (c)}
 									<Button
 										color="outline-success"
 										active={$status.currency == c}
@@ -186,7 +186,7 @@
 						{$_('section.status.screenCycle')}:
 						<a
 							id="timerStatusText"
-							href={'#'}
+							href="#"
 							style="cursor: pointer"
 							tabindex="0"
 							role="button"
@@ -200,7 +200,7 @@
 						{$_('section.status.doNotDisturb')}:
 						<a
 							id="dndStatusText"
-							href={'#'}
+							href="#"
 							style="cursor: pointer"
 							tabindex="0"
 							role="button"
@@ -222,7 +222,7 @@
 				{#if !$settings.disableLeds}
 					<Row class="justify-content-evenly">
 						{#if $status.leds}
-							{#each $status.leds as led}
+							{#each $status.leds as led (led)}
 								<Col>
 									<Input
 										type="color"

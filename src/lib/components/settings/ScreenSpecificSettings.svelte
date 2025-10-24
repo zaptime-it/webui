@@ -97,7 +97,7 @@
 		<Row>
 			<h5>{$_('section.settings.screens')}</h5>
 			{#if $settings.screens}
-				{#each $settings.screens as s}
+				{#each $settings.screens as s (s.id)}
 					<SettingsSwitch
 						id="screens_{s.id}"
 						bind:checked={s.enabled}
@@ -113,7 +113,7 @@
 				<h5>{$_('section.settings.currencies')}</h5>
 				<small>{$_('restartRequired')}</small>
 				{#if $settings.availableCurrencies}
-					{#each $settings.availableCurrencies as c}
+					{#each $settings.availableCurrencies as c (c)}
 						<Col md="6" xl="12" xxl="6">
 							<div class="form-check form-control-{$uiSettings.inputSize}">
 								<input

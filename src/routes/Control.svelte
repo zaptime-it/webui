@@ -147,7 +147,7 @@
 						<Col md="8">
 							<Row class="justify-content-between">
 								{#if ledStatus}
-									{#each ledStatus as led, i}
+									{#each ledStatus as led, i (i)}
 										<Col>
 											<Input
 												type="color"

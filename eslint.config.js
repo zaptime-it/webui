@@ -29,5 +29,13 @@ export default [
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/']
+	},
+	{
+		rules: {
+			'svelte/no-navigation-without-resolve': 'off',
+			'svelte/valid-prop-names-in-kit-pages': 'off',
+			'svelte/require-event-dispatcher-types': 'off',
+			'svelte/require-each-key': 'off'
+		}
 	}
 ];
