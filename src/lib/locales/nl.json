@@ -65,7 +65,8 @@
 			"dndStartMinute": "Beginminuut",
 			"dndEndHour": "Eind uur",
 			"dndEndMinute": "Einde minuut",
-			"screenRestoreZap": "Herstel vorige schermstatus na zap (Gebruikt {setting} instelling)"
+			"screenRestoreZap": "Herstel vorige schermstatus na zap (Gebruikt {setting} instelling)",
+			"blockFeeDec": "Toon block fee decimalen"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

@@ -85,6 +85,14 @@
 					col={{ md: '6', xl: '12', xxl: '6' }}
 				/>
 			{/if}
+
+			<SettingsSwitch
+				id="blockFeeDec"
+				bind:checked={$settings.blockFeeDec}
+				label={$_('section.settings.blockFeeDec')}
+				size={$uiSettings.inputSize}
+				col={{ md: '6', xl: '12', xxl: '6' }}
+			/>
 		</Row>
 		<Row>
 			<h5>{$_('section.settings.screens')}</h5>

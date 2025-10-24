@@ -73,7 +73,8 @@
 			"dndStartMinute": "Minuto de inicio",
 			"dndEndHour": "Hora final",
 			"dndEndMinute": "Minuto final",
-			"screenRestoreZap": "Restaurar el estado de pantalla anterior después de Zap (Usa la configuración {setting})"
+			"screenRestoreZap": "Restaurar el estado de pantalla anterior después de Zap (Usa la configuración {setting})",
+			"blockFeeDec": "Mostrar decimales de tarifa por bloque"
 		},
 		"control": {
 			"turnOff": "Apagar",

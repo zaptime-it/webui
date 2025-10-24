@@ -91,7 +91,8 @@
 			"dndStartMinute": "Start minute",
 			"dndEndHour": "End hour",
 			"dndEndMinute": "End minute",
-			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)"
+			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)",
+			"blockFeeDec": "Show block fee decimals"
 		},
 		"control": {
 			"systemInfo": "System info",

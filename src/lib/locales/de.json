@@ -74,7 +74,8 @@
 			"dndStartMinute": "Startminute",
 			"dndEndHour": "Endstunde",
 			"dndEndMinute": "Schlussminute",
-			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)"
+			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)",
+			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",
