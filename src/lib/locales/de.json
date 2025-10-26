@@ -76,7 +76,8 @@
 			"dndEndMinute": "Schlussminute",
 			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)",
 			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen",
-			"blockFlashColor": "LED farbe bei neuem Block"
+			"blockFlashColor": "LED farbe bei neuem Block",
+			"supplyPercent": "BTC-Angebot in Prozent anzeigen"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

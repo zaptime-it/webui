@@ -93,7 +93,8 @@
 			"dndEndMinute": "End minute",
 			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)",
 			"blockFeeDec": "Show block fee decimals",
-			"blockFlashColor": "LED color on new block"
+			"blockFlashColor": "LED color on new block",
+			"supplyPercent": "Show BTC supply in percent"
 		},
 		"control": {
 			"systemInfo": "System info",

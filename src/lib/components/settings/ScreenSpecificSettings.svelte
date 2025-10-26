@@ -93,6 +93,14 @@
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
+
+			<SettingsSwitch
+				id="supplyPercent"
+				bind:checked={$settings.supplyPercent}
+				label={$_('section.settings.supplyPercent')}
+				size={$uiSettings.inputSize}
+				col={{ md: '6', xl: '12', xxl: '6' }}
+			/>
 		</Row>
 		<Row>
 			<h5>{$_('section.settings.screens')}</h5>

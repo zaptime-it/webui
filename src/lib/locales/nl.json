@@ -67,7 +67,8 @@
 			"dndEndMinute": "Einde minuut",
 			"screenRestoreZap": "Herstel vorige schermstatus na zap (Gebruikt {setting} instelling)",
 			"blockFeeDec": "Toon block fee decimalen",
-			"blockFlashColor": "LED kleur bij nieuw blok"
+			"blockFlashColor": "LED kleur bij nieuw blok",
+			"supplyPercent": "Toon BTC-aanbod in procenten"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",
