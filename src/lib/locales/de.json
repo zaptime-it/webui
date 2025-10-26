@@ -77,7 +77,8 @@
 			"screenRestoreZap": "Vorherigen Bildschirmzustand nach Zap wieder herstellen (Verwendet {setting} Einstellung)",
 			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen",
 			"blockFlashColor": "LED farbe bei neuem Block",
-			"supplyPercent": "BTC-Angebot in Prozent anzeigen"
+			"supplyPercent": "BTC-Angebot in Prozent anzeigen",
+			"refrScrnChange": "Vollständige Aktualisierung bei jedem Bildschirmwechsel"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

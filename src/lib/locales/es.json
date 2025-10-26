@@ -76,7 +76,8 @@
 			"screenRestoreZap": "Restaurar el estado de pantalla anterior después de Zap (Usa la configuración {setting})",
 			"blockFeeDec": "Mostrar decimales de tarifa por bloque",
 			"blockFlashColor": "Color del LED en el nuevo bloque",
-			"supplyPercent": "Mostrar el suministro de BTC en porcentaje"
+			"supplyPercent": "Mostrar el suministro de BTC en porcentaje",
+			"refrScrnChange": "Actualización completa en cada cambio de pantalla."
 		},
 		"control": {
 			"turnOff": "Apagar",

@@ -180,6 +180,13 @@
 				size={$uiSettings.inputSize}
 			/>
 
+			<SettingsSwitch
+				id="refrScrnChange"
+				bind:checked={$settings.refrScrnChange}
+				label={$_('section.settings.refrScrnChange')}
+				size={$uiSettings.inputSize}
+			/>
+
 			{#if $settings.hasFrontlight}
 				<SettingsSwitch
 					id="flDisable"

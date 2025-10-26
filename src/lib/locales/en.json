@@ -94,7 +94,8 @@
 			"screenRestoreZap": "Restore previous screen state after zap (Uses {setting} setting)",
 			"blockFeeDec": "Show block fee decimals",
 			"blockFlashColor": "LED color on new block",
-			"supplyPercent": "Show BTC supply in percent"
+			"supplyPercent": "Show BTC supply in percent",
+			"refrScrnChange": "Full refresh on each screen change"
 		},
 		"control": {
 			"systemInfo": "System info",
