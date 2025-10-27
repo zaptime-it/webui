@@ -77,7 +77,8 @@
 			"blockFeeDec": "Mostrar decimales de tarifa por bloque",
 			"blockFlashColor": "Color del LED en el nuevo bloque",
 			"supplyPercent": "Mostrar el suministro de BTC en porcentaje",
-			"refrScrnChange": "Actualización completa en cada cambio de pantalla."
+			"refrScrnChange": "Actualización completa en cada cambio de pantalla.",
+			"inverseButtons": "Números de pulsador inversos"
 		},
 		"control": {
 			"turnOff": "Apagar",

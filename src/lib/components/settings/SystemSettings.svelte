@@ -88,6 +88,12 @@
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsSwitch
+				id="inverseButtons"
+				bind:checked={$settings.inverseButtons}
+				label={$_('section.settings.inverseButtons')}
+				size={$uiSettings.inputSize}
+			/>
+			<SettingsSwitch
 				id="enableDebugLog"
 				bind:checked={$settings.enableDebugLog}
 				label="{$_('section.settings.enableDebugLog')} ({$_('restartRequired')})"

@@ -95,7 +95,8 @@
 			"blockFeeDec": "Show block fee decimals",
 			"blockFlashColor": "LED color on new block",
 			"supplyPercent": "Show BTC supply in percent",
-			"refrScrnChange": "Full refresh on each screen change"
+			"refrScrnChange": "Full refresh on each screen change",
+			"inverseButtons": "Inverse push button numbers"
 		},
 		"control": {
 			"systemInfo": "System info",

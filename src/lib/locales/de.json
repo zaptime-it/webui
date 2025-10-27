@@ -78,7 +78,8 @@
 			"blockFeeDec": "Blockgebühr Dezimalstellen anzeigen",
 			"blockFlashColor": "LED farbe bei neuem Block",
 			"supplyPercent": "BTC-Angebot in Prozent anzeigen",
-			"refrScrnChange": "Vollständige Aktualisierung bei jedem Bildschirmwechsel"
+			"refrScrnChange": "Vollständige Aktualisierung bei jedem Bildschirmwechsel",
+			"inverseButtons": "Tastennummern umkehren"
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

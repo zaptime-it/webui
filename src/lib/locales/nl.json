@@ -69,7 +69,8 @@
 			"blockFeeDec": "Toon block fee decimalen",
 			"blockFlashColor": "LED kleur bij nieuw blok",
 			"supplyPercent": "Toon BTC-aanbod in procenten",
-			"refrScrnChange": "Volledige verversing bij elke schermwijziging"
+			"refrScrnChange": "Volledige verversing bij elke schermwijziging",
+			"inverseButtons": "Omgekeerde drukknopnummers"
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",
