@@ -102,7 +102,7 @@ export default defineConfig({
 		environment: 'jsdom',
 		server: {
 			deps: {
-				inline: ['@sveltestrap/sveltestrap', '@sveltejs/kit']
+				inline: ['@sveltestrap/sveltestrap', '@sveltejs/kit', 'svelte-i18n', 'intl-messageformat']
 			}
 		},
 		alias: {
