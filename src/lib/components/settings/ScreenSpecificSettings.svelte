@@ -116,7 +116,7 @@
 				{/each}
 			{/if}
 		</Row>
-		{#if $settings.actCurrencies && $settings.dataSource == DataSourceType.BTCLOCK_SOURCE}
+		{#if $settings.actCurrencies && ($settings.dataSource == DataSourceType.BTCLOCK_SOURCE || $settings.dataSource == DataSourceType.CUSTOM_SOURCE || $settings.dataSource == DataSourceType.THIRD_PARTY_SOURCE)}
 			<Row>
 				<h5>{$_('section.settings.currencies')}</h5>
 				<small>{$_('restartRequired')}</small>

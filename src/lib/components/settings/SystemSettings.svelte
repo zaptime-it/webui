@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SettingsInput, SettingsSwitch } from '$lib/components';
+	import { SettingsInput, SettingsSwitch, SettingsSelect } from '$lib/components';
 	import { _ } from 'svelte-i18n';
 	import { Row, Button } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
@@ -12,6 +12,20 @@
 	export let isOpen = false;
 
 	let showPassword = false;
+
+	const wifiTxPowerMap = new Map<string, number>([
+		['Default', 80],
+		['19.5dBm', 78], // 19.5dBm
+		['19dBm', 76], // 19dBm
+		['18.5dBm', 74], // 18.5dBm
+		['17dBm', 68], // 17dBm
+		['15dBm', 60], // 15dBm
+		['13dBm', 52], // 13dBm
+		['11dBm', 44], // 11dBm
+		['8.5dBm', 34], // 8.5dBm
+		['7dBm', 28], // 7dBm
+		['5dBm', 20] // 5dBm
+	]);
 </script>
 
 <Row>
@@ -54,6 +68,13 @@
 			bind:value={$settings.hostnamePrefix}
 			required={true}
 			size={$uiSettings.inputSize}
+		/>
+
+		<SettingsSelect
+			id="wifiTxPower"
+			label={$_('section.settings.wifiTxPower')}
+			bind:value={$settings.wifiTxPower}
+			options={Array.from(wifiTxPowerMap.entries())}
 		/>
 
 		<SettingsInput

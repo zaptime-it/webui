@@ -152,7 +152,7 @@
 							{/each}
 						</ButtonGroup>
 					</div>
-					{#if $settings.actCurrencies && ($settings.dataSource == DataSourceType.BTCLOCK_SOURCE || $settings.dataSource == DataSourceType.CUSTOM_SOURCE)}
+					{#if $settings.actCurrencies && ($settings.dataSource == DataSourceType.BTCLOCK_SOURCE || $settings.dataSource == DataSourceType.CUSTOM_SOURCE || $settings.dataSource == DataSourceType.THIRD_PARTY_SOURCE)}
 						<div class="d-flex justify-content-center d-sm-flex mt-2">
 							<ButtonGroup size="sm">
 								{#each $settings.actCurrencies as c}
