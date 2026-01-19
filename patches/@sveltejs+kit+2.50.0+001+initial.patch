@@ -1,8 +1,8 @@
 diff --git a/node_modules/@sveltejs/kit/src/exports/vite/index.js b/node_modules/@sveltejs/kit/src/exports/vite/index.js
-index c1b12db..57cc2fa 100644
+index ec28e02..4ec85cc 100644
 --- a/node_modules/@sveltejs/kit/src/exports/vite/index.js
 +++ b/node_modules/@sveltejs/kit/src/exports/vite/index.js
-@@ -901,9 +901,9 @@ async function kit({ svelte_config }) {
+@@ -904,9 +904,9 @@ async function kit({ svelte_config }) {
  							output: {
  								format: inline ? 'iife' : 'esm',
  								name: `__sveltekit_${version_hash}.app`,
