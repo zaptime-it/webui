@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import * as sass from 'sass';
 import * as path from 'path';
 
 export default defineConfig({
@@ -16,9 +17,11 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
+				api: 'modern-compiler',
 				quietDeps: true,
 				silenceDeprecations: ['import'],
-				loadPaths: [path.resolve(__dirname, 'node_modules')]
+				loadPaths: [path.resolve(__dirname, 'node_modules')],
+				importers: [new sass.NodePackageImporter()]
 			}
 		}
 	},

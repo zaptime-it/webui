@@ -4,17 +4,9 @@
 
 @import '../node_modules/bootstrap/scss/functions';
 
-@include fontsource.faces(
-	$metadata: ubuntu.$metadata,
-	$subsets: latin,
-	$weights: 400
-);
+@include fontsource.faces($metadata: ubuntu.$metadata, $subsets: latin, $weights: 400);
 
-@include fontsource.faces(
-	$metadata: antonio.$metadata,
-	$subsets: latin,
-	$weights: 400
-);
+@include fontsource.faces($metadata: antonio.$metadata, $subsets: latin, $weights: 400);
 
 @import './satsymbol';
 
