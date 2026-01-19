@@ -5,9 +5,14 @@
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { DataSourceType } from '$lib/types/dataSource';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	export let settings;
-	export let isOpen = false;
+	interface Props {
+		settings: PartialSettings;
+		isOpen?: boolean;
+	}
+
+	let { settings, isOpen = $bindable(false) }: Props = $props();
 </script>
 
 <Row>

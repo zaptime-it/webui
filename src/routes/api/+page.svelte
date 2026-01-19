@@ -2,7 +2,7 @@
 	import { Button, Container } from '@sveltestrap/sveltestrap';
 
 	import { onMount } from 'svelte';
-	let swaggerLoaded: boolean = false;
+	let swaggerLoaded: boolean = $state(false);
 
 	onMount(async () => {
 		loadSwagger();
@@ -53,5 +53,5 @@
 
 <Container fluid class="bg-light">
 	<section class:invisible={swaggerLoaded}><Button on:click={loadSwagger}>Load</Button></section>
-	<div id="swagger-ui-container" />
+	<div id="swagger-ui-container"></div>
 </Container>

@@ -18,9 +18,7 @@
 	} from '@sveltestrap/sveltestrap';
 	import Rendered from './Rendered.svelte';
 	import { DataSourceType } from '$lib/types/dataSource';
-
-	export let settings;
-	export let status: writable<object>;
+	import type { PartialSettings } from '$lib/types/settings';
 
 	// Function to split array into chunks
 	const chunkArray = (array, chunkSize) => {
@@ -30,7 +28,7 @@
 		}
 		return result;
 	};
-	let buttonChunks = chunkArray([], 6);
+	let buttonChunks = $state(chunkArray([], 6));
 
 	const toTime = (secs: number) => {
 		var hours = Math.floor(secs / (60 * 60));
@@ -55,10 +53,10 @@
 		return `${time.h}h ${time.m}m ${time.s}s`;
 	};
 
-	let memoryFreePercent: number = 50;
-	let rssiPercent: number = 50;
-	let wifiStrengthColor: string = 'info';
-	let lightMode: boolean = false;
+	let memoryFreePercent: number = $state(50);
+	let rssiPercent: number = $state(50);
+	let wifiStrengthColor: string = $state('info');
+	let lightMode: boolean = $state(false);
 
 	status.subscribe((value: object) => {
 		memoryFreePercent = Math.round((value.espFreeHeap / value.espHeapSize) * 100);
@@ -107,12 +105,18 @@
 		}
 	};
 
-	export let xs = 12;
-	export let sm = xs;
-	export let md = sm;
-	export let lg = md;
-	export let xl = lg;
-	export let xxl = xl;
+	interface Props {
+		settings: PartialSettings;
+		status: writable<object>;
+		xs?: number;
+		sm?: number;
+		md?: number;
+		lg?: number;
+		xl?: number;
+		xxl?: number;
+	}
+
+	let { settings, status, xs = 12, sm = xs, md = sm, lg = md, xl = lg, xxl = xl }: Props = $props();
 </script>
 
 <Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
@@ -191,7 +195,7 @@
 							tabindex="0"
 							role="button"
 							aria-pressed="false"
-							on:click={toggleTimer($status.timerRunning)}
+							onclick={toggleTimer($status.timerRunning)}
 							>{#if $status.timerRunning}&#9205; {m['timer.running']()}{:else}&#9208; {m[
 									'timer.stopped'
 								]()}{/if}</a
@@ -205,7 +209,7 @@
 							tabindex="0"
 							role="button"
 							aria-pressed="false"
-							on:click={toggleDoNotDisturb($status.dnd?.enabled)}
+							onclick={toggleDoNotDisturb($status.dnd?.enabled)}
 						>
 							{#if $status.dnd?.active}&#9205; On{:else}&#9208; Off{/if}</a
 						>

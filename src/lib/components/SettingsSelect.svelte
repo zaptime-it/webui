@@ -1,14 +1,27 @@
 <script lang="ts">
 	import { Input, Label, FormText, Col, Row } from '@sveltestrap/sveltestrap';
 
-	export let id: string;
-	export let label: string;
-	export let value: string | number;
-	export let options: Array<[string, string | number]>;
-	export let size: string = 'sm';
-	export let helpText: string | undefined = undefined;
-	export let selectClass: string | undefined = undefined;
-	export let onChange: (() => void) | undefined = undefined;
+	interface Props {
+		id: string;
+		label: string;
+		value: string | number;
+		options: Array<[string, string | number]>;
+		size?: string;
+		helpText?: string | undefined;
+		selectClass?: string | undefined;
+		onChange?: (() => void) | undefined;
+	}
+
+	let {
+		id,
+		label,
+		value = $bindable(),
+		options,
+		size = 'sm',
+		helpText = undefined,
+		selectClass = undefined,
+		onChange = undefined
+	}: Props = $props();
 </script>
 
 <Row>

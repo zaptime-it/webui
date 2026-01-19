@@ -5,21 +5,25 @@
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib';
-	import { createEventDispatcher } from 'svelte';
+	import { toastStore } from '$lib/stores/toast';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	const dispatch = createEventDispatcher();
-	export let settings;
-	export let isOpen = false;
-	export let miningPoolMap: Map<string, string>;
+	interface Props {
+		settings: PartialSettings;
+		isOpen?: boolean;
+		miningPoolMap: Map<string, string>;
+	}
 
-	let validBitaxe = false;
-	let validLocalPool = false;
+	let { settings, isOpen = $bindable(false), miningPoolMap }: Props = $props();
+
+	let validBitaxe = $state(false);
+	let validLocalPool = $state(false);
 	const testBitaxe = async () => {
 		try {
 			const response = await fetch(`http://${$settings.bitaxeHostname}/api/system/info`);
 
 			if (!response.ok) {
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: `Failed to connect to Bitaxe HTTP error! status: ${response.status}`
 				});
@@ -28,14 +32,14 @@
 			}
 
 			const systemInfo = await response.json();
-			dispatch('showToast', {
+			toastStore.show({
 				color: 'success',
 				text: `Connected to Bitaxe ${systemInfo.ASICModel} (Board version ${systemInfo.boardVersion}) running firmware ${systemInfo.version}.\r\nCurrent hashrate ${Math.round(systemInfo.hashRate)} GH/s`
 			});
 			validBitaxe = true;
 		} catch (error) {
 			if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: `Failed to connect to Bitaxe, make sure you are connected to the same network.`
 				});
@@ -48,7 +52,7 @@
 	const checkValidNostrPubkey = (key: string) => {
 		$settings[key] = $settings[key].trim();
 		if (isValidNpub($settings[key])) {
-			dispatch('showToast', {
+			toastStore.show({
 				color: 'info',
 				text: m['section.settings.convertingValidNpub']()
 			});
@@ -58,10 +62,12 @@
 		if (ret) $settings[key] = ret;
 	};
 
-	$: poolOptions = ($settings.availablePools || []).map((pool: string): [string, string] => [
-		miningPoolMap.get(pool) || pool,
-		pool
-	]);
+	let poolOptions = $derived(
+		($settings.availablePools || []).map((pool: string): [string, string] => [
+			miningPoolMap.get(pool) || pool,
+			pool
+		])
+	);
 
 	const testLocalPool = async () => {
 		try {
@@ -75,7 +81,7 @@
 			clearTimeout(timeoutId);
 
 			if (!response.ok) {
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: `Failed to connect to local pool! status: ${response.status}`
 				});
@@ -84,19 +90,19 @@
 			}
 
 			const poolInfo = await response.json();
-			dispatch('showToast', {
+			toastStore.show({
 				color: 'success',
 				text: `Can connect to local public pool, ${poolInfo.workersCount} workers`
 			});
 			validLocalPool = true;
 		} catch (error) {
-			if (error.name === 'AbortError') {
-				dispatch('showToast', {
+			if (error instanceof Error && error.name === 'AbortError') {
+				toastStore.show({
 					color: 'danger',
 					text: `Connection to local pool timed out after 1 second`
 				});
 			} else {
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: `Failed to connect to local pool, check the endpoint and make sure you are connected to the same network.`
 				});
@@ -192,7 +198,7 @@
 							valid={validBitaxe}
 							size={$uiSettings.inputSize}
 						>
-							<Button type="button" color="success" on:click={testBitaxe}>Test</Button>
+							<Button type="button" color="success" onclick={testBitaxe}>Test</Button>
 						</SettingsInput>
 					{/if}
 				</Col>
@@ -230,7 +236,7 @@
 								valid={validLocalPool}
 								size={$uiSettings.inputSize}
 							>
-								<Button type="button" color="success" on:click={testLocalPool}>Test</Button>
+								<Button type="button" color="success" onclick={testLocalPool}>Test</Button>
 							</SettingsInput>
 						{/if}
 						<SettingsInput

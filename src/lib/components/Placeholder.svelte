@@ -1,9 +1,13 @@
 <script lang="ts">
-	export let value: unknown;
-	export let checkValue: unknown = null;
-	export let width: number = 25;
+	interface Props {
+		value: unknown;
+		checkValue?: unknown;
+		width?: number;
+	}
 
-	$: valueToCheck = checkValue === null ? value : checkValue;
+	let { value, checkValue = null, width = 25 }: Props = $props();
+
+	let valueToCheck = $derived(checkValue === null ? value : checkValue);
 </script>
 
 <span class:placeholder={!valueToCheck} class={!valueToCheck ? `w-${width}` : ''}>

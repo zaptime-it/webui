@@ -10,9 +10,14 @@
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { PUBLIC_BASE_URL } from '$lib/config';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	export let settings;
-	export let isOpen = false;
+	interface Props {
+		settings: PartialSettings;
+		isOpen?: boolean;
+	}
+
+	let { settings, isOpen = $bindable(false) }: Props = $props();
 
 	const onFlBrightnessChange = async () => {
 		await fetch(`${PUBLIC_BASE_URL}/api/frontlight/brightness/${$settings.flMaxBrightness}`, {
@@ -39,7 +44,7 @@
 		font
 	]);
 
-	let timePerScreen = $settings.timePerScreen;
+	let timePerScreen = $state($settings.timePerScreen);
 </script>
 
 <Row>

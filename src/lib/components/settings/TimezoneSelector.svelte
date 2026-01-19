@@ -3,12 +3,16 @@
 	import { Row, Button, Col, Label, InputGroup, Input, FormText } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
 
-	export let value: string;
-	export let onChange: (value: string) => void;
-	export let size: string = 'sm';
+	interface Props {
+		value: string;
+		onChange: (value: string) => void;
+		size?: string;
+	}
 
-	let timezones: string[] = [];
-	let selectedTimezone: string = '';
+	let { value, onChange, size = 'sm' }: Props = $props();
+
+	let timezones: string[] = $state([]);
+	let selectedTimezone: string = $state('');
 
 	onMount(async () => {
 		const response = await fetch('/zones.json');

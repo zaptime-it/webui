@@ -7,11 +7,16 @@
 	import EyeIcon from 'svelte-bootstrap-icons/lib/Eye.svelte';
 	import EyeSlashIcon from 'svelte-bootstrap-icons/lib/EyeSlash.svelte';
 	import TimezoneSelector from './TimezoneSelector.svelte';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	export let settings;
-	export let isOpen = false;
+	interface Props {
+		settings: PartialSettings;
+		isOpen?: boolean;
+	}
 
-	let showPassword = false;
+	let { settings, isOpen = $bindable(false) }: Props = $props();
+
+	let showPassword = $state(false);
 
 	const wifiTxPowerMap = new Map<string, number>([
 		['Default', 80],

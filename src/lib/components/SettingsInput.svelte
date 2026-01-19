@@ -9,23 +9,47 @@
 		Row
 	} from '@sveltestrap/sveltestrap';
 
-	export let id: string;
-	export let label: string;
-	export let value: string | number;
-	export let type: string = 'text';
-	export let size: string = 'sm';
-	export let required: boolean = false;
-	export let min: number | undefined = undefined;
-	export let max: number | undefined = undefined;
-	export let step: number | string | undefined = undefined;
-	export let suffix: string | undefined = undefined;
-	export let helpText: string | undefined = undefined;
-	export let disabled: boolean = false;
-	export let valid: boolean | undefined = undefined;
-	export let invalid: boolean | undefined = undefined;
-	export let minlength: string | undefined = undefined;
-	export let onChange: (() => void) | undefined = undefined;
-	export let onInput: ((e: Event) => void) | undefined = undefined;
+	interface Props {
+		id: string;
+		label: string;
+		value: string | number;
+		type?: string;
+		size?: string;
+		required?: boolean;
+		min?: number | undefined;
+		max?: number | undefined;
+		step?: number | string | undefined;
+		suffix?: string | undefined;
+		helpText?: string | undefined;
+		disabled?: boolean;
+		valid?: boolean | undefined;
+		invalid?: boolean | undefined;
+		minlength?: string | undefined;
+		onChange?: (() => void) | undefined;
+		onInput?: ((e: Event) => void) | undefined;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		id,
+		label,
+		value = $bindable(),
+		type = 'text',
+		size = 'sm',
+		required = false,
+		min = undefined,
+		max = undefined,
+		step = undefined,
+		suffix = undefined,
+		helpText = undefined,
+		disabled = false,
+		valid = undefined,
+		invalid = undefined,
+		minlength = undefined,
+		onChange = undefined,
+		onInput = undefined,
+		children
+	}: Props = $props();
 
 	const onInputHandler = (e: Event) => {
 		onInput?.(e);
@@ -56,7 +80,7 @@
 			{#if suffix}
 				<InputGroupText>{suffix}</InputGroupText>
 			{/if}
-			<slot />
+			{@render children?.()}
 		</InputGroup>
 		{#if helpText}
 			<FormText>{helpText}</FormText>

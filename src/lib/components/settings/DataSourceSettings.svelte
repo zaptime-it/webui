@@ -5,17 +5,21 @@
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib';
-	import { createEventDispatcher } from 'svelte';
+	import { toastStore } from '$lib/stores/toast';
 	import { DataSourceType } from '$lib/types/dataSource';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	const dispatch = createEventDispatcher();
-	export let settings;
-	export let isOpen = false;
+	interface Props {
+		settings: PartialSettings;
+		isOpen?: boolean;
+	}
+
+	let { settings, isOpen = $bindable(false) }: Props = $props();
 
 	const checkValidNostrPubkey = (key: string) => {
 		$settings[key] = $settings[key].trim();
 		if (isValidNpub($settings[key])) {
-			dispatch('showToast', {
+			toastStore.show({
 				color: 'info',
 				text: m['section.settings.convertingValidNpub']()
 			});

@@ -3,17 +3,22 @@
 	import CaretRightFill from 'svelte-bootstrap-icons/lib/CaretRightFill.svelte';
 	import CaretDownFill from 'svelte-bootstrap-icons/lib/CaretDownFill.svelte';
 
-	export let header;
-	export let defaultOpen = false;
-	export let isOpen = defaultOpen;
+	interface Props {
+		header: string;
+		defaultOpen?: boolean;
+		isOpen?: boolean;
+		children?: import('svelte').Snippet;
+	}
+
+	let { header, defaultOpen = false, isOpen = $bindable(defaultOpen), children }: Props = $props();
 </script>
 
 <h4 style="cursor: pointer">
 	<span
 		role="link"
-		on:click={() => (isOpen = !isOpen)}
+		onclick={() => (isOpen = !isOpen)}
 		tabindex="0"
-		on:keypress={() => (isOpen = !isOpen)}
+		onkeypress={() => (isOpen = !isOpen)}
 	>
 		{#if isOpen}
 			<CaretDownFill></CaretDownFill>
@@ -24,5 +29,5 @@
 	</span>
 </h4>
 <Fade {isOpen}>
-	<slot></slot>
+	{@render children?.()}
 </Fade>

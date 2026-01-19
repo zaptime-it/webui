@@ -11,23 +11,28 @@
 	import Settings from './Settings.svelte';
 	import Status from './Status.svelte';
 	import { uiSettings } from '$lib/uiSettings';
+	import { toastStore } from '$lib/stores/toast';
 
-	let settings = writable({
-		isLoaded: false,
-		timePerScreen: 0
-	});
+	let settings = $state(
+		writable({
+			isLoaded: false,
+			timePerScreen: 0
+		})
+	);
 
-	let status = writable({
-		data: ['L', 'O', 'A', 'D', 'I', 'N', 'G'],
-		espFreeHeap: 0,
-		espHeapSize: 0,
-		connectionStatus: {
-			price: false,
-			blocks: false
-		},
-		leds: [],
-		isUpdating: false
-	});
+	let status = $state(
+		writable({
+			data: ['L', 'O', 'A', 'D', 'I', 'N', 'G'],
+			espFreeHeap: 0,
+			espHeapSize: 0,
+			connectionStatus: {
+				price: false,
+				blocks: false
+			},
+			leds: [],
+			isUpdating: false
+		})
+	);
 
 	const fetchStatusData = async () => {
 		const res = await fetch(`${PUBLIC_BASE_URL}/api/status`, { credentials: 'same-origin' });
@@ -160,7 +165,7 @@
 		};
 	});
 
-	$: {
+	$effect(() => {
 		const lgBreakpoint = parseInt(
 			getComputedStyle(document.documentElement).getPropertyValue('--bs-breakpoint-lg')
 		);
@@ -178,17 +183,7 @@
 				btnSize: 'xl'
 			});
 		}
-	}
-
-	let toastIsOpen = false;
-	let toastColor = 'success';
-	let toastBody = '';
-
-	export const showToast = (event) => {
-		toastIsOpen = true;
-		toastColor = event.detail.color;
-		toastBody = event.detail.text;
-	};
+	});
 </script>
 
 <svelte:head>
@@ -197,24 +192,23 @@
 
 <Container fluid>
 	<Row class="placeholder-glow">
-		<Control bind:settings on:showToast={showToast} bind:status lg="3" xxl="4"></Control>
+		<Control bind:settings bind:status lg="3" xxl="4"></Control>
 
 		<Status bind:settings bind:status lg="6" xxl="4"></Status>
 
-		<Settings bind:settings on:showToast={showToast} on:formReset={fetchSettingsData} lg="3" xxl="4"
-		></Settings>
+		<Settings bind:settings onFormReset={fetchSettingsData} lg="3" xxl="4"></Settings>
 	</Row>
 </Container>
 <div class="position-fixed bottom-0 end-0 p-2">
 	<div class="">
 		<Toast
-			isOpen={toastIsOpen}
-			class="me-1 bg-{toastColor} text-bg-{toastColor}"
+			isOpen={$toastStore.isOpen}
+			class="me-1 bg-{$toastStore.color} text-bg-{$toastStore.color}"
 			autohide
-			on:close={() => (toastIsOpen = false)}
+			onclose={() => toastStore.close()}
 		>
 			<ToastBody>
-				{toastBody}
+				{$toastStore.text}
 			</ToastBody>
 		</Toast>
 	</div>

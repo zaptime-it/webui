@@ -19,13 +19,34 @@
 	import FirmwareUpdater from './FirmwareUpdater.svelte';
 	import { uiSettings } from '$lib/uiSettings';
 	import { Placeholder } from '$lib/components';
+	import type { PartialSettings } from '$lib/types/settings';
 
-	export let settings = {};
+	interface Props {
+		settings?: PartialSettings;
+		status: Writable<{ leds: [] }>;
+		// You can also add more props if needed
+		xs?: number;
+		sm?: number;
+		md?: number;
+		lg?: number;
+		xl?: number;
+		xxl?: number;
+	}
 
-	let customText: string;
-	export let status: Writable<{ leds: [] }>;
-	let ledStatus = [];
-	let keepLedsSameColor = false;
+	let {
+		settings = $bindable({}),
+		status = $bindable(),
+		xs = 12,
+		sm = xs,
+		md = sm,
+		lg = md,
+		xl = lg,
+		xxl = xl
+	}: Props = $props();
+
+	let customText: string = $state();
+	let ledStatus = $state([]);
+	let keepLedsSameColor = $state(false);
 
 	const setCustomText = () => {
 		fetch(`${PUBLIC_BASE_URL}/api/show/text/${customText}`).catch(() => {});
@@ -97,14 +118,6 @@
 	});
 
 	onDestroy(firstLedDataSubscription);
-
-	// You can also add more props if needed
-	export let xs = 12;
-	export let sm = xs;
-	export let md = sm;
-	export let lg = md;
-	export let xl = lg;
-	export let xxl = xl;
 </script>
 
 <Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
@@ -130,7 +143,7 @@
 				</Row>
 				<Row>
 					<Col class="d-flex justify-content-end">
-						<Button color="primary" on:click={setCustomText} bsSize={$uiSettings.btnSize}
+						<Button color="primary" onclick={setCustomText} bsSize={$uiSettings.btnSize}
 							>{m['section.control.showText']()}</Button
 						>
 					</Col>
@@ -154,7 +167,7 @@
 												id="ledColorPicker[{i}]"
 												bind:value={led.hex}
 												class="mx-auto"
-												on:change={checkSyncLeds}
+												onchange={checkSyncLeds}
 											/>
 										</Col>
 									{/each}
@@ -177,11 +190,11 @@
 							<Button
 								color="secondary"
 								id="turnOffLedsBtn"
-								on:click={turnOffLeds}
+								onclick={turnOffLeds}
 								bsSize={$uiSettings.inputSize}>{m['section.control.turnOff']()}</Button
 							>
 							<div class="mx-2"></div>
-							<Button color="primary" on:click={setLEDcolor} bsSize={$uiSettings.inputSize}
+							<Button color="primary" onclick={setLEDcolor} bsSize={$uiSettings.inputSize}
 								>{m['section.control.setColor']()}</Button
 							>
 						</Col>
@@ -193,15 +206,15 @@
 				<h3>{m['section.control.frontlight']()}</h3>
 				<Row class="d-flex justify-content-between justify-content-md-end">
 					<Col md="auto" class="">
-						<Button color="secondary" id="turnOffFrontlightBtn" on:click={turnOffFrontlight}
+						<Button color="secondary" id="turnOffFrontlightBtn" onclick={turnOffFrontlight}
 							>{m['section.control.turnOff']()}</Button
 						>
 					</Col><Col md="auto" class="">
-						<Button color="primary" on:click={turnOnFrontlight}
+						<Button color="primary" onclick={turnOnFrontlight}
 							>{m['section.control.turnOn']()}</Button
 						>
 					</Col><Col md="auto" class="">
-						<Button color="success" id="flashFrontlight" on:click={flashFrontlight}
+						<Button color="success" id="flashFrontlight" onclick={flashFrontlight}
 							>{m['section.control.flashFrontlight']()}</Button
 						>
 					</Col>
@@ -234,12 +247,12 @@
 			{/if}
 			<Row>
 				<Col class="d-flex justify-content-end">
-					<Button color="danger" id="restartBtn" on:click={restartClock}
+					<Button color="danger" id="restartBtn" onclick={restartClock}
 						>{m['button.restart']()}</Button
 					>
 					<div class="mx-2"></div>
 
-					<Button color="warning" id="forceFullRefresh" on:click={forceFullRefresh}
+					<Button color="warning" id="forceFullRefresh" onclick={forceFullRefresh}
 						>{m['button.forceFullRefresh']()}</Button
 					>
 				</Col>
@@ -247,7 +260,7 @@
 			{#if $settings.otaEnabled}
 				<hr />
 				<h3>{m['section.control.firmwareUpdate']()}</h3>
-				<FirmwareUpdater on:showToast bind:settings bind:status />
+				<FirmwareUpdater bind:settings bind:status />
 			{/if}
 		</CardBody>
 	</Card>

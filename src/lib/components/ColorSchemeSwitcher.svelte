@@ -4,7 +4,7 @@
 
 	type Theme = 'light' | 'dark' | 'auto';
 
-	let theme: Theme = 'auto';
+	let theme: Theme = $state('auto');
 
 	// Set the theme based on user selection and store it in localStorage
 	function setTheme(newTheme: Theme) {

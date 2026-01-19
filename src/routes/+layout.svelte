@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import {
 		Collapse,
 		Dropdown,
@@ -17,6 +19,11 @@
 	import { page } from '$app/stores';
 	import { currentLocale, setLocale, locales, type SupportedLocale } from '$lib/i18n';
 	import { ColorSchemeSwitcher } from '$lib/components';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const changeLocale = (lang: string) => () => {
 		setLocale(lang as SupportedLocale);
@@ -42,9 +49,9 @@
 		}
 	};
 
-	let languageNames: Record<string, string> = {};
+	let languageNames: Record<string, string> = $state({});
 
-	$: {
+	run(() => {
 		const localeToUse = $currentLocale || 'en';
 		const newLanguageNames = new Intl.DisplayNames([localeToUse], { type: 'language' });
 
@@ -53,9 +60,9 @@
 		}
 		// Trigger reactivity
 		languageNames = languageNames;
-	}
+	});
 
-	let isOpen = false;
+	let isOpen = $state(false);
 
 	const toggle = () => {
 		isOpen = !isOpen;
@@ -110,6 +117,6 @@
 
 	<!-- +layout.svelte -->
 	<main>
-		<slot />
+		{@render children?.()}
 	</main>
 {/key}

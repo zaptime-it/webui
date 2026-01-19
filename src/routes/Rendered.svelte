@@ -1,15 +1,20 @@
 <script lang="ts">
-	export let status = {};
 	import RocketIcon from '../icons/RocketIcon.svelte';
 	import PickaxeIcon from '../icons/PickaxeIcon.svelte';
 	import ZapIcon from '../icons/ZapIcon.svelte';
+	import type { PartialStatus } from '$lib/types/status';
 
 	const isSplitText = (str: string) => {
 		return str.includes('/');
 	};
 
-	export let className = 'btclock-wrapper';
-	export let verticalDesc = false;
+	interface Props {
+		status?: PartialStatus;
+		className?: string;
+		verticalDesc?: boolean;
+	}
+
+	let { status = {}, className = 'btclock-wrapper', verticalDesc = false }: Props = $props();
 	// Define the currency symbols as constants
 	const CURRENCY_USD = '$';
 	const CURRENCY_EUR = '[';

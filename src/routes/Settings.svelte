@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
-	import { createEventDispatcher } from 'svelte';
+	import { toastStore } from '$lib/stores/toast';
 	import * as m from '$lib/paraglide/messages';
 	import {
 		Button,
@@ -19,8 +19,7 @@
 		ExtraFeaturesSettings,
 		SystemSettings
 	} from '$lib/components/settings';
-
-	export let settings;
+	import type { PartialSettings } from '$lib/types/settings';
 
 	const miningPoolMap = new Map<string, string>([
 		['noderunners', 'Noderunners.network'],
@@ -34,11 +33,9 @@
 		['local_public_pool', 'Public Pool (local)']
 	]);
 
-	const dispatch = createEventDispatcher();
-
 	const handleReset = (e: Event) => {
 		e.preventDefault();
-		dispatch('formReset');
+		onFormReset?.();
 	};
 
 	const onSave = async (e: Event) => {
@@ -61,37 +58,52 @@
 		})
 			.then((data) => {
 				if (data.status == 200) {
-					dispatch('showToast', {
+					toastStore.show({
 						color: 'success',
 						text: m['section.settings.settingsSaved']()
 					});
 				} else {
-					dispatch('showToast', {
+					toastStore.show({
 						color: 'danger',
 						text: `${data.status}: ${data.statusText}`
 					});
 				}
 			})
 			.catch(() => {
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: m['section.settings.errorSavingSettings']()
 				});
 			});
 	};
 
-	export let xs = 12;
-	export let sm = xs;
-	export let md = sm;
-	export let lg = md;
-	export let xl = lg;
-	export let xxl = xl;
+	interface Props {
+		settings: PartialSettings;
+		onFormReset?: () => void;
+		xs?: number;
+		sm?: number;
+		md?: number;
+		lg?: number;
+		xl?: number;
+		xxl?: number;
+	}
 
-	let screenSettingsIsOpen = true,
-		displaySettingsIsOpen = false,
-		dataSourceIsOpen = false,
-		extraFeaturesIsOpen = false,
-		systemIsOpen = false;
+	let {
+		settings,
+		onFormReset = undefined,
+		xs = 12,
+		sm = xs,
+		md = sm,
+		lg = md,
+		xl = lg,
+		xxl = xl
+	}: Props = $props();
+
+	let screenSettingsIsOpen = $state(true),
+		displaySettingsIsOpen = $state(false),
+		dataSourceIsOpen = $state(false),
+		extraFeaturesIsOpen = $state(false),
+		systemIsOpen = $state(false);
 
 	const showAll = () => {
 		screenSettingsIsOpen = true;
@@ -115,11 +127,11 @@
 		<CardHeader>
 			<div class="float-end">
 				<small>
-					<button type="button" on:click={showAll} id="showAllBtn"
+					<button type="button" onclick={showAll} id="showAllBtn"
 						>{m['section.settings.showAll']()}</button
 					>
 					|
-					<button type="button" on:click={hideAll} id="hideAllBtn"
+					<button type="button" onclick={hideAll} id="hideAllBtn"
 						>{m['section.settings.hideAll']()}</button
 					>
 				</small>
@@ -133,16 +145,11 @@
 					<div class="spinner-border ms-auto" aria-hidden="true"></div>
 				</div>
 			{:else}
-				<Form on:submit={onSave}>
+				<Form onsubmit={onSave}>
 					<ScreenSpecificSettings {settings} bind:isOpen={screenSettingsIsOpen} />
 					<DisplaySettings {settings} bind:isOpen={displaySettingsIsOpen} />
-					<DataSourceSettings {settings} bind:isOpen={dataSourceIsOpen} on:showToast />
-					<ExtraFeaturesSettings
-						{settings}
-						bind:isOpen={extraFeaturesIsOpen}
-						{miningPoolMap}
-						on:showToast
-					/>
+					<DataSourceSettings {settings} bind:isOpen={dataSourceIsOpen} />
+					<ExtraFeaturesSettings {settings} bind:isOpen={extraFeaturesIsOpen} {miningPoolMap} />
 					<SystemSettings {settings} bind:isOpen={systemIsOpen} />
 
 					<Row class="mt-4">
@@ -150,7 +157,7 @@
 							<Button type="submit" color="primary" class="me-2">
 								{m['button.save']()}
 							</Button>
-							<Button type="button" color="secondary" on:click={handleReset}>
+							<Button type="button" color="secondary" onclick={handleReset}>
 								{m['button.reset']()}
 							</Button>
 						</Col>

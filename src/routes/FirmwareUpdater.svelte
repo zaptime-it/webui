@@ -1,29 +1,27 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
+	import { toastStore } from '$lib/stores/toast';
 	import * as m from '$lib/paraglide/messages';
 	import { writable } from 'svelte/store';
 	import { Progress, Alert, Button } from '@sveltestrap/sveltestrap';
 	import HourglassSplitIcon from 'svelte-bootstrap-icons/lib/HourglassSplit.svelte';
 
-	const dispatch = createEventDispatcher();
-
-	export let settings = { hwRev: '' };
-	export let status = writable({ isOTAUpdating: false });
+	let { settings = { hwRev: '' }, status = writable({ isOTAUpdating: false }) } = $props();
 	let currentVersion: string = $settings.gitTag; // Replace with your current version
 
-	let latestVersion: string = '';
-	let isNewerVersionAvailable: boolean = false;
-	let releaseDate: string = '';
-	let releaseUrl: string = '';
+	let latestVersion: string = $state('');
+	let isNewerVersionAvailable: boolean = $state(false);
+	let releaseDate: string = $state('');
+	let releaseUrl: string = $state('');
 
 	const countdown = writable(10);
-	let firmwareUploadFile: File | null = null;
-	let firmwareWebUiFile: File | null = null;
+	let firmwareUploadFile: File | null = $state(null);
+	let firmwareWebUiFile: File | null = $state(null);
 
-	let firmwareUploadProgress = 0;
-	let firmwareUploadSuccess = false;
-	let firmwareUploadError = false;
+	let firmwareUploadProgress = $state(0);
+	let firmwareUploadSuccess = $state(false);
+	let firmwareUploadError = $state(false);
 
 	const handleFileChange = (event: Event, setFile: (file: File) => void) => {
 		const target = event.target as HTMLInputElement;
@@ -141,22 +139,22 @@
 			if (!response.ok) {
 				let msg = (await response.json()).msg;
 
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'danger',
 					text: msg
 				});
 			} else {
 				let msg = (await response.json()).msg;
 
-				dispatch('showToast', {
+				toastStore.show({
 					color: 'info',
 					text: msg
 				});
 			}
 		} catch (error) {
-			dispatch('showToast', {
+			toastStore.show({
 				color: 'danger',
-				text: error
+				text: String(error)
 			});
 			console.error('Error fetching latest version:', error);
 		}
@@ -210,7 +208,7 @@
 		{#if isNewerVersionAvailable}
 			{#if !$status.isOTAUpdating}
 				{m['section.firmwareUpdater.swUpdateAvailable']()} -
-				<a href="/" on:click={onAutoUpdate}>{m['section.firmwareUpdater.autoUpdate']()}</a>.
+				<a href="/" onclick={onAutoUpdate}>{m['section.firmwareUpdater.autoUpdate']()}</a>.
 			{:else}
 				<HourglassSplitIcon /> {m['section.firmwareUpdater.autoUpdateInProgress']()}
 			{/if}
@@ -230,14 +228,14 @@
 			<input
 				type="file"
 				id="firmwareFile"
-				on:change={(e) => handleFileChange(e, (file) => (firmwareUploadFile = file))}
+				onchange={(e) => handleFileChange(e, (file) => (firmwareUploadFile = file))}
 				name="update"
 				class="form-control"
 				accept=".bin"
 			/>
 		</div>
 		<div class="flex-fill">
-			<Button block on:click={uploadFirmwareFile} color="primary" disabled={!firmwareUploadFile}
+			<Button block onclick={uploadFirmwareFile} color="primary" disabled={!firmwareUploadFile}
 				>Update firmware</Button
 			>
 		</div>
@@ -249,12 +247,12 @@
 				name="update"
 				class="form-control"
 				placeholder="littlefs.bin"
-				on:change={(e) => handleFileChange(e, (file) => (firmwareWebUiFile = file))}
+				onchange={(e) => handleFileChange(e, (file) => (firmwareWebUiFile = file))}
 				accept=".bin"
 			/>
 		</div>
 		<div class="flex-fill">
-			<Button block on:click={uploadWebUiFile} color="secondary" disabled={!firmwareWebUiFile}
+			<Button block onclick={uploadWebUiFile} color="secondary" disabled={!firmwareWebUiFile}
 				>Update WebUI</Button
 			>
 		</div>

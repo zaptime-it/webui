@@ -3,14 +3,14 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { encode, decode } from 'msgpack-es';
 
-	let exchangeRates = {
+	let exchangeRates = $state({
 		USD: 57798,
 		GBP: 44236,
 		AUD: 86552,
 		JPY: 8221088,
 		EUR: 52347,
 		CAD: 78508
-	};
+	});
 
 	let socket: WebSocket;
 
@@ -18,13 +18,13 @@
 	let btcValue = 1;
 	let satsValue = 100000000;
 	let lastEditedField = 'BTC';
-	let inputValues = {
+	let inputValues = $state({
 		BTC: '1',
 		sats: '100000000',
 		...Object.fromEntries(
 			Object.keys(exchangeRates).map((cur) => [cur, exchangeRates[cur].toString()])
 		)
-	};
+	});
 
 	function updateValues(currency: string, value: string) {
 		lastEditedField = currency;

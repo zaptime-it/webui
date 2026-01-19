@@ -9,15 +9,31 @@
 		Row
 	} from '@sveltestrap/sveltestrap';
 
-	export let id: string;
-	export let label: string;
-	export let value: number;
-	export let size: 'sm' | 'lg' | undefined = 'sm';
-	export let required: boolean = false;
-	export let suffix: string | undefined = undefined;
-	export let helpText: string | undefined = undefined;
-	export let disabled: boolean = false;
-	export let onChange: (() => void) | undefined = undefined;
+	interface Props {
+		id: string;
+		label: string;
+		value: number;
+		size?: 'sm' | 'lg' | undefined;
+		required?: boolean;
+		suffix?: string | undefined;
+		helpText?: string | undefined;
+		disabled?: boolean;
+		onChange?: (() => void) | undefined;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		id,
+		label,
+		value = $bindable(),
+		size = 'sm',
+		required = false,
+		suffix = undefined,
+		helpText = undefined,
+		disabled = false,
+		onChange = undefined,
+		children
+	}: Props = $props();
 
 	// Convert unsigned integer to hex color string
 	function intToColor(int: number): string {
@@ -32,7 +48,7 @@
 	}
 
 	// Local color string for the input
-	let colorValue = intToColor(value);
+	let colorValue = $state(intToColor(value));
 
 	// Update integer value when color changes
 	function handleColorChange(e: Event) {
@@ -43,7 +59,9 @@
 	}
 
 	// Update color string when integer value changes externally
-	$: colorValue = intToColor(value);
+	$effect(() => {
+		colorValue = intToColor(value);
+	});
 </script>
 
 <Row>
@@ -57,13 +75,13 @@
 				{required}
 				{disabled}
 				bsSize={size}
-				on:change={handleColorChange}
-				on:input={handleColorChange}
+				onchange={handleColorChange}
+				oninput={handleColorChange}
 			/>
 			{#if suffix}
 				<InputGroupText>{suffix}</InputGroupText>
 			{/if}
-			<slot />
+			{@render children?.()}
 		</InputGroup>
 		{#if helpText}
 			<FormText>{helpText}</FormText>

@@ -116,6 +116,9 @@ export default defineConfig({
 			$lib: path.resolve('./src/lib')
 		}
 	},
+	resolve: {
+		conditions: process.env.VITEST ? ['browser'] : []
+	},
 	define: {
 		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
 	}
