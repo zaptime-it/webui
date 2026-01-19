@@ -49,6 +49,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource-utils/scss": "^0.2.1",
 		"@fontsource/antonio": "^5.2.8",
 		"@fontsource/oswald": "^5.2.8",
 		"@fontsource/ubuntu": "^5.2.8",

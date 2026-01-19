@@ -1,22 +1,19 @@
-@use '@fontsource/ubuntu/scss/mixins' as Ubuntu;
-@use '@fontsource/antonio/scss/mixins' as Antonio;
+@use 'pkg:@fontsource-utils/scss' as fontsource;
+@use 'pkg:@fontsource/ubuntu/scss/metadata' as ubuntu;
+@use 'pkg:@fontsource/antonio/scss/metadata' as antonio;
 
 @import '../node_modules/bootstrap/scss/functions';
 
-//@import "@fontsource/antonio/latin-400.css";
-
-@include Ubuntu.faces(
+@include fontsource.faces(
+	$metadata: ubuntu.$metadata,
 	$subsets: latin,
-	$weights: 400,
-	$formats: 'woff2',
-	$directory: '@fontsource/ubuntu/files'
+	$weights: 400
 );
 
-@include Antonio.faces(
+@include fontsource.faces(
+	$metadata: antonio.$metadata,
 	$subsets: latin,
-	$weights: 400,
-	$formats: 'woff2',
-	$directory: '@fontsource/antonio/files'
+	$weights: 400
 );
 
 @import './satsymbol';

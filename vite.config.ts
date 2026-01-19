@@ -2,6 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vite';
 // import { visualizer } from 'rollup-plugin-visualizer';
+import * as sass from 'sass';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -96,9 +97,11 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
+				api: 'modern-compiler',
 				quietDeps: true,
 				silenceDeprecations: ['import'],
-				loadPaths: [path.resolve(__dirname, 'node_modules')]
+				loadPaths: [path.resolve(__dirname, 'node_modules')],
+				importers: [new sass.NodePackageImporter()]
 			}
 		}
 	},

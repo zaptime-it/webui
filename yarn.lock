@@ -360,6 +360,11 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
+"@fontsource-utils/scss@^0.2.1":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@fontsource-utils/scss/-/scss-0.2.2.tgz#da0ed89a4e871c8b354fe76d7cf4a62097c8972f"
+  integrity sha512-by8j2nJVjXWmS5Aqzg8r8+ppwRSCK8HvYwPyuHzvigJ+4AbLXHtdb1HaVHaBDb+ObZ586lAdzvEDWFoAYQO+GQ==
+
 "@fontsource/antonio@^5.2.8":
   version "5.2.8"
   resolved "https://registry.yarnpkg.com/@fontsource/antonio/-/antonio-5.2.8.tgz#0e775440423a31c596352031c72572ca198f78e1"
