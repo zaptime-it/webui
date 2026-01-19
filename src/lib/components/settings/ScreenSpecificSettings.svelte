@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SettingsSwitch } from '$lib/components';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { Row, Col } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
@@ -12,7 +12,7 @@
 
 <Row>
 	<ToggleHeader
-		header={$_('section.settings.section.screenSettings')}
+		header={m['section.settings.section.screenSettings']()}
 		bind:isOpen
 		defaultOpen={true}
 	>
@@ -20,42 +20,42 @@
 			<SettingsSwitch
 				id="stealFocus"
 				bind:checked={$settings.stealFocus}
-				label={$_('section.settings.StealFocusOnNewBlock')}
+				label={m['section.settings.StealFocusOnNewBlock']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 			<SettingsSwitch
 				id="mcapBigChar"
 				bind:checked={$settings.mcapBigChar}
-				label={$_('section.settings.useBigCharsMcap')}
+				label={m['section.settings.useBigCharsMcap']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 			<SettingsSwitch
 				id="useBlkCountdown"
 				bind:checked={$settings.useBlkCountdown}
-				label={$_('section.settings.useBlkCountdown')}
+				label={m['section.settings.useBlkCountdown']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 			<SettingsSwitch
 				id="useSatsSymbol"
 				bind:checked={$settings.useSatsSymbol}
-				label={$_('section.settings.useSatsSymbol')}
+				label={m['section.settings.useSatsSymbol']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 			<SettingsSwitch
 				id="suffixPrice"
 				bind:checked={$settings.suffixPrice}
-				label={$_('section.settings.suffixPrice')}
+				label={m['section.settings.suffixPrice']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 			<SettingsSwitch
 				id="mowMode"
 				bind:checked={$settings.mowMode}
-				label={$_('section.settings.mowMode')}
+				label={m['section.settings.mowMode']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 				disabled={!$settings.suffixPrice}
@@ -63,7 +63,7 @@
 			<SettingsSwitch
 				id="suffixShareDot"
 				bind:checked={$settings.suffixShareDot}
-				label={$_('section.settings.suffixShareDot')}
+				label={m['section.settings.suffixShareDot']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 				disabled={!$settings.suffixPrice}
@@ -71,7 +71,7 @@
 			<SettingsSwitch
 				id="verticalDesc"
 				bind:checked={$settings.verticalDesc}
-				label={$_('section.settings.verticalDesc')}
+				label={m['section.settings.verticalDesc']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
@@ -80,7 +80,7 @@
 				<SettingsSwitch
 					id="fetchEurPrice"
 					bind:checked={$settings.fetchEurPrice}
-					label="{$_('section.settings.fetchEuroPrice')} ({$_('restartRequired')})"
+					label="{m['section.settings.fetchEuroPrice']()} ({m['restartRequired']()})"
 					size={$uiSettings.inputSize}
 					col={{ md: '6', xl: '12', xxl: '6' }}
 				/>
@@ -89,7 +89,7 @@
 			<SettingsSwitch
 				id="blockFeeDec"
 				bind:checked={$settings.blockFeeDec}
-				label={$_('section.settings.blockFeeDec')}
+				label={m['section.settings.blockFeeDec']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
@@ -97,13 +97,13 @@
 			<SettingsSwitch
 				id="supplyPercent"
 				bind:checked={$settings.supplyPercent}
-				label={$_('section.settings.supplyPercent')}
+				label={m['section.settings.supplyPercent']()}
 				size={$uiSettings.inputSize}
 				col={{ md: '6', xl: '12', xxl: '6' }}
 			/>
 		</Row>
 		<Row>
-			<h5>{$_('section.settings.screens')}</h5>
+			<h5>{m['section.settings.screens']()}</h5>
 			{#if $settings.screens}
 				{#each $settings.screens as s}
 					<SettingsSwitch
@@ -118,8 +118,8 @@
 		</Row>
 		{#if $settings.actCurrencies && ($settings.dataSource == DataSourceType.BTCLOCK_SOURCE || $settings.dataSource == DataSourceType.CUSTOM_SOURCE || $settings.dataSource == DataSourceType.THIRD_PARTY_SOURCE)}
 			<Row>
-				<h5>{$_('section.settings.currencies')}</h5>
-				<small>{$_('restartRequired')}</small>
+				<h5>{m['section.settings.currencies']()}</h5>
+				<small>{m['restartRequired']()}</small>
 				{#if $settings.availableCurrencies}
 					{#each $settings.availableCurrencies as c}
 						<Col md="6" xl="12" xxl="6">

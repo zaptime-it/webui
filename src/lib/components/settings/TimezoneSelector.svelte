@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { Row, Button, Col, Label, InputGroup, Input, FormText } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
 
@@ -36,7 +36,7 @@
 
 <Row>
 	<Label md={6} {size} for="timezone">
-		{$_('section.settings.timezoneOffset')}
+		{m['section.settings.timezoneOffset']()}
 	</Label>
 	<Col md="6" {size}>
 		<InputGroup>
@@ -48,9 +48,9 @@
 				{/each}
 			</Input>
 			<Button type="button" color="info" on:click={getTzOffsetFromSystem}>
-				{$_('auto-detect')}
+				{m['auto-detect']()}
 			</Button>
 		</InputGroup>
-		<FormText>{$_('section.settings.tzOffsetHelpText')}</FormText>
+		<FormText>{m['section.settings.tzOffsetHelpText']()}</FormText>
 	</Col>
 </Row>

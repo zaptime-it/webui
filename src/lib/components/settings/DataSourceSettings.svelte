@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SettingsInput, SettingsSwitch } from '$lib/components';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { Row, Col, FormGroup, Input, InputGroupText } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
@@ -17,7 +17,7 @@
 		if (isValidNpub($settings[key])) {
 			dispatch('showToast', {
 				color: 'info',
-				text: $_('section.settings.convertingValidNpub')
+				text: m['section.settings.convertingValidNpub']()
 			});
 		}
 
@@ -27,7 +27,7 @@
 </script>
 
 <Row>
-	<ToggleHeader header={$_('section.settings.section.dataSource')} bind:isOpen defaultOpen={false}>
+	<ToggleHeader header={m['section.settings.section.dataSource']()} bind:isOpen defaultOpen={false}>
 		<Row>
 			<Col>
 				<h5>Data Source</h5>
@@ -40,7 +40,7 @@
 								name="dataSource"
 								bind:group={$settings.dataSource}
 								value={DataSourceType.BTCLOCK_SOURCE}
-								label={$_('section.settings.dataSource.btclock')}
+								label={m['section.settings.dataSource.btclock']()}
 							/>
 						</Col>
 						<Col xs="12" xl="6" class="mb-2">
@@ -50,7 +50,7 @@
 								name="dataSource"
 								bind:group={$settings.dataSource}
 								value={DataSourceType.THIRD_PARTY_SOURCE}
-								label={$_('section.settings.dataSource.thirdParty')}
+								label={m['section.settings.dataSource.thirdParty']()}
 							/>
 						</Col>
 						{#if $settings.nostrRelay}
@@ -61,7 +61,7 @@
 									name="dataSource"
 									bind:group={$settings.dataSource}
 									value={DataSourceType.NOSTR_SOURCE}
-									label={$_('section.settings.dataSource.nostr')}
+									label={m['section.settings.dataSource.nostr']()}
 								/>
 							</Col>
 						{/if}
@@ -72,7 +72,7 @@
 								name="dataSource"
 								bind:group={$settings.dataSource}
 								value={DataSourceType.CUSTOM_SOURCE}
-								label={$_('section.settings.dataSource.custom')}
+								label={m['section.settings.dataSource.custom']()}
 							/>
 						</Col>
 					</Row>
@@ -83,7 +83,7 @@
 		{#if $settings.dataSource === DataSourceType.THIRD_PARTY_SOURCE}
 			<SettingsInput
 				id="mempoolInstance"
-				label={$_('section.settings.mempoolnstance')}
+				label={m['section.settings.mempoolnstance']()}
 				bind:value={$settings.mempoolInstance}
 				required={true}
 				size={$uiSettings.inputSize}
@@ -102,20 +102,20 @@
 		{#if $settings.dataSource === DataSourceType.NOSTR_SOURCE}
 			<SettingsInput
 				id="nostrRelay"
-				label={$_('section.settings.nostrRelay')}
+				label={m['section.settings.nostrRelay']()}
 				bind:value={$settings.nostrRelay}
 				required={true}
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsInput
 				id="nostrPubKey"
-				label={$_('section.settings.nostrPubKey')}
+				label={m['section.settings.nostrPubKey']()}
 				bind:value={$settings.nostrPubKey}
 				required={true}
 				minlength="64"
 				invalid={!isValidHexPubKey($settings.nostrPubKey)}
 				helpText={!isValidHexPubKey($settings.nostrPubKey)
-					? $_('section.settings.invalidNostrPubkey')
+					? m['section.settings.invalidNostrPubkey']()
 					: undefined}
 				size={$uiSettings.inputSize}
 				onChange={() => checkValidNostrPubkey('nostrPubKey')}
@@ -126,7 +126,7 @@
 		{#if $settings.dataSource === DataSourceType.CUSTOM_SOURCE}
 			<SettingsInput
 				id="ceEndpoint"
-				label={$_('section.settings.ceEndpoint')}
+				label={m['section.settings.ceEndpoint']()}
 				bind:value={$settings.ceEndpoint}
 				required={true}
 				size={$uiSettings.inputSize}
@@ -134,7 +134,7 @@
 			<SettingsSwitch
 				id="ceDisableSSL"
 				bind:checked={$settings.ceDisableSSL}
-				label={$_('section.settings.ceDisableSSL')}
+				label={m['section.settings.ceDisableSSL']()}
 				size={$uiSettings.inputSize}
 			/>
 		{/if}

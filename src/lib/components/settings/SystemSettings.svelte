@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SettingsInput, SettingsSwitch, SettingsSelect } from '$lib/components';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { Row, Button } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
@@ -29,7 +29,7 @@
 </script>
 
 <Row>
-	<ToggleHeader header={$_('section.settings.section.system')} bind:isOpen defaultOpen={false}>
+	<ToggleHeader header={m['section.settings.section.system']()} bind:isOpen defaultOpen={false}>
 		<TimezoneSelector
 			value={$settings.tzString}
 			onChange={(value) => ($settings.tzString = value)}
@@ -39,14 +39,14 @@
 		{#if $settings.httpAuthEnabled}
 			<SettingsInput
 				id="httpAuthUser"
-				label={$_('section.settings.httpAuthUser')}
+				label={m['section.settings.httpAuthUser']()}
 				bind:value={$settings.httpAuthUser}
 				required={true}
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsInput
 				id="httpAuthPass"
-				label={$_('section.settings.httpAuthPass')}
+				label={m['section.settings.httpAuthPass']()}
 				bind:value={$settings.httpAuthPass}
 				type={showPassword ? 'text' : 'password'}
 				required={true}
@@ -64,7 +64,7 @@
 
 		<SettingsInput
 			id="hostnamePrefix"
-			label={$_('section.settings.hostnamePrefix')}
+			label={m['section.settings.hostnamePrefix']()}
 			bind:value={$settings.hostnamePrefix}
 			required={true}
 			size={$uiSettings.inputSize}
@@ -72,20 +72,20 @@
 
 		<SettingsSelect
 			id="wifiTxPower"
-			label={$_('section.settings.wifiTxPower')}
+			label={m['section.settings.wifiTxPower']()}
 			bind:value={$settings.wifiTxPower}
 			options={Array.from(wifiTxPowerMap.entries())}
 		/>
 
 		<SettingsInput
 			id="wpTimeout"
-			label={$_('section.settings.wpTimeout')}
+			label={m['section.settings.wpTimeout']()}
 			bind:value={$settings.wpTimeout}
 			type="number"
 			min={1}
 			step={1}
 			required={true}
-			suffix={$_('time.seconds')}
+			suffix={m['time.seconds']()}
 			size={$uiSettings.inputSize}
 		/>
 
@@ -93,31 +93,31 @@
 			<SettingsSwitch
 				id="otaEnabled"
 				bind:checked={$settings.otaEnabled}
-				label="{$_('section.settings.otaUpdates')} ({$_('restartRequired')})"
+				label="{m['section.settings.otaUpdates']()} ({m['restartRequired']()})"
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsSwitch
 				id="mdnsEnabled"
 				bind:checked={$settings.mdnsEnabled}
-				label="{$_('section.settings.enableMdns')} ({$_('restartRequired')})"
+				label="{m['section.settings.enableMdns']()} ({m['restartRequired']()})"
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsSwitch
 				id="httpAuthEnabled"
 				bind:checked={$settings.httpAuthEnabled}
-				label="{$_('section.settings.httpAuthEnabled')} ({$_('restartRequired')})"
+				label="{m['section.settings.httpAuthEnabled']()} ({m['restartRequired']()})"
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsSwitch
 				id="inverseButtons"
 				bind:checked={$settings.inverseButtons}
-				label={$_('section.settings.inverseButtons')}
+				label={m['section.settings.inverseButtons']()}
 				size={$uiSettings.inputSize}
 			/>
 			<SettingsSwitch
 				id="enableDebugLog"
 				bind:checked={$settings.enableDebugLog}
-				label="{$_('section.settings.enableDebugLog')} ({$_('restartRequired')})"
+				label="{m['section.settings.enableDebugLog']()} ({m['restartRequired']()})"
 				size={$uiSettings.inputSize}
 			/>
 		</Row>

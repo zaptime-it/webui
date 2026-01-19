@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
 	import { createEventDispatcher } from 'svelte';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import {
 		Button,
 		Card,
@@ -63,7 +63,7 @@
 				if (data.status == 200) {
 					dispatch('showToast', {
 						color: 'success',
-						text: $_('section.settings.settingsSaved')
+						text: m['section.settings.settingsSaved']()
 					});
 				} else {
 					dispatch('showToast', {
@@ -75,7 +75,7 @@
 			.catch(() => {
 				dispatch('showToast', {
 					color: 'danger',
-					text: $_('section.settings.errorSavingSettings')
+					text: m['section.settings.errorSavingSettings']()
 				});
 			});
 	};
@@ -116,15 +116,15 @@
 			<div class="float-end">
 				<small>
 					<button type="button" on:click={showAll} id="showAllBtn"
-						>{$_('section.settings.showAll')}</button
+						>{m['section.settings.showAll']()}</button
 					>
 					|
 					<button type="button" on:click={hideAll} id="hideAllBtn"
-						>{$_('section.settings.hideAll')}</button
+						>{m['section.settings.hideAll']()}</button
 					>
 				</small>
 			</div>
-			<CardTitle>{$_('section.settings.title')}</CardTitle>
+			<CardTitle>{m['section.settings.title']()}</CardTitle>
 		</CardHeader>
 		<CardBody>
 			{#if $settings.isLoaded === false}
@@ -148,10 +148,10 @@
 					<Row class="mt-4">
 						<Col>
 							<Button type="submit" color="primary" class="me-2">
-								{$_('button.save')}
+								{m['button.save']()}
 							</Button>
 							<Button type="button" color="secondary" on:click={handleReset}>
-								{$_('button.reset')}
+								{m['button.reset']()}
 							</Button>
 						</Col>
 					</Row>

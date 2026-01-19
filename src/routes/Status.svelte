@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
 
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { writable } from 'svelte/store';
 	import {
 		Button,
@@ -118,7 +118,7 @@
 <Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
 	<Card id="status">
 		<CardHeader>
-			<CardTitle>{$_('section.status.title', { default: 'Status' })}</CardTitle>
+			<CardTitle>{m['section.status.title']()}</CardTitle>
 		</CardHeader>
 		<CardBody>
 			{#if $settings.isLoaded === false}
@@ -183,7 +183,7 @@
 								verticalDesc={$settings.verticalDesc}
 							></Rendered>
 						</section>
-						{$_('section.status.screenCycle')}:
+						{m['section.status.screenCycle']()}:
 						<a
 							id="timerStatusText"
 							href={'#'}
@@ -192,12 +192,12 @@
 							role="button"
 							aria-pressed="false"
 							on:click={toggleTimer($status.timerRunning)}
-							>{#if $status.timerRunning}&#9205; {$_('timer.running')}{:else}&#9208; {$_(
+							>{#if $status.timerRunning}&#9205; {m['timer.running']()}{:else}&#9208; {m[
 									'timer.stopped'
-								)}{/if}</a
+								]()}{/if}</a
 						><br />
 
-						{$_('section.status.doNotDisturb')}:
+						{m['section.status.doNotDisturb']()}:
 						<a
 							id="dndStatusText"
 							href={'#'}
@@ -207,11 +207,11 @@
 							aria-pressed="false"
 							on:click={toggleDoNotDisturb($status.dnd?.enabled)}
 						>
-							{#if $status.dnd?.active}&#9205; {$_('on')}{:else}&#9208; {$_('off')}{/if}</a
+							{#if $status.dnd?.active}&#9205; On{:else}&#9208; Off{/if}</a
 						>
 						<small>
 							{#if $status.dnd?.timeBasedEnabled}
-								{$_('section.status.timeBasedDnd')} ( {$settings.dnd
+								{m['section.status.timeBasedDnd']()} ( {$settings.dnd
 									.startHour}:{$settings.dnd.startMinute.toString().padStart(2, '0')} - {$settings
 									.dnd.endHour}:{$settings.dnd.endMinute.toString().padStart(2, '0')} )
 							{/if}
@@ -239,33 +239,33 @@
 				{/if}
 				<Progress striped value={memoryFreePercent}>{memoryFreePercent}%</Progress>
 				<div class="d-flex justify-content-between">
-					<div>{$_('section.status.memoryFree')}</div>
+					<div>{m['section.status.memoryFree']()}</div>
 					<div>
 						{Math.round($status.espFreeHeap / 1024)} / {Math.round($status.espHeapSize / 1024)} KiB
 					</div>
 				</div>
 				<hr />
 				{#if $settings.hasLightLevel}
-					{$_('section.status.lightSensor')}: {Number(Math.round($status.lightLevel))} lux
+					{m['section.status.lightSensor']()}: {Number(Math.round($status.lightLevel))} lux
 					<hr />
 				{/if}
 				<Progress striped id="rssiBar" color={wifiStrengthColor} value={rssiPercent}
 					>{rssiPercent}%</Progress
 				>
-				<Tooltip target="rssiBar" placement="bottom">{$_('rssiBar.tooltip')}</Tooltip>
+				<Tooltip target="rssiBar" placement="bottom">{m['rssiBar.tooltip']()}</Tooltip>
 
 				<div class="d-flex justify-content-between">
-					<div>{$_('section.status.wifiSignalStrength')}</div>
+					<div>{m['section.status.wifiSignalStrength']()}</div>
 					<div>
 						{$status.rssi} dBm
 					</div>
 				</div>
 				<hr />
-				{$_('section.status.uptime')}: {toUptimestring($status.espUptime)}
+				{m['section.status.uptime']()}: {toUptimestring($status.espUptime)}
 				<br />
 				<p>
 					{#if $settings.dataSource == DataSourceType.NOSTR_SOURCE || $settings.nostrZapNotify}
-						{$_('section.status.nostrConnection')}:
+						{m['section.status.nostrConnection']()}:
 						<span>
 							{#if $status.connectionStatus && $status.connectionStatus.nostr}
 								&#9989;
@@ -276,7 +276,7 @@
 					{/if}
 					{#if $settings.dataSource != DataSourceType.NOSTR_SOURCE}
 						{#if $settings.dataSource == DataSourceType.THIRD_PARTY_SOURCE}
-							{$_('section.status.wsPriceConnection')}:
+							{m['section.status.wsPriceConnection']()}:
 							<span>
 								{#if $status.connectionStatus && $status.connectionStatus.price}
 									&#9989;
@@ -285,9 +285,7 @@
 								{/if}
 							</span>
 							-
-							{$_('section.status.wsMempoolConnection', {
-								values: { instance: $settings.mempoolInstance }
-							})}:
+							{m['section.status.wsMempoolConnection']({ instance: $settings.mempoolInstance })}:
 							<span>
 								{#if $status.connectionStatus && $status.connectionStatus.blocks}
 									&#9989;
@@ -296,7 +294,7 @@
 								{/if}
 							</span><br />
 						{:else}
-							{$_('section.status.wsDataConnection')}:
+							{m['section.status.wsDataConnection']()}:
 							<span>
 								{#if $status.connectionStatus && $status.connectionStatus.V2}
 									&#9989;
@@ -307,7 +305,7 @@
 						{/if}
 					{/if}
 					{#if $settings.fetchEurPrice}
-						<small>{$_('section.status.fetchEuroNote')}</small>
+						<small>{m['section.status.fetchEuroNote']()}</small>
 					{/if}
 				</p>
 			{/if}

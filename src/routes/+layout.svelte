@@ -12,16 +12,14 @@
 		NavbarBrand,
 		NavbarToggler
 	} from '@sveltestrap/sveltestrap';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 
 	import { page } from '$app/stores';
-	import { locale, locales, isLoading } from 'svelte-i18n';
+	import { currentLocale, setLocale, locales, type SupportedLocale } from '$lib/i18n';
 	import { ColorSchemeSwitcher } from '$lib/components';
-	import { derived } from 'svelte/store';
 
-	export const setLocale = (lang: string) => () => {
-		locale.set(lang);
-		localStorage.setItem('locale', lang);
+	const changeLocale = (lang: string) => () => {
+		setLocale(lang as SupportedLocale);
 	};
 
 	export const getFlagEmoji = (languageCode: string): string | null => {
@@ -44,18 +42,18 @@
 		}
 	};
 
-	let languageNames = {};
+	let languageNames: Record<string, string> = {};
 
-	const currentLocale = derived(locale, ($locale) => $locale || 'en');
+	$: {
+		const localeToUse = $currentLocale || 'en';
+		const newLanguageNames = new Intl.DisplayNames([localeToUse], { type: 'language' });
 
-	locale.subscribe(() => {
-		const localeToUse = $locale || 'en';
-		let newLanguageNames = new Intl.DisplayNames([localeToUse], { type: 'language' });
-
-		for (let l of $locales) {
+		for (const l of locales) {
 			languageNames[l] = newLanguageNames.of(l) || l;
 		}
-	});
+		// Trigger reactivity
+		languageNames = languageNames;
+	}
 
 	let isOpen = false;
 
@@ -64,57 +62,54 @@
 	};
 </script>
 
-<Navbar expand="md" sticky="xs-top" theme="auto">
-	<NavbarBrand class="d-none d-sm-block">&#8383;TClock</NavbarBrand>
-	<Nav class="d-md-none" pills>
-		<NavItem>
-			<NavLink href="#control" active>{$_('section.control.title', { default: 'Control' })}</NavLink
-			>
-		</NavItem>
-		<NavItem>
-			<NavLink href="#status">{$_('section.status.title', { default: 'Status' })}</NavLink>
-		</NavItem>
-		<NavItem>
-			<NavLink class="nav-link" href="#settings"
-				>{$_('section.settings.title', { default: 'Settings' })}</NavLink
-			>
-		</NavItem>
-	</Nav>
-
-	<NavbarToggler on:click={toggle} />
-
-	<Collapse {isOpen} navbar expand="sm">
-		<Nav class="me-auto" navbar>
+{#key $currentLocale}
+	<Navbar expand="md" sticky="xs-top" theme="auto">
+		<NavbarBrand class="d-none d-sm-block">&#8383;TClock</NavbarBrand>
+		<Nav class="d-md-none" pills>
 			<NavItem>
-				<NavLink href="/" active={$page.url.pathname === '/'}>Home</NavLink>
+				<NavLink href="#control" active>{m['section.control.title']()}</NavLink>
 			</NavItem>
 			<NavItem>
-				<NavLink href="/convert" active={$page.url.pathname === '/convert'}>Convert</NavLink>
+				<NavLink href="#status">{m['section.status.title']()}</NavLink>
 			</NavItem>
 			<NavItem>
-				<NavLink href="/api" active={$page.url.pathname === '/api'}>API</NavLink>
+				<NavLink class="nav-link" href="#settings">{m['section.settings.title']()}</NavLink>
 			</NavItem>
 		</Nav>
-		{#if !$isLoading}
+
+		<NavbarToggler on:click={toggle} />
+
+		<Collapse {isOpen} navbar expand="sm">
+			<Nav class="me-auto" navbar>
+				<NavItem>
+					<NavLink href="/" active={$page.url.pathname === '/'}>Home</NavLink>
+				</NavItem>
+				<NavItem>
+					<NavLink href="/convert" active={$page.url.pathname === '/convert'}>Convert</NavLink>
+				</NavItem>
+				<NavItem>
+					<NavLink href="/api" active={$page.url.pathname === '/api'}>API</NavLink>
+				</NavItem>
+			</Nav>
 			<Dropdown id="nav-language-dropdown" inNavbar class="me-3">
 				<DropdownToggle nav caret
 					>{getFlagEmoji($currentLocale)}
 					{languageNames[$currentLocale] || 'English'}</DropdownToggle
 				>
 				<DropdownMenu end>
-					{#each $locales as locale}
-						<DropdownItem on:click={setLocale(locale)}
+					{#each locales as locale}
+						<DropdownItem on:click={changeLocale(locale)}
 							>{getFlagEmoji(locale)} {languageNames[locale]}</DropdownItem
 						>
 					{/each}
 				</DropdownMenu>
 			</Dropdown>
-		{/if}
-		<ColorSchemeSwitcher></ColorSchemeSwitcher>
-	</Collapse>
-</Navbar>
+			<ColorSchemeSwitcher></ColorSchemeSwitcher>
+		</Collapse>
+	</Navbar>
 
-<!-- +layout.svelte -->
-<main>
-	<slot />
-</main>
+	<!-- +layout.svelte -->
+	<main>
+		<slot />
+	</main>
+{/key}

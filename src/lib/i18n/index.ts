@@ -1,30 +1,50 @@
 import { browser } from '$app/environment';
-import { init, register } from 'svelte-i18n';
+import {
+	setLocale as paraglideSetLocale,
+	getLocale as paraglideGetLocale,
+	locales,
+	isLocale
+} from '$lib/paraglide/runtime';
+import { writable, derived } from 'svelte/store';
 
-const defaultLocale = 'en';
+export type SupportedLocale = 'en' | 'nl' | 'es' | 'de';
+export const supportedLocales: readonly SupportedLocale[] = ['en', 'nl', 'es', 'de'];
 
-register('en', () => import('../locales/en.json'));
-register('nl', () => import('../locales/nl.json'));
-register('es', () => import('../locales/es.json'));
-register('de', () => import('../locales/de.json'));
+// Create a writable store to track locale changes for reactivity
+const localeStore = writable<SupportedLocale>('en');
 
-const getInitialLocale = () => {
-	if (!browser) return defaultLocale;
+// Export a derived store that stays in sync
+export const currentLocale = derived(localeStore, ($locale) => $locale);
 
-	// Check localStorage first
+// Export locales list for the language switcher
+export { locales };
+
+export function initLocale() {
+	if (!browser) return;
+
 	const storedLocale = localStorage.getItem('locale');
-	if (storedLocale) return storedLocale;
+	if (storedLocale && isLocale(storedLocale)) {
+		paraglideSetLocale(storedLocale as SupportedLocale, { reload: false });
+		localeStore.set(storedLocale as SupportedLocale);
+		return;
+	}
 
-	// Get browser locale and normalize it
-	const browserLocale = window.navigator.language;
-	const normalizedLocale = browserLocale.split('-')[0].toLowerCase();
+	const browserLocale = window.navigator.language.split('-')[0].toLowerCase();
+	const locale = supportedLocales.includes(browserLocale as SupportedLocale)
+		? (browserLocale as SupportedLocale)
+		: 'en';
+	paraglideSetLocale(locale, { reload: false });
+	localeStore.set(locale);
+}
 
-	// Check if we support this locale
-	const supportedLocales = ['en', 'nl', 'es', 'de'];
-	return supportedLocales.includes(normalizedLocale) ? normalizedLocale : defaultLocale;
-};
+export function setLocale(locale: SupportedLocale) {
+	paraglideSetLocale(locale, { reload: false });
+	localeStore.set(locale);
+	if (browser) {
+		localStorage.setItem('locale', locale);
+	}
+}
 
-init({
-	fallbackLocale: defaultLocale,
-	initialLocale: getInitialLocale()
-});
+export function getLocale(): SupportedLocale {
+	return paraglideGetLocale() as SupportedLocale;
+}

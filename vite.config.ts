@@ -1,4 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vite';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -55,6 +56,10 @@ const doRewrap = ({ cssClass }) => {
 
 export default defineConfig({
 	plugins: [
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide'
+		}),
 		sveltekit(),
 		{
 			name: 'postbuild-command',
@@ -103,11 +108,12 @@ export default defineConfig({
 		environment: 'jsdom',
 		server: {
 			deps: {
-				inline: ['@sveltestrap/sveltestrap', '@sveltejs/kit', 'svelte-i18n', 'intl-messageformat']
+				inline: ['@sveltestrap/sveltestrap', '@sveltejs/kit']
 			}
 		},
 		alias: {
-			$app: path.resolve('./src/mocks/$app')
+			$app: path.resolve('./src/mocks/$app'),
+			$lib: path.resolve('./src/lib')
 		}
 	},
 	define: {

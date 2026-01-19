@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
 	import { onDestroy } from 'svelte';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import type { Writable } from 'svelte/store';
 	import {
 		Button,
@@ -110,13 +110,13 @@
 <Col {xs} {sm} {md} {lg} {xl} {xxl} class="mb-4 mb-xl-0">
 	<Card id="control">
 		<CardHeader>
-			<CardTitle>{$_('section.control.title', { default: 'Control' })}</CardTitle>
+			<CardTitle>{m['section.control.title']()}</CardTitle>
 		</CardHeader>
 		<CardBody>
 			<Form>
 				<Row>
 					<Label md={4} for="customText" size={$uiSettings.inputSize}
-						>{$_('section.control.text')}</Label
+						>{m['section.control.text']()}</Label
 					>
 					<Col md="8">
 						<Input
@@ -131,7 +131,7 @@
 				<Row>
 					<Col class="d-flex justify-content-end">
 						<Button color="primary" on:click={setCustomText} bsSize={$uiSettings.btnSize}
-							>{$_('section.control.showText')}</Button
+							>{m['section.control.showText']()}</Button
 						>
 					</Col>
 				</Row>
@@ -142,7 +142,7 @@
 				<Form>
 					<Row>
 						<Label md={4} for="ledColorPicker" size={$uiSettings.inputSize}
-							>{$_('section.control.ledColor')}</Label
+							>{m['section.control.ledColor']()}</Label
 						>
 						<Col md="8">
 							<Row class="justify-content-between">
@@ -165,7 +165,7 @@
 									<Input
 										bind:checked={keepLedsSameColor}
 										type="switch"
-										label={$_('sections.control.keepSameColor')}
+										label={m['sections.control.keepSameColor']()}
 										bsSize={$uiSettings.inputSize}
 									/>
 								</Col>
@@ -178,11 +178,11 @@
 								color="secondary"
 								id="turnOffLedsBtn"
 								on:click={turnOffLeds}
-								bsSize={$uiSettings.inputSize}>{$_('section.control.turnOff')}</Button
+								bsSize={$uiSettings.inputSize}>{m['section.control.turnOff']()}</Button
 							>
 							<div class="mx-2"></div>
 							<Button color="primary" on:click={setLEDcolor} bsSize={$uiSettings.inputSize}
-								>{$_('section.control.setColor')}</Button
+								>{m['section.control.setColor']()}</Button
 							>
 						</Col>
 					</Row>
@@ -190,63 +190,63 @@
 				<hr />
 			{/if}
 			{#if $settings.hasFrontlight && !$settings.flDisable}
-				<h3>{$_('section.control.frontlight')}</h3>
+				<h3>{m['section.control.frontlight']()}</h3>
 				<Row class="d-flex justify-content-between justify-content-md-end">
 					<Col md="auto" class="">
 						<Button color="secondary" id="turnOffFrontlightBtn" on:click={turnOffFrontlight}
-							>{$_('section.control.turnOff')}</Button
+							>{m['section.control.turnOff']()}</Button
 						>
 					</Col><Col md="auto" class="">
 						<Button color="primary" on:click={turnOnFrontlight}
-							>{$_('section.control.turnOn')}</Button
+							>{m['section.control.turnOn']()}</Button
 						>
 					</Col><Col md="auto" class="">
 						<Button color="success" id="flashFrontlight" on:click={flashFrontlight}
-							>{$_('section.control.flashFrontlight')}</Button
+							>{m['section.control.flashFrontlight']()}</Button
 						>
 					</Col>
 				</Row>
 				<hr />
 			{/if}
-			<h3>{$_('section.control.systemInfo')}</h3>
+			<h3>{m['section.control.systemInfo']()}</h3>
 			<ul class="small system_info">
 				{#if $settings.gitTag}
 					<li>
-						{$_('section.control.version')}: {$settings.gitTag}
+						{m['section.control.version']()}: {$settings.gitTag}
 					</li>
 				{/if}
 				<li>
-					{$_('section.control.buildTime')}: <Placeholder
+					{m['section.control.buildTime']()}: <Placeholder
 						value={new Date($settings.lastBuildTime * 1000).toLocaleString()}
 						checkValue={$settings.lastBuildTime}
 					/>
 				</li>
 				<li>IP: <Placeholder value={$settings.ip} /></li>
 				<li>HW revision: <Placeholder value={$settings.hwRev} /></li>
-				<li>{$_('section.control.fwCommit')}: <Placeholder value={$settings.gitRev} /></li>
+				<li>{m['section.control.fwCommit']()}: <Placeholder value={$settings.gitRev} /></li>
 				<li>WebUI commit: <Placeholder value={$settings.fsRev} /></li>
-				<li>{$_('section.control.hostname')}: <Placeholder value={$settings.hostname} /></li>
+				<li>{m['section.control.hostname']()}: <Placeholder value={$settings.hostname} /></li>
 			</ul>
 			{#if $settings.gitRev && $settings.fsRev && $settings.gitRev != $settings.fsRev}
 				<Alert color="warning">
-					⚠️ <strong>{$_('warning')}</strong>: {$_('section.control.fwCommitMismatch')}
+					⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwCommitMismatch']()}
 				</Alert>
 			{/if}
 			<Row>
 				<Col class="d-flex justify-content-end">
 					<Button color="danger" id="restartBtn" on:click={restartClock}
-						>{$_('button.restart')}</Button
+						>{m['button.restart']()}</Button
 					>
 					<div class="mx-2"></div>
 
 					<Button color="warning" id="forceFullRefresh" on:click={forceFullRefresh}
-						>{$_('button.forceFullRefresh')}</Button
+						>{m['button.forceFullRefresh']()}</Button
 					>
 				</Col>
 			</Row>
 			{#if $settings.otaEnabled}
 				<hr />
-				<h3>{$_('section.control.firmwareUpdate')}</h3>
+				<h3>{m['section.control.firmwareUpdate']()}</h3>
 				<FirmwareUpdater on:showToast bind:settings bind:status />
 			{/if}
 		</CardBody>

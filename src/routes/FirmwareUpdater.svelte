@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_BASE_URL } from '$lib/config';
 	import { createEventDispatcher, onMount } from 'svelte';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { writable } from 'svelte/store';
 	import { Progress, Alert, Button } from '@sveltestrap/sveltestrap';
 	import HourglassSplitIcon from 'svelte-bootstrap-icons/lib/HourglassSplit.svelte';
@@ -203,19 +203,19 @@
 
 {#if latestVersion && latestVersion != 'error'}
 	<p>
-		{$_('section.firmwareUpdater.latestVersion')}: {latestVersion} - {$_(
+		{m['section.firmwareUpdater.latestVersion']()}: {latestVersion} - {m[
 			'section.firmwareUpdater.releaseDate'
-		)}: {releaseDate} -
-		<a href={releaseUrl} target="_blank">{$_('section.firmwareUpdater.viewRelease')}</a><br />
+		]()}: {releaseDate} -
+		<a href={releaseUrl} target="_blank">{m['section.firmwareUpdater.viewRelease']()}</a><br />
 		{#if isNewerVersionAvailable}
 			{#if !$status.isOTAUpdating}
-				{$_('section.firmwareUpdater.swUpdateAvailable')} -
-				<a href="/" on:click={onAutoUpdate}>{$_('section.firmwareUpdater.autoUpdate')}</a>.
+				{m['section.firmwareUpdater.swUpdateAvailable']()} -
+				<a href="/" on:click={onAutoUpdate}>{m['section.firmwareUpdater.autoUpdate']()}</a>.
 			{:else}
-				<HourglassSplitIcon /> {$_('section.firmwareUpdater.autoUpdateInProgress')}
+				<HourglassSplitIcon /> {m['section.firmwareUpdater.autoUpdateInProgress']()}
 			{/if}
 		{:else}
-			{$_('section.firmwareUpdater.swUpToDate')}
+			{m['section.firmwareUpdater.swUpToDate']()}
 		{/if}
 	</p>
 {:else if latestVersion == 'error'}
@@ -261,21 +261,21 @@
 	</section>
 	{#if firmwareUploadProgress > 0}
 		<Progress striped value={firmwareUploadProgress} class="progress" id="firmwareUploadProgress"
-			>{$_('section.firmwareUpdater.uploading')}... {firmwareUploadProgress}%</Progress
+			>{m['section.firmwareUpdater.uploading']()}... {firmwareUploadProgress}%</Progress
 		>
 	{/if}
 	{#if firmwareUploadSuccess}
 		<Alert color="success" class="firmwareUploadStatusAlert"
-			>{$_('section.firmwareUpdater.fileUploadSuccess', { values: { countdown: $countdown } })}
+			>{m['section.firmwareUpdater.fileUploadSuccess']({ countdown: $countdown })}
 		</Alert>
 	{/if}
 
 	{#if firmwareUploadError}
 		<Alert color="danger" class="firmwareUploadStatusAlert"
-			>{$_('section.firmwareUpdater.fileUploadFailed')}</Alert
+			>{m['section.firmwareUpdater.fileUploadFailed']()}</Alert
 		>
 	{/if}
 	<small
-		>⚠️ <strong>{$_('warning')}</strong>: {$_('section.firmwareUpdater.firmwareUpdateText')}</small
+		>⚠️ <strong>{m['warning']()}</strong>: {m['section.firmwareUpdater.firmwareUpdateText']()}</small
 	>
 {/if}

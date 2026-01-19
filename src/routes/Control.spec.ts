@@ -2,19 +2,11 @@ import { writable } from 'svelte/store';
 import Control from './Control.svelte';
 import { render } from '@testing-library/svelte';
 import { describe, test, expect, beforeEach } from 'vitest';
-import { addMessages, init, locale } from 'svelte-i18n';
-
-import '$lib/i18n/index.ts';
-import en from '$lib/locales/en.json';
-addMessages('en', en);
+import { setLocale as paraglideSetLocale } from '$lib/paraglide/runtime';
 
 describe('Control Component', () => {
 	beforeEach(() => {
-		init({
-			fallbackLocale: 'en',
-			initialLocale: 'en'
-		});
-		locale.set('en');
+		paraglideSetLocale('en', { reload: false });
 	});
 
 	test('should render the component', () => {

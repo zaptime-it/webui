@@ -2,19 +2,11 @@ import { writable } from 'svelte/store';
 import Status from './Status.svelte';
 import { render } from '@testing-library/svelte';
 import { describe, test, expect, beforeEach } from 'vitest';
-import { locale, init, addMessages } from 'svelte-i18n';
-
-import '$lib/i18n/index.ts';
-import en from '$lib/locales/en.json';
-addMessages('en', en);
+import { setLocale as paraglideSetLocale } from '$lib/paraglide/runtime';
 
 describe('Status Component', () => {
 	beforeEach(() => {
-		init({
-			fallbackLocale: 'en',
-			initialLocale: 'en'
-		});
-		locale.set('en');
+		paraglideSetLocale('en', { reload: false });
 	});
 
 	test('should render the component', () => {

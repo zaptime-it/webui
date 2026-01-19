@@ -5,7 +5,7 @@
 		SettingsSelect,
 		SettingsInputColor
 	} from '$lib/components';
-	import { _ } from 'svelte-i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { Row } from '@sveltestrap/sveltestrap';
 	import ToggleHeader from '../ToggleHeader.svelte';
 	import { uiSettings } from '$lib/uiSettings';
@@ -28,13 +28,13 @@
 	};
 
 	const textColorOptions: [string, boolean][] = [
-		[$_('colors.black') + ' on ' + $_('colors.white'), false],
-		[$_('colors.white') + ' on ' + $_('colors.black'), true]
+		[m['colors.black']() + ' on ' + m['colors.white'](), false],
+		[m['colors.white']() + ' on ' + m['colors.black'](), true]
 	];
 
 	const fontPreferenceOptions: [string, string][] = $settings.availableFonts?.map((font) => [
-		$_(`fonts.${font}`) !== `fonts.${font}`
-			? $_(`fonts.${font}`)
+		m[`fonts.${font}`]?.() !== undefined
+			? m[`fonts.${font}`]()
 			: font.charAt(0).toUpperCase() + font.slice(1),
 		font
 	]);
@@ -44,13 +44,13 @@
 
 <Row>
 	<ToggleHeader
-		header={$_('section.settings.section.displaysAndLed')}
+		header={m['section.settings.section.displaysAndLed']()}
 		bind:isOpen
 		defaultOpen={false}
 	>
 		<SettingsSelect
 			id="textColor"
-			label={$_('section.settings.textColor')}
+			label={m['section.settings.textColor']()}
 			bind:value={$settings.invertedColor}
 			options={textColorOptions}
 			size={$uiSettings.inputSize}
@@ -59,7 +59,7 @@
 
 		<SettingsSelect
 			id="fontName"
-			label={$_('section.settings.fontName')}
+			label={m['section.settings.fontName']()}
 			bind:value={$settings.fontName}
 			options={fontPreferenceOptions}
 			size={$uiSettings.inputSize}
@@ -67,43 +67,43 @@
 
 		<SettingsInput
 			id="timePerScreen"
-			label={$_('section.settings.timePerScreen')}
+			label={m['section.settings.timePerScreen']()}
 			bind:value={timePerScreen}
 			onInput={(e) => ($settings.timePerScreen = Number(e.target.value))}
 			type="number"
 			min={1}
 			step={1}
 			required={true}
-			suffix={$_('time.minutes')}
+			suffix={m['time.minutes']()}
 			size={$uiSettings.inputSize}
 		/>
 		<SettingsInput
 			id="fullRefreshMin"
-			label={$_('section.settings.fullRefreshEvery')}
+			label={m['section.settings.fullRefreshEvery']()}
 			bind:value={$settings.fullRefreshMin}
 			type="number"
 			min={1}
 			step={1}
 			required={true}
-			suffix={$_('time.minutes')}
+			suffix={m['time.minutes']()}
 			size={$uiSettings.inputSize}
 		/>
 
 		<SettingsInput
 			id="minSecPriceUpd"
-			label={$_('section.settings.timeBetweenPriceUpdates')}
+			label={m['section.settings.timeBetweenPriceUpdates']()}
 			bind:value={$settings.minSecPriceUpd}
 			type="number"
 			min={1}
 			step={1}
-			suffix={$_('time.seconds')}
-			helpText={$_('section.settings.shortAmountsWarning')}
+			suffix={m['time.seconds']()}
+			helpText={m['section.settings.shortAmountsWarning']()}
 			size={$uiSettings.inputSize}
 		/>
 
 		<SettingsInput
 			id="ledBrightness"
-			label={$_('section.settings.ledBrightness')}
+			label={m['section.settings.ledBrightness']()}
 			bind:value={$settings.ledBrightness}
 			type="range"
 			min={0}
@@ -114,14 +114,14 @@
 
 		<SettingsInputColor
 			id="blockFlashColor"
-			label={$_('section.settings.blockFlashColor')}
+			label={m['section.settings.blockFlashColor']()}
 			bind:value={$settings.blockFlashColor}
 		/>
 
 		{#if $settings.hasFrontlight && !$settings.flDisable}
 			<SettingsInput
 				id="flMaxBrightness"
-				label={$_('section.settings.flMaxBrightness')}
+				label={m['section.settings.flMaxBrightness']()}
 				bind:value={$settings.flMaxBrightness}
 				type="range"
 				min={0}
@@ -133,7 +133,7 @@
 
 			<SettingsInput
 				id="flEffectDelay"
-				label={$_('section.settings.flEffectDelay')}
+				label={m['section.settings.flEffectDelay']()}
 				bind:value={$settings.flEffectDelay}
 				type="range"
 				min={5}
@@ -146,14 +146,14 @@
 		{#if !$settings.flDisable && $settings.hasLightLevel}
 			<SettingsInput
 				id="luxLightToggle"
-				label={`${$_('section.settings.luxLightToggle')} (${$settings.luxLightToggle})`}
+				label={`${m['section.settings.luxLightToggle']()} (${$settings.luxLightToggle})`}
 				bind:value={$settings.luxLightToggle}
 				onInput={(e) => ($settings.luxLightToggle = Number(e.target.value))}
 				type="range"
 				min={0}
 				max={1000}
 				step={1}
-				helpText={$_('section.settings.luxLightToggleText')}
+				helpText={m['section.settings.luxLightToggleText']()}
 				size={$uiSettings.inputSize}
 			/>
 		{/if}
@@ -162,28 +162,28 @@
 			<SettingsSwitch
 				id="ledTestOnPower"
 				bind:checked={$settings.ledTestOnPower}
-				label={$_('section.settings.ledPowerOnTest')}
+				label={m['section.settings.ledPowerOnTest']()}
 				size={$uiSettings.inputSize}
 			/>
 
 			<SettingsSwitch
 				id="ledFlashOnUpd"
 				bind:checked={$settings.ledFlashOnUpd}
-				label={$_('section.settings.ledFlashOnBlock')}
+				label={m['section.settings.ledFlashOnBlock']()}
 				size={$uiSettings.inputSize}
 			/>
 
 			<SettingsSwitch
 				id="disableLeds"
 				bind:checked={$settings.disableLeds}
-				label={$_('section.settings.disableLeds')}
+				label={m['section.settings.disableLeds']()}
 				size={$uiSettings.inputSize}
 			/>
 
 			<SettingsSwitch
 				id="refrScrnChange"
 				bind:checked={$settings.refrScrnChange}
-				label={$_('section.settings.refrScrnChange')}
+				label={m['section.settings.refrScrnChange']()}
 				size={$uiSettings.inputSize}
 			/>
 
@@ -191,7 +191,7 @@
 				<SettingsSwitch
 					id="flDisable"
 					bind:checked={$settings.flDisable}
-					label={$_('section.settings.flDisable')}
+					label={m['section.settings.flDisable']()}
 					size={$uiSettings.inputSize}
 				/>
 			{/if}
@@ -200,14 +200,14 @@
 				<SettingsSwitch
 					id="flAlwaysOn"
 					bind:checked={$settings.flAlwaysOn}
-					label={$_('section.settings.flAlwaysOn')}
+					label={m['section.settings.flAlwaysOn']()}
 					size={$uiSettings.inputSize}
 				/>
 
 				<SettingsSwitch
 					id="flFlashOnUpd"
 					bind:checked={$settings.flFlashOnUpd}
-					label={$_('section.settings.flFlashOnUpd')}
+					label={m['section.settings.flFlashOnUpd']()}
 					size={$uiSettings.inputSize}
 				/>
 
@@ -215,7 +215,7 @@
 					<SettingsSwitch
 						id="flOffWhenDark"
 						bind:checked={$settings.flOffWhenDark}
-						label={$_('section.settings.flOffWhenDark')}
+						label={m['section.settings.flOffWhenDark']()}
 						size={$uiSettings.inputSize}
 					/>
 				{/if}
