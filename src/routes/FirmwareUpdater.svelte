@@ -276,6 +276,8 @@
 		>
 	{/if}
 	<small
-		>⚠️ <strong>{m['warning']()}</strong>: {m['section.firmwareUpdater.firmwareUpdateText']()}</small
+		>⚠️ <strong>{m['warning']()}</strong>: {m[
+			'section.firmwareUpdater.firmwareUpdateText'
+		]()}</small
 	>
 {/if}

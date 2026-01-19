@@ -192,9 +192,7 @@
 							valid={validBitaxe}
 							size={$uiSettings.inputSize}
 						>
-							<Button type="button" color="success" on:click={testBitaxe}>
-								Test
-							</Button>
+							<Button type="button" color="success" on:click={testBitaxe}>Test</Button>
 						</SettingsInput>
 					{/if}
 				</Col>
@@ -232,9 +230,7 @@
 								valid={validLocalPool}
 								size={$uiSettings.inputSize}
 							>
-								<Button type="button" color="success" on:click={testLocalPool}>
-									Test
-								</Button>
+								<Button type="button" color="success" on:click={testLocalPool}>Test</Button>
 							</SettingsInput>
 						{/if}
 						<SettingsInput
