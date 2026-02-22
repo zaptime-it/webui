@@ -1,11 +1,13 @@
 import adapter from '@sveltejs/adapter-static';
 import { sveltePreprocess } from 'svelte-preprocess';
+import { svelteDefaultImportPreprocess } from './svelte-default-import-preprocess.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: sveltePreprocess({}),
+	// Run default-import rewrite before svelte-preprocess to avoid Svelte 5 parse error on "import X from './Y.svelte'"
+	preprocess: [svelteDefaultImportPreprocess(), sveltePreprocess({})],
 	build: {
 		rollupOptions: {
 			output: {
