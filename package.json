@@ -6,6 +6,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"build:test": "vite build --config vite.config.test.ts",
+		"serve:test": "vite build --config vite.config.test.ts && vite preview --config vite.config.test.ts --host 127.0.0.1 --port 4173 --strictPort",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
