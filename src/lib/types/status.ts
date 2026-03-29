@@ -13,7 +13,7 @@ export interface ConnectionStatus {
  */
 export interface DndStatus {
 	enabled: boolean;
-	timeBasedEnabled: boolean;
+	dndTimeEnabled: boolean;
 	startTime: string;
 	endTime: string;
 	active: boolean;

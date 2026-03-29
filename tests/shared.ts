@@ -60,7 +60,7 @@ export const statusJson = {
 	isFake: true,
 	dnd: {
 		enabled: true,
-		timeBasedEnabled: true,
+		dndTimeEnabled: true,
 		startTime: '23:00',
 		endTime: '7:00',
 		active: true
@@ -90,7 +90,7 @@ export const settingsJson = {
 	dataSource: 0,
 	dnd: {
 		enabled: false,
-		timeBasedEnabled: true,
+		dndTimeEnabled: true,
 		startHour: 23,
 		startMinute: 0,
 		endHour: 7,

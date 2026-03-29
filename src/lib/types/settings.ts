@@ -14,7 +14,7 @@ export interface Screen {
  */
 export interface DndSettings {
 	enabled: boolean;
-	timeBasedEnabled: boolean;
+	dndTimeEnabled: boolean;
 	startHour: number;
 	startMinute: number;
 	endHour: number;
@@ -51,9 +51,8 @@ export interface Settings {
 	dataSource: DataSourceType | number;
 	mempoolInstance: string;
 	mempoolSecure: boolean;
-	localPoolEndpoint: string;
+	localPoolHost: string;
 	customEndpoint: string;
-	customEndpointDisableSSL: boolean;
 	ceEndpoint: string;
 	ceDisableSSL: boolean;
 

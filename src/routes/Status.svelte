@@ -214,7 +214,7 @@
 							{#if $status.dnd?.active}&#9205; On{:else}&#9208; Off{/if}</a
 						>
 						<small>
-							{#if $status.dnd?.timeBasedEnabled}
+							{#if $status.dnd?.dndTimeEnabled}
 								{m['section.status.timeBasedDnd']()} ( {$settings.dnd
 									.startHour}:{$settings.dnd.startMinute.toString().padStart(2, '0')} - {$settings
 									.dnd.endHour}:{$settings.dnd.endMinute.toString().padStart(2, '0')} )

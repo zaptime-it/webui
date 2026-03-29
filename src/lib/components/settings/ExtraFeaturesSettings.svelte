@@ -75,7 +75,7 @@
 			const timeoutId = setTimeout(() => controller.abort(), 1000);
 
 			const response = await fetch(
-				`http://${$settings.localPoolEndpoint}/api/client/${$settings.miningPoolUser}`,
+				`http://${$settings.localPoolHost}/api/client/${$settings.miningPoolUser}`,
 				{ signal: controller.signal }
 			);
 			clearTimeout(timeoutId);
@@ -123,10 +123,10 @@
 		<SettingsSwitch
 			id="timeBasedDnd"
 			label={m['section.settings.timeBasedDnd']()}
-			bind:checked={$settings.dnd.timeBasedEnabled}
+			bind:checked={$settings.dnd.dndTimeEnabled}
 			size={$uiSettings.inputSize}
 		/>
-		{#if $settings.dnd.timeBasedEnabled}
+		{#if $settings.dnd.dndTimeEnabled}
 			<Row>
 				<Col>
 					<SettingsInput
@@ -228,9 +228,9 @@
 						/>
 						{#if $settings.miningPoolName === 'local_public_pool'}
 							<SettingsInput
-								id="localPoolEndpoint"
+								id="localPoolHost"
 								label="Local Pool Endpoint"
-								bind:value={$settings.localPoolEndpoint}
+								bind:value={$settings.localPoolHost}
 								placeholder="umbrel.local:2019"
 								required={true}
 								valid={validLocalPool}
