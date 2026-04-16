@@ -1,0 +1,235 @@
+@import 'tailwindcss';
+
+@plugin "daisyui" {
+	themes:
+		light --default,
+		dark --prefersdark;
+}
+
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/antonio/400.css';
+
+@font-face {
+	font-family: 'Satoshi Symbol';
+	src: url('/fonts/satoshi-symbol.woff2') format('woff2');
+	font-display: swap;
+}
+
+@theme {
+	--font-sans: 'Ubuntu', system-ui, sans-serif;
+	--font-display: 'Antonio', sans-serif;
+}
+
+:root {
+	font-family: var(--font-sans);
+}
+
+/* DaisyUI 5's .label forces white-space:nowrap which overflows in narrow
+   columns. Relax it for our form labels. */
+.label {
+	white-space: normal;
+}
+
+/* -------------------------------------------------------------
+ * Layout helpers
+ * ----------------------------------------------------------- */
+
+.navbar-brand {
+	font-style: italic;
+	font-weight: 600;
+}
+
+.system_info {
+	padding: 0;
+	& li {
+		list-style: none;
+	}
+}
+
+.currencyCode {
+	width: 20%;
+	text-align: center;
+	display: inline-block;
+}
+
+input[type='number'] {
+	text-align: right;
+}
+
+/* Keep the rewrap hydration anchor */
+.overlay {
+	display: contents;
+}
+
+/* -------------------------------------------------------------
+ * BTClock display — ported verbatim from src/lib/style/app.scss
+ * ----------------------------------------------------------- */
+
+.btclock-wrapper .btclock {
+	background: #000;
+	display: flex;
+	font-size: calc(2vw + 2vh);
+	font-family: 'Antonio', sans-serif;
+	font-weight: 400;
+	padding: 10px;
+	gap: 10px;
+}
+
+.btclock-wrapper .btclock .digit,
+.btclock-wrapper .btclock .splitText,
+.btclock-wrapper .btclock .mediumText {
+	border: 2px solid gold;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 10px 10px 15px 10px;
+	width: calc(12vw + 12vh);
+	aspect-ratio: 1 / 1.5;
+}
+
+.btclock-wrapper .btclock .digit hr,
+.btclock-wrapper .btclock .splitText hr,
+.btclock-wrapper .btclock .mediumText hr {
+	width: 75%;
+	border: 0;
+	border-top: 2px solid #fff;
+	margin: 0;
+	padding: 0;
+	opacity: 1;
+}
+
+.btclock-wrapper .btclock .digit.sats {
+	padding-top: 35px;
+	font-family: 'Satoshi Symbol', sans-serif;
+}
+
+.btclock-wrapper .btclock .mediumText {
+	font-size: calc(1.25vw + 1.25vh);
+}
+
+.btclock-wrapper .btclock .splitText {
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	padding: 5px;
+	font-size: calc(0.3vw + 1vh);
+}
+
+.btclock-wrapper .btclock.verticalDesc > .splitText:first-child .textcontainer {
+	transform: rotate(-90deg);
+}
+
+.btclock-wrapper .btclock .splitText .textcontainer :first-child::after {
+	display: block;
+	content: '';
+	margin-top: 0px;
+	border-bottom: 2px solid;
+}
+
+.btclock-wrapper .btclock .splitText .top-text,
+.btclock-wrapper .btclock .splitText .bottom-text {
+	margin: 0;
+	line-height: 1;
+}
+
+.btclock-wrapper .btclock .splitText .top-text {
+	margin-bottom: -45px;
+}
+
+.btclock-wrapper .btclock .splitText .bottom-text {
+	margin-top: -45px;
+}
+
+.btclock-wrapper .btclock .digit.icon svg {
+	width: 100%;
+	fill: currentColor;
+}
+
+.btclock-wrapper .btclock .digit.icon.icon-img {
+	aspect-ratio: 1;
+	width: calc(100 / 7);
+}
+
+.btclock-wrapper .btclock .digit.icon.icon-img img {
+	max-width: 95%;
+}
+
+.btclock-wrapper .bitaxelogo {
+	transform: rotate(-90deg);
+}
+
+.btclock-wrapper .pool-logo {
+	font-size: 0.75rem;
+}
+
+@media (max-width: 576px) {
+	.btclock-wrapper .btclock {
+		font-size: calc(2vw + 2vh);
+	}
+	.btclock-wrapper .btclock .digit,
+	.btclock-wrapper .btclock .splitText,
+	.btclock-wrapper .btclock .mediumText {
+		padding: 5px;
+	}
+	.btclock-wrapper .btclock .splitText {
+		font-size: calc(1.2vw + 1.2vh);
+	}
+	.btclock-wrapper .btclock .splitText .top-text {
+		margin-bottom: -10px;
+	}
+	.btclock-wrapper .btclock .splitText .bottom-text {
+		margin-top: -10px;
+	}
+}
+
+.darkMode .btclock > div {
+	background: #000;
+	color: #fff;
+	border-color: #fff;
+}
+
+.lightMode .btclock > div {
+	background: #fff;
+	color: #000;
+}
+
+.lightMode .btclock .splitText hr {
+	border-top: 2px solid #000;
+}
+
+.lightMode .bitaxelogo {
+	filter: brightness(0) saturate(100%);
+}
+
+.connection-lost-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.75);
+	z-index: 1050;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.connection-lost-overlay .overlay-content {
+	background-color: rgba(255, 255, 255, 0.85);
+	color: #000;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+	text-align: center;
+}
+
+.connection-lost-overlay .overlay-content h4 {
+	margin: 0 0 0.25rem 0;
+	font-weight: 600;
+}
+
+.connection-lost-overlay .overlay-content p {
+	margin: 0;
+	font-size: 0.875rem;
+}
