@@ -9,12 +9,12 @@ info:
     The embedded web app may rewrite `/api` to `/` for same-origin routing.
     Several routes require HTTP Basic auth when the device has `httpAuthEnabled` (same as `GET /api/settings`).
 servers:
-- url: "/"
+  - url: '/'
 paths:
-  "/api/status":
+  '/api/status':
     get:
       tags:
-      - system
+        - system
       summary: Get current runtime status
       responses:
         '200':
@@ -22,11 +22,11 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/Status"
-  "/api/system_status":
+                '$ref': '#/components/schemas/Status'
+  '/api/system_status':
     get:
       tags:
-      - system
+        - system
       summary: Get memory, filesystem, and WiFi metrics
       responses:
         '200':
@@ -34,20 +34,20 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/SystemStatus"
-  "/api/wifi_set_tx_power":
+                '$ref': '#/components/schemas/SystemStatus'
+  '/api/wifi_set_tx_power':
     get:
       tags:
-      - network
+        - network
       summary: Set WiFi TX power (dBm enum value)
       parameters:
-      - in: query
-        name: txPower
-        required: true
-        schema:
-          type: integer
-        description: ESP32 `wifi_power_t` value (e.g. 8 for 19.5 dBm). Must be in
-          the supported range.
+        - in: query
+          name: txPower
+          required: true
+          schema:
+            type: integer
+          description: ESP32 `wifi_power_t` value (e.g. 8 for 19.5 dBm). Must be in
+            the supported range.
       responses:
         '200':
           description: Power applied
@@ -61,27 +61,27 @@ paths:
                     example: ok
         '400':
           description: Missing or invalid txPower
-  "/api/settings":
+  '/api/settings':
     get:
       tags:
-      - system
+        - system
       summary: Get current settings
       description: May require HTTP Basic authentication when enabled on the device.
       security:
-      - basicAuth: []
+        - basicAuth: []
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/Settings"
+                '$ref': '#/components/schemas/Settings'
         '401':
           description: Authentication required
-  "/api/json/settings":
+  '/api/json/settings':
     patch:
       tags:
-      - system
+        - system
       summary: Apply partial settings update
       description: |
         Sends a JSON object with only the keys to change. May require HTTP Basic authentication.
@@ -89,156 +89,156 @@ paths:
         `timePerScreen` (minutes; stored as `timerSeconds`), `tzOffset` (minutes; stored as `gmtOffset` seconds),
         `txPower`, `dataSource`, `customEndpoint`, nested `dnd`, `invertedColor`, etc. See firmware `onApiSettingsPatch`.
       security:
-      - basicAuth: []
+        - basicAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/SettingsPatch"
+              '$ref': '#/components/schemas/SettingsPatch'
       responses:
         '200':
           description: successful operation
         '401':
           description: Authentication required
-  "/api/stop_datasources":
+  '/api/stop_datasources':
     get:
       tags:
-      - datasources
+        - datasources
       summary: Stop price and block data connections
       responses:
         '200':
           description: successful operation
-  "/api/restart_datasources":
+  '/api/restart_datasources':
     get:
       tags:
-      - datasources
+        - datasources
       summary: Restart data connections according to current data source mode
       responses:
         '200':
           description: successful operation
-  "/api/action/pause":
+  '/api/action/pause':
     get:
       tags:
-      - timer
+        - timer
       summary: Pause screen rotation timer
       responses:
         '200':
           description: successful operation
-  "/api/action/timer_restart":
+  '/api/action/timer_restart':
     get:
       tags:
-      - timer
+        - timer
       summary: Resume screen rotation timer
       responses:
         '200':
           description: successful operation
-  "/api/show/screen/{s}":
+  '/api/show/screen/{s}':
     get:
       tags:
-      - screens
+        - screens
       summary: Switch to a screen by index
       description: Path form is rewritten to `/api/show/screen?s={s}`. Query `s` may
         also be used directly.
       parameters:
-      - in: path
-        name: s
-        schema:
-          type: integer
-        required: true
-        description: Screen index
+        - in: path
+          name: s
+          schema:
+            type: integer
+          required: true
+          description: Screen index
       responses:
         '200':
           description: successful operation
-  "/api/show/text/{text}":
+  '/api/show/text/{text}':
     get:
       tags:
-      - screens
+        - screens
       summary: Show one character per display (legacy text mode)
       description: Path is rewritten to `/api/show/text?t={text}`. Text is uppercased
         on the device.
       parameters:
-      - in: path
-        name: text
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: text
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: successful operation
-  "/api/show/currency/{c}":
+  '/api/show/currency/{c}':
     get:
       tags:
-      - screens
+        - screens
       summary: Switch to an active fiat/crypto currency code
       description: Path rewritten to `/api/show/currency?c={c}`. Returns 404 if the
         currency is not active.
       parameters:
-      - in: path
-        name: c
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: c
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: successful operation
         '404':
           description: Currency not in active list
-  "/api/screen/next":
+  '/api/screen/next':
     get:
       tags:
-      - screens
+        - screens
       summary: Advance to next screen in rotation order
       responses:
         '200':
           description: successful operation
-  "/api/screen/previous":
+  '/api/screen/previous':
     get:
       tags:
-      - screens
+        - screens
       summary: Go to previous screen in rotation order
       responses:
         '200':
           description: successful operation
-  "/api/show/custom":
+  '/api/show/custom':
     post:
       tags:
-      - screens
+        - screens
       summary: Set custom multi-line EPD content (JSON array)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/CustomText"
+              '$ref': '#/components/schemas/CustomText'
       responses:
         '200':
           description: successful operation
     patch:
       tags:
-      - screens
+        - screens
       summary: Same as POST — JSON array body
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/CustomText"
+              '$ref': '#/components/schemas/CustomText'
       responses:
         '200':
           description: successful operation
-  "/api/full_refresh":
+  '/api/full_refresh':
     get:
       tags:
-      - system
+        - system
       summary: Force full refresh of all EPD panels
       responses:
         '200':
           description: successful operation
-  "/api/lights":
+  '/api/lights':
     get:
       tags:
-      - lights
+        - lights
       summary: Get LED strip colors
       responses:
         '200':
@@ -246,11 +246,11 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/ArrayOfLeds"
-  "/api/lights/set":
+                '$ref': '#/components/schemas/ArrayOfLeds'
+  '/api/lights/set':
     patch:
       tags:
-      - lights
+        - lights
       summary: Set each LED from a JSON array
       description: POST and PATCH are accepted by the firmware JSON handler. Empty
         array turns all LEDs off.
@@ -259,7 +259,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/ArrayOfLedsInput"
+              '$ref': '#/components/schemas/ArrayOfLedsInput'
       responses:
         '200':
           description: successful operation
@@ -267,70 +267,70 @@ paths:
           description: Invalid colors, wrong LED count, or malformed JSON
     post:
       tags:
-      - lights
+        - lights
       summary: Same as PATCH — set LEDs from JSON array
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/ArrayOfLedsInput"
+              '$ref': '#/components/schemas/ArrayOfLedsInput'
       responses:
         '200':
           description: successful operation
         '400':
           description: Invalid colors or wrong LED count
-  "/api/lights/color/{color}":
+  '/api/lights/color/{color}':
     get:
       tags:
-      - lights
+        - lights
       summary: Set all LEDs to one RGB hex color
       description: Path rewritten to `/api/lights/color?c={color}`. Use six hex digits
         without `#`, or `off`.
       parameters:
-      - in: path
-        name: color
-        schema:
-          type: string
-          example: FFCC00
-        required: true
+        - in: path
+          name: color
+          schema:
+            type: string
+            example: FFCC00
+          required: true
       responses:
         '200':
           description: Returns current LED array (same shape as GET /lights)
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/ArrayOfLeds"
+                '$ref': '#/components/schemas/ArrayOfLeds'
         '400':
           description: Missing color parameter
-  "/api/lights/off":
+  '/api/lights/off':
     get:
       tags:
-      - lights
+        - lights
       summary: Turn all LEDs off
       responses:
         '200':
           description: successful operation
-  "/api/identify":
+  '/api/identify':
     get:
       tags:
-      - system
+        - system
       summary: Flash LEDs with identify pattern
       responses:
         '200':
           description: successful operation
-  "/api/restart":
+  '/api/restart':
     get:
       tags:
-      - system
+        - system
       summary: Restart the device
       responses:
         '200':
           description: successful operation
-  "/api/dnd/status":
+  '/api/dnd/status':
     get:
       tags:
-      - dnd
+        - dnd
       summary: Get Do-Not-Disturb status
       responses:
         '200':
@@ -338,27 +338,27 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/DndStatusApi"
-  "/api/dnd/enable":
+                '$ref': '#/components/schemas/DndStatusApi'
+  '/api/dnd/enable':
     post:
       tags:
-      - dnd
+        - dnd
       summary: Enable DND
       responses:
         '200':
           description: successful operation
-  "/api/dnd/disable":
+  '/api/dnd/disable':
     post:
       tags:
-      - dnd
+        - dnd
       summary: Disable DND
       responses:
         '200':
           description: successful operation
-  "/api/firmware/auto_update":
+  '/api/firmware/auto_update':
     get:
       tags:
-      - firmware
+        - firmware
       summary: Trigger OTA firmware check / update (only when OTA is enabled)
       responses:
         '200':
@@ -372,53 +372,53 @@ paths:
                     type: string
         '503':
           description: Update already in progress
-  "/upload/firmware":
+  '/upload/firmware':
     post:
       tags:
-      - firmware
+        - firmware
       summary: Upload a firmware binary (multipart)
       description: Available when OTA is enabled. Same handler as PlatformIO / ESP
         update flow.
       responses:
         '200':
           description: Upload finished; connection may close before reboot
-  "/upload/webui":
+  '/upload/webui':
     post:
       tags:
-      - firmware
+        - firmware
       summary: Upload WebUI / LittleFS image (multipart)
       description: Available when OTA is enabled.
       responses:
         '200':
           description: successful operation
-  "/api/frontlight/on":
+  '/api/frontlight/on':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Fade frontlight on (Rev B + frontlight hardware only)
       responses:
         '200':
           description: successful operation
-  "/api/frontlight/off":
+  '/api/frontlight/off':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Fade frontlight off
       responses:
         '200':
           description: successful operation
-  "/api/frontlight/flash":
+  '/api/frontlight/flash':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Run frontlight flash effect
       responses:
         '200':
           description: successful operation
-  "/api/frontlight/status":
+  '/api/frontlight/status':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Frontlight levels per screen
       responses:
         '200':
@@ -432,40 +432,40 @@ paths:
                     type: array
                     items:
                       type: integer
-  "/api/frontlight/brightness":
+  '/api/frontlight/brightness':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Set frontlight brightness
       parameters:
-      - in: query
-        name: b
-        schema:
-          type: integer
-        description: Brightness value (see device firmware)
+        - in: query
+          name: b
+          schema:
+            type: integer
+          description: Brightness value (see device firmware)
       responses:
         '200':
           description: successful operation
         '400':
           description: Missing parameter
-  "/api/frontlight/brightness/{b}":
+  '/api/frontlight/brightness/{b}':
     get:
       tags:
-      - frontlight
+        - frontlight
       summary: Set brightness via path (rewritten to query `b`)
       parameters:
-      - in: path
-        name: b
-        required: true
-        schema:
-          type: integer
+        - in: path
+          name: b
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
-  "/events":
+  '/events':
     get:
       tags:
-      - system
+        - system
       summary: Server-Sent Events stream of status updates
       description: Event name `status`; payload JSON matches `GET /status` plus `leds`
         and line `data` fields.
@@ -540,7 +540,7 @@ components:
         espHeapSize:
           type: integer
         connectionStatus:
-          "$ref": "#/components/schemas/ConnectionStatus"
+          '$ref': '#/components/schemas/ConnectionStatus'
         rssi:
           type: integer
         currency:
@@ -551,9 +551,9 @@ components:
           items:
             type: string
         leds:
-          "$ref": "#/components/schemas/ArrayOfLeds"
+          '$ref': '#/components/schemas/ArrayOfLeds'
         dnd:
-          "$ref": "#/components/schemas/DndNestedStatus"
+          '$ref': '#/components/schemas/DndNestedStatus'
         flStatus:
           type: array
           items:
@@ -765,7 +765,7 @@ components:
         screens:
           type: array
           items:
-            "$ref": "#/components/schemas/Screen"
+            '$ref': '#/components/schemas/Screen'
         actCurrencies:
           type: array
           items:
@@ -781,12 +781,12 @@ components:
         ceDisableSSL:
           type: boolean
         dnd:
-          "$ref": "#/components/schemas/DndSettings"
+          '$ref': '#/components/schemas/DndSettings'
     SettingsPatch:
       description: Partial document; omit keys you do not want to change. Keys mirror
         `Settings` and `onApiSettingsPatch` in firmware.
       allOf:
-      - "$ref": "#/components/schemas/Settings"
+        - '$ref': '#/components/schemas/Settings'
     RgbColorValues:
       type: object
       properties:
@@ -810,24 +810,24 @@ components:
       properties:
         hex:
           type: string
-          pattern: "^#(?:[0-9a-fA-F]{3}){1,2}$"
-          example: "#FFCC00"
+          pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+          example: '#FFCC00'
     RgbColorValueAndHex:
       allOf:
-      - "$ref": "#/components/schemas/RgbColorValues"
-      - "$ref": "#/components/schemas/RgbColorHex"
+        - '$ref': '#/components/schemas/RgbColorValues'
+        - '$ref': '#/components/schemas/RgbColorHex'
     RgbColorValueOrHex:
       oneOf:
-      - "$ref": "#/components/schemas/RgbColorValues"
-      - "$ref": "#/components/schemas/RgbColorHex"
+        - '$ref': '#/components/schemas/RgbColorValues'
+        - '$ref': '#/components/schemas/RgbColorHex'
     ArrayOfLeds:
       type: array
       items:
-        "$ref": "#/components/schemas/RgbColorValueAndHex"
+        '$ref': '#/components/schemas/RgbColorValueAndHex'
     ArrayOfLedsInput:
       type: array
       items:
-        "$ref": "#/components/schemas/RgbColorValueOrHex"
+        '$ref': '#/components/schemas/RgbColorValueOrHex'
     CustomText:
       type: array
       description: One string per screen; length must match device `numScreens` (commonly

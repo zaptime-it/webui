@@ -68,6 +68,8 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 			nearLossless: true
 		})
 		.toFile(
-			`./doc/screenshot-${String(testInfo.project.use.colorScheme ?? 'light').toLowerCase().replace(/\s+/g, '_')}.webp`
+			`./doc/screenshot-${String(testInfo.project.use.colorScheme ?? 'light')
+				.toLowerCase()
+				.replace(/\s+/g, '_')}.webp`
 		);
 });

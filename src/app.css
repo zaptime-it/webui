@@ -110,7 +110,8 @@
 .accent-control .control-row {
 	position: relative;
 	padding-left: 0.75rem;
-	border-left: 3px solid color-mix(in oklab, var(--control-row-color, var(--color-primary)) 45%, transparent);
+	border-left: 3px solid
+		color-mix(in oklab, var(--control-row-color, var(--color-primary)) 45%, transparent);
 	border-radius: 0 0.25rem 0.25rem 0;
 }
 .accent-control .control-row + .control-row {
