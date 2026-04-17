@@ -78,4 +78,47 @@ describe('statusStore.connected', () => {
 		store.disconnect();
 		expect(store.connected).toBe(false);
 	});
+
+	/**
+	 * Regression: clicking "Restart" (or any other momentary disconnect)
+	 * used to leave the "Lost connection" overlay stuck on forever. The
+	 * flow was: onDisconnect stamps `isFake: true` on the current status
+	 * frame → onOpen flips `connected` back to `true` → but nothing ever
+	 * clears `isFake`, and the Status overlay gates on
+	 * `connected && !isFake`. Lock in that reopening the stream drops
+	 * the stale `isFake` marker, both on the `open` event and on the
+	 * first subsequent `status` frame.
+	 */
+	test('reopening the stream clears the stale isFake marker (fixed on onOpen)', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ espFreeHeap: 1, espHeapSize: 2, isUpdating: false });
+		capturedHandlers?.onDisconnect?.();
+		expect(store.data?.isFake).toBe(true);
+		capturedHandlers?.onOpen?.();
+		expect(store.connected).toBe(true);
+		expect(store.data?.isFake).toBe(false);
+	});
+
+	test('a fresh status frame after disconnect clears isFake even if onOpen is skipped', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ espFreeHeap: 1, espHeapSize: 2, isUpdating: false });
+		capturedHandlers?.onDisconnect?.();
+		expect(store.data?.isFake).toBe(true);
+		capturedHandlers?.onStatus({ espFreeHeap: 3, espHeapSize: 4, isUpdating: true });
+		expect(store.connected).toBe(true);
+		expect(store.data?.isFake).toBe(false);
+		expect(store.data?.espFreeHeap).toBe(3);
+	});
+
+	test('an incoming frame that explicitly declares isFake is still respected', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ espFreeHeap: 1, espHeapSize: 2, isFake: true });
+		expect(store.data?.isFake).toBe(true);
+	});
 });
