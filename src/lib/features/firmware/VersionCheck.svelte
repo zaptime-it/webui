@@ -54,14 +54,16 @@
 	<p class="text-sm">
 		{m['section.firmwareUpdater.latestVersion']()}: {latestVersion} -
 		{m['section.firmwareUpdater.releaseDate']()}: {releaseDate} -
-		<a href={releaseUrl} target="_blank" rel="noreferrer">
+		<a href={releaseUrl} target="_blank" rel="noreferrer" class="link link-primary">
 			{m['section.firmwareUpdater.viewRelease']()}
 		</a>
 		<br />
 		{#if newer}
 			{#if !status?.isOTAUpdating}
 				{m['section.firmwareUpdater.swUpdateAvailable']()} -
-				<a href="/" onclick={autoUpdate}>{m['section.firmwareUpdater.autoUpdate']()}</a>.
+				<a href="/" onclick={autoUpdate} class="link link-primary">
+					{m['section.firmwareUpdater.autoUpdate']()}
+				</a>.
 			{:else}
 				<span class="inline-flex items-center gap-1">
 					<Hourglass size="16" />
