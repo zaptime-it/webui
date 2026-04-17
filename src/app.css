@@ -205,27 +205,42 @@ input[type='number'] {
  * BTClock display — ported verbatim from src/lib/style/app.scss
  * ----------------------------------------------------------- */
 
+.btclock-wrapper {
+	/* Scope a container so the clock's digit sizing tracks the Status
+	   column width rather than the full viewport — otherwise the digits
+	   keep their viewport-based size and the last cell gets clipped when
+	   the column is narrower than `7 * (12vw + 12vh)`. */
+	container-type: inline-size;
+}
+
 .btclock-wrapper .btclock {
 	background: #000;
 	display: flex;
-	font-size: calc(2vw + 2vh);
+	/* `cqi` = 1% of the container's inline size, so font-size now scales
+	   with the Status column instead of the viewport. */
+	font-size: clamp(1rem, 10cqi, 2.5rem);
 	font-family: 'Antonio', sans-serif;
 	font-weight: 400;
-	padding: 10px;
-	gap: 10px;
+	padding: 8px;
+	gap: 6px;
+	/* Defensive: never overflow the card even on very narrow columns. */
+	overflow: hidden;
 }
 
 .btclock-wrapper .btclock .digit,
 .btclock-wrapper .btclock .splitText,
 .btclock-wrapper .btclock .mediumText {
 	border: 2px solid gold;
-	border-radius: 8px;
+	border-radius: 6px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	padding: 10px 10px 15px 10px;
-	width: calc(12vw + 12vh);
+	padding: 6px 4px 10px;
+	/* Share the available row width evenly and let each cell shrink
+	   below its intrinsic content width so nothing overflows. */
+	flex: 1 1 0;
+	min-width: 0;
 	aspect-ratio: 1 / 1.5;
 }
 
@@ -305,16 +320,10 @@ input[type='number'] {
 }
 
 @media (max-width: 576px) {
-	.btclock-wrapper .btclock {
-		font-size: calc(2vw + 2vh);
-	}
 	.btclock-wrapper .btclock .digit,
 	.btclock-wrapper .btclock .splitText,
 	.btclock-wrapper .btclock .mediumText {
-		padding: 5px;
-	}
-	.btclock-wrapper .btclock .splitText {
-		font-size: calc(1.2vw + 1.2vh);
+		padding: 4px 3px 8px;
 	}
 	.btclock-wrapper .btclock .splitText .top-text {
 		margin-bottom: -10px;
