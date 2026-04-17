@@ -321,34 +321,39 @@ export const initMock = async ({ page }: { page: Page }) => {
 		await route.fulfill({ json: statusJson });
 	});
 
-	await page.route('*/**/api/show/screen/10', async (route) => {
-		//if (route.request().url().includes('*/**/api/show/screen/1')) {
+	// 3.4.0 URL shape: POST /api/show/screen?s={id} (query param). Route patterns
+	// use RegExp here rather than glob strings because the literal `?` in the
+	// URL would otherwise collide with the glob single-char wildcard.
+	await page.route(/\/api\/show\/screen\?s=10$/, async (route) => {
 		statusJson.currentScreen = 1;
 		statusJson.data = ['MSCW/TIME', ' ', ' ', '2', '6', '4', '4'];
 
 		await route.fulfill({ json: statusJson });
 	});
 
-	await page.route('*/**/api/show/screen/20', async (route) => {
+	await page.route(/\/api\/show\/screen\?s=20$/, async (route) => {
 		statusJson.currentScreen = 2;
 		statusJson.data = ['BTC/USD', '$', '3', '7', '8', '2', '4'];
 
 		await route.fulfill({ json: statusJson });
 	});
 
-	await page.route('*/**/api/show/screen/4', async (route) => {
+	await page.route(/\/api\/show\/screen\?s=4$/, async (route) => {
 		statusJson.currentScreen = 4;
 		statusJson.data = ['BIT/COIN', 'HALV/ING', '0/YRS', '149/DAYS', '8/HRS', '30/MINS', 'TO/GO'];
 
 		await route.fulfill({ json: statusJson });
 	});
 
+	// /api/settings handles both GET (full settings) and the 3.4.0 PATCH (settings update).
+	// Route matching in Playwright is method-agnostic, so a single handler is enough —
+	// return the stub settings for GET and a 200 for PATCH.
 	await page.route('*/**/api/settings', async (route) => {
+		if (route.request().method() === 'PATCH') {
+			await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/json' } });
+			return;
+		}
 		await route.fulfill({ json: settingsJson });
-	});
-
-	await page.route('*/**/api/json/settings', async (route) => {
-		await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/json' } });
 	});
 
 	await page.route('**/api/v1/repos/btclock/btclock_v3/releases/latest', async (route) => {

@@ -198,11 +198,15 @@ test('empty nostr relay field is not accepted', async ({ page }) => {
 test('screens should be able to change', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByRole('button', { name: 'Sats per Dollar' })).toBeVisible();
-	const responsePromise = page.waitForRequest('*/**/api/show/screen/*');
+	// 3.4.0 moved from `GET /api/show/screen/{id}` path params to
+	// `POST /api/show/screen?s={id}` query params.
+	const responsePromise = page.waitForRequest(
+		(req) => req.url().includes('/api/show/screen') && req.method() === 'POST'
+	);
 
 	await page.getByRole('button', { name: 'Sats per Dollar' }).click();
 	const response = await responsePromise;
-	expect(response.url()).toContain('api/show/screen/10');
+	expect(response.url()).toContain('api/show/screen?s=10');
 });
 
 test('parse all types of EPD content correctly', async ({ page }) => {

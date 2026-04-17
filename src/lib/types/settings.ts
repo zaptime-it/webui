@@ -2,8 +2,17 @@
  * Settings types for the BTClock device.
  *
  * `Settings` is the full, validated shape returned by `GET /api/settings` and
- * sent back with `PATCH /api/json/settings`. `SettingsState` is the store-facing
+ * sent back with `PATCH /api/settings`. `SettingsState` is the store-facing
  * discriminated union that replaces the old `PartialSettings` + `isLoaded` sentinel.
+ *
+ * 3.4.0 changes:
+ *  - `customEndpoint` is retired; the firmware no longer reads or migrates it.
+ *    Use `ceEndpoint` for both BTCLOCK and CUSTOM data-source modes.
+ *  - `httpAuthPass` / `otaPass` are *never* returned by the device. GET responds
+ *    with `httpAuthPassSet` / `otaPassSet` boolean flags instead so the UI can
+ *    render a "password is set" indicator without leaking the plaintext. These
+ *    keys are PATCH-only: only send them when the user actually entered a new
+ *    value (see SettingsPanel.handleSubmit).
  */
 
 export enum DataSourceType {
@@ -56,7 +65,6 @@ export interface Settings {
 	mempoolInstance: string;
 	mempoolSecure: boolean;
 	localPoolHost: string;
-	customEndpoint: string;
 	ceEndpoint: string;
 	ceDisableSSL: boolean;
 
@@ -97,10 +105,17 @@ export interface Settings {
 	ip: string;
 	txPower: number;
 
-	// HTTP auth
+	// HTTP auth. `httpAuthPass` is PATCH-only (form input buffer); the
+	// device only reports whether one is stored via `httpAuthPassSet`.
 	httpAuthEnabled: boolean;
 	httpAuthUser: string;
 	httpAuthPass: string;
+	httpAuthPassSet: boolean;
+
+	// ArduinoOTA. Same PATCH-only / *Set-flag pattern as the HTTP auth
+	// password above. New in 3.4.0.
+	otaPass: string;
+	otaPassSet: boolean;
 
 	// Bitaxe
 	bitaxeEnabled: boolean;
