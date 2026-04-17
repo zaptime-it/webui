@@ -18,6 +18,7 @@
 			"useBigCharsMcap": "Verwende große Zeichen für die Marktkapitalisierung",
 			"useBlkCountdown": "Blocks Countdown zur Halbierung",
 			"useSatsSymbol": "Sats-Symbol verwenden",
+			"useMscwTime": "Moscow Time verwenden",
 			"suffixPrice": "Suffix-Preisformat",
 			"disableLeds": "Alle LED-Effekte deaktivieren",
 			"otaUpdates": "OTA updates",

@@ -46,6 +46,11 @@
 			label={m['section.settings.useSatsSymbol']()}
 		/>
 		<SwitchField
+			id="useMscwTime"
+			bind:checked={data.useMscwTime}
+			label={m['section.settings.useMscwTime']()}
+		/>
+		<SwitchField
 			id="suffixPrice"
 			bind:checked={data.suffixPrice}
 			label={m['section.settings.suffixPrice']()}

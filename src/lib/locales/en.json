@@ -17,6 +17,7 @@
 			"useBigCharsMcap": "Use big characters for market cap",
 			"useBlkCountdown": "Blocks countdown for halving",
 			"useSatsSymbol": "Use sats symbol",
+			"useMscwTime": "Use Moscow Time",
 			"suffixPrice": "Suffix price format",
 			"disableLeds": "Disable all LEDs effects",
 			"otaUpdates": "OTA updates",

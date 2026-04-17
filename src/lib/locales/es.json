@@ -16,6 +16,7 @@
 			"useBigCharsMcap": "Utilice caracteres grandes para la market cap",
 			"useBlkCountdown": "Cuenta regresiva en bloques",
 			"useSatsSymbol": "Usar símbolo sats",
+			"useMscwTime": "Usar Moscow Time",
 			"fetchEuroPrice": "Obtener precio en €",
 			"timeBetweenPriceUpdates": "Tiempo entre actualizaciones de precios",
 			"ledPowerOnTest": "Prueba de encendido del LED",

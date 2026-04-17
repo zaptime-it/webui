@@ -49,6 +49,7 @@ export interface Settings {
 	stealFocus: boolean;
 	mcapBigChar: boolean;
 	useSatsSymbol: boolean;
+	useMscwTime: boolean;
 	useBlkCountdown: boolean;
 	suffixPrice: boolean;
 	mowMode: boolean;
