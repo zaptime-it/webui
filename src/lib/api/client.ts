@@ -71,8 +71,11 @@ export const forceFullRefresh = (): Promise<Response> => fetch(url('/api/full_re
 
 export const pauseTimer = (): Promise<Response> => fetch(url('/api/action/pause'));
 export const timerRestart = (): Promise<Response> => fetch(url('/api/action/timer_restart'));
-export const dndEnable = (): Promise<Response> => fetch(url('/api/dnd/enable'));
-export const dndDisable = (): Promise<Response> => fetch(url('/api/dnd/disable'));
+export const dndEnable = (): Promise<Response> =>
+	fetch(url('/api/dnd/enable'), { method: 'POST', credentials: 'same-origin' });
+
+export const dndDisable = (): Promise<Response> =>
+	fetch(url('/api/dnd/disable'), { method: 'POST', credentials: 'same-origin' });
 
 /* ----- firmware ----- */
 
