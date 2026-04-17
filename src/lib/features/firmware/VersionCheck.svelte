@@ -16,11 +16,15 @@
 	let releaseUrl = $state('');
 	let fetched = false;
 
-	const newer = $derived(
-		latestVersion && latestVersion !== 'error' && settings?.gitTag
-			? compareVersions(latestVersion, settings.gitTag) === 1
-			: false
-	);
+	const currentTag = $derived(settings?.gitTag?.trim() ?? '');
+	const hasCurrentTag = $derived(Boolean(currentTag));
+	// If the device can't report its current version, we should still surface the
+	// latest version and offer auto-update (treat it as "update available").
+	const newer = $derived.by(() => {
+		if (!latestVersion || latestVersion === 'error') return false;
+		if (!hasCurrentTag) return true;
+		return compareVersions(latestVersion, currentTag) === 1;
+	});
 
 	const autoUpdate = async (e: Event) => {
 		e.preventDefault();
