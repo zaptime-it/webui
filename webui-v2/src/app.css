@@ -6,13 +6,29 @@
 		dark --prefersdark;
 }
 
-@import '@fontsource/ubuntu/400.css';
-@import '@fontsource/antonio/400.css';
+/* Ship only the latin subset at weight 400 in woff2, matching the v1 footprint.
+   @fontsource's own 400.css emits 6 subsets × (woff2, woff) per family which
+   blew the LittleFS partition. */
+@font-face {
+	font-family: 'Ubuntu';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('@fontsource/ubuntu/files/ubuntu-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Antonio';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('@fontsource/antonio/files/antonio-latin-400-normal.woff2') format('woff2');
+}
 
 @font-face {
 	font-family: 'Satoshi Symbol';
-	src: url('/fonts/satoshi-symbol.woff2') format('woff2');
 	font-display: swap;
+	src: url('/fonts/Satoshi_Symbol.woff2') format('woff2');
 }
 
 @theme {
