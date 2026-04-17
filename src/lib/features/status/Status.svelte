@@ -55,36 +55,56 @@
 					{/if}
 					<ClockDisplay status={status ?? {}} verticalDesc={settings?.verticalDesc} />
 				</section>
-				<div class="text-sm">
-					{m['section.status.screenCycle']()}:
-					<button
-						id="timerStatusText"
-						type="button"
-						class="btn btn-link btn-xs px-1"
-						onclick={toggleTimer(!!status?.timerRunning)}
-					>
-						{#if status?.timerRunning}⏵ {m['timer.running']()}{:else}⏸ {m['timer.stopped']()}{/if}
-					</button>
-					<br />
-					{m['section.status.doNotDisturb']()}:
-					<button
-						id="dndStatusText"
-						type="button"
-						class="btn btn-link btn-xs px-1"
-						onclick={toggleDnd(!!status?.dnd?.enabled)}
-					>
-						{#if status?.dnd?.active}⏵ On{:else}⏸ Off{/if}
-					</button>
-					{#if status?.dnd?.dndTimeEnabled && settings?.dnd}
-						<small>
-							{m['section.status.timeBasedDnd']()} ({settings.dnd.startHour}:{String(
-								settings.dnd.startMinute
-							).padStart(2, '0')} - {settings.dnd.endHour}:{String(settings.dnd.endMinute).padStart(
-								2,
-								'0'
-							)})
-						</small>
-					{/if}
+
+				<div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+					<div class="flex min-w-0 flex-col gap-1">
+						<span class="text-base-content/70">{m['section.status.screenCycle']()}</span>
+						<button
+							id="timerStatusText"
+							type="button"
+							class="btn btn-xs gap-1 self-start {status?.timerRunning
+								? 'btn-success'
+								: 'btn-ghost'}"
+							onclick={toggleTimer(!!status?.timerRunning)}
+							aria-pressed={!!status?.timerRunning}
+						>
+							{#if status?.timerRunning}
+								<span aria-hidden="true">⏵</span>
+								{m['timer.running']()}
+							{:else}
+								<span aria-hidden="true">⏸</span>
+								{m['timer.stopped']()}
+							{/if}
+						</button>
+					</div>
+
+					<div class="flex min-w-0 flex-col gap-1">
+						<span class="text-base-content/70">{m['section.status.doNotDisturb']()}</span>
+						<button
+							id="dndStatusText"
+							type="button"
+							class="btn btn-xs gap-1 self-start {status?.dnd?.active
+								? 'btn-warning'
+								: 'btn-ghost'}"
+							onclick={toggleDnd(!!status?.dnd?.enabled)}
+							aria-pressed={!!status?.dnd?.active}
+						>
+							{#if status?.dnd?.active}
+								<span aria-hidden="true">⏵</span> On
+							{:else}
+								<span aria-hidden="true">⏸</span> Off
+							{/if}
+						</button>
+						{#if status?.dnd?.dndTimeEnabled && settings?.dnd}
+							<small class="text-base-content/70 leading-snug">
+								{m['section.status.timeBasedDnd']()} ({settings.dnd.startHour}:{String(
+									settings.dnd.startMinute
+								).padStart(2, '0')} - {settings.dnd.endHour}:{String(
+									settings.dnd.endMinute
+								).padStart(2, '0')})
+							</small>
+						{/if}
+					</div>
 				</div>
 			{/if}
 
@@ -105,12 +125,7 @@
 				<hr class="border-base-300" />
 			{/if}
 
-			<ResourceBars />
-
-			<hr class="border-base-300" />
-			<div class="text-sm">
-				{m['section.status.uptime']()}: {toUptimeString(status?.espUptime ?? 0)}
-			</div>
+			<ResourceBars uptime={toUptimeString(status?.espUptime ?? 0)} />
 
 			<ConnectionStatus />
 		{/if}

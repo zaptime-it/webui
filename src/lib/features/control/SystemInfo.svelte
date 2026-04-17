@@ -15,20 +15,24 @@
 
 <section class="space-y-2">
 	<h3 class="text-lg font-semibold">{m['section.control.systemInfo']()}</h3>
-	<ul class="text-sm system_info space-y-1">
+	<dl class="system-info">
 		{#if data?.gitTag}
-			<li>{m['section.control.version']()}: {data.gitTag}</li>
+			<dt>{m['section.control.version']()}</dt>
+			<dd>{data.gitTag}</dd>
 		{/if}
-		<li>
-			{m['section.control.buildTime']()}:
-			<Skeleton value={buildTimeStr} checkValue={data?.lastBuildTime} />
-		</li>
-		<li>IP: <Skeleton value={data?.ip ?? ''} /></li>
-		<li>HW revision: <Skeleton value={data?.hwRev ?? ''} /></li>
-		<li>{m['section.control.fwCommit']()}: <Skeleton value={data?.gitRev ?? ''} /></li>
-		<li>WebUI commit: <Skeleton value={data?.fsRev ?? ''} /></li>
-		<li>{m['section.control.hostname']()}: <Skeleton value={data?.hostname ?? ''} /></li>
-	</ul>
+		<dt>{m['section.control.buildTime']()}</dt>
+		<dd><Skeleton value={buildTimeStr} checkValue={data?.lastBuildTime} /></dd>
+		<dt>IP</dt>
+		<dd class="mono"><Skeleton value={data?.ip ?? ''} /></dd>
+		<dt>HW revision</dt>
+		<dd><Skeleton value={data?.hwRev ?? ''} /></dd>
+		<dt>{m['section.control.fwCommit']()}</dt>
+		<dd class="mono"><Skeleton value={data?.gitRev ?? ''} /></dd>
+		<dt>WebUI commit</dt>
+		<dd class="mono"><Skeleton value={data?.fsRev ?? ''} /></dd>
+		<dt>{m['section.control.hostname']()}</dt>
+		<dd class="mono"><Skeleton value={data?.hostname ?? ''} /></dd>
+	</dl>
 	{#if mismatch}
 		<div class="alert alert-warning text-sm">
 			<span>⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwCommitMismatch']()}</span>
