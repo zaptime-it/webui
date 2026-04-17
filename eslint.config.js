@@ -45,6 +45,7 @@ export default [
 			'dist/',
 			'build_gz/',
 			'output/',
+			'.pnpm-store/**',
 			'src/lib/paraglide/',
 			'tests/',
 			'playwright.*.config.ts',
