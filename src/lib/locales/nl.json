@@ -19,6 +19,7 @@
 			"useBlkCountdown": "Blocks aftellen voor halving",
 			"useSatsSymbol": "Gebruik sats symbol",
 			"useMscwTime": "Moscow Time gebruiken",
+			"poolGlobalStats": "Toon pool-brede hashrate",
 			"fetchEuroPrice": "Toon € prijs",
 			"screens": "Schermen",
 			"hostnamePrefix": "Hostnaam voorvoegsel",

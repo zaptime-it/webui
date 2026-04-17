@@ -126,6 +126,7 @@ export interface Settings {
 	miningPoolStats: boolean;
 	miningPoolName: string;
 	miningPoolUser: string;
+	poolGlobalStats: boolean;
 	availablePools: string[];
 	poolLogosUrl: string;
 

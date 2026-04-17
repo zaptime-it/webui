@@ -66,6 +66,7 @@
 			"enableDebugLog": "Debug-Protokoll aktivieren",
 			"bitaxeEnabled": "Bitaxe-Integration aktivieren",
 			"miningPoolStats": "Mining-Pool-Statistiken Integration Aktivieren",
+			"poolGlobalStats": "Pool-weite Hashrate anzeigen",
 			"nostrZapNotify": "Nostr Zap-Benachrichtigungen aktivieren",
 			"thirdPartySource": "mempool.space/coincap.io Verwenden",
 			"dataSource": {

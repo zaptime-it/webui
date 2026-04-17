@@ -75,6 +75,12 @@
 		])
 	);
 
+	// Pools that expose a ckpool-style /api/v1/pool endpoint — the firmware
+	// knows this via MiningPoolInterface::supportsGlobalStats(). Kept in sync
+	// by convention: add a pool here if you add the override in firmware.
+	const poolsWithGlobalStats = new Set(['noderunners', 'satoshiradio']);
+	const supportsGlobalStats = $derived(poolsWithGlobalStats.has(data.miningPoolName));
+
 	const zapInvalid = $derived(!isValidHexPubKey(data.nostrZapPubkey ?? ''));
 </script>
 
@@ -188,11 +194,19 @@
 							{/snippet}
 						</Field>
 					{/if}
+					{#if supportsGlobalStats}
+						<SwitchField
+							id="poolGlobalStats"
+							bind:checked={data.poolGlobalStats}
+							label={m['section.settings.poolGlobalStats']()}
+						/>
+					{/if}
 					<Field
 						id="miningPoolUser"
 						label={m['section.settings.miningPoolUser']()}
 						bind:value={data.miningPoolUser}
-						required
+						required={!(supportsGlobalStats && data.poolGlobalStats)}
+						disabled={supportsGlobalStats && data.poolGlobalStats}
 					/>
 				</div>
 			{/if}

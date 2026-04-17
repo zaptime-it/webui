@@ -65,6 +65,7 @@
 			"enableDebugLog": "Habilitar registro de depuración",
 			"bitaxeEnabled": "Habilitar la integración de Bitaxe",
 			"miningPoolStats": "Habilitar la integración de estadísticas del grupo minero",
+			"poolGlobalStats": "Mostrar hashrate global del pool",
 			"nostrZapNotify": "Habilitar notificaciones de Nostr Zap",
 			"thirdPartySource": "Utilice mempool.space/coincap.io",
 			"dataSource": {

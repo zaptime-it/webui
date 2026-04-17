@@ -48,6 +48,7 @@
 			"miningPoolStats": "Enable Mining Pool Stats integration",
 			"miningPoolName": "Mining Pool",
 			"miningPoolUser": "Mining Pool username or api key",
+			"poolGlobalStats": "Show pool-wide hashrate",
 			"nostrZapPubkey": "Nostr Zap pubkey",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
 			"convertingValidNpub": "Converting valid npub to pubkey",
