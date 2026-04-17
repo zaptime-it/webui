@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { initMock, settingsJson, statusJson } from '../shared';
+import { waitForStatusConnected } from '../wait-for-status-connected';
 import sharp from 'sharp';
 
 test.beforeEach(initMock);
@@ -55,6 +56,8 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
 	}
 
+	await waitForStatusConnected(page);
+
 	const screenshot = await page.screenshot({
 		fullPage: true
 	});
@@ -65,6 +68,6 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 			nearLossless: true
 		})
 		.toFile(
-			`./doc/screenshot-${test.info().project.use.colorScheme?.toLowerCase().replace(' ', '_')}.webp`
+			`./doc/screenshot-${String(testInfo.project.use.colorScheme ?? 'light').toLowerCase().replace(/\s+/g, '_')}.webp`
 		);
 });

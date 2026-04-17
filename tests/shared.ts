@@ -1,5 +1,6 @@
 interface Page {
 	route: (url: string, handler: (route: Route) => Promise<void>) => Promise<void>;
+	addInitScript: (fn: () => void) => Promise<void>;
 }
 
 interface Route {
@@ -11,10 +12,20 @@ interface Route {
 	}) => Promise<void>;
 }
 
-export const fetchLatestBlockHeight = async () => {
-	const response = await fetch('https://ws.btclock.dev/api/lastblock');
-	const blockHeight = await response.text();
-	return ['BLOCK/HEIGHT', ...blockHeight.trim().split('')];
+const MEMPOOL_TIP_HEIGHT = 'https://mempool.dbtc.link/api/blocks/tip/height';
+
+/** Plain digits from mempool tip height → clock `data` row for Block Height screen */
+export const fetchLatestBlockHeight = async (): Promise<string[]> => {
+	try {
+		const response = await fetch(MEMPOOL_TIP_HEIGHT);
+		if (!response.ok) throw new Error(`HTTP ${response.status}`);
+		const raw = (await response.text()).trim();
+		if (!/^\d+$/.test(raw)) throw new Error('non-numeric height');
+		return ['BLOCK/HEIGHT', ...raw.split('')];
+	} catch (error) {
+		console.warn('Failed to fetch tip height from mempool.dbtc.link, using zeros:', error);
+		return ['BLOCK/HEIGHT', '0', '0', '0', '0', '0', '0'];
+	}
 };
 
 export const fetchLatestRelease = async () => {
@@ -57,7 +68,8 @@ export const statusJson = {
 		{ red: 0, green: 0, blue: 0, hex: '#000000' }
 	],
 	isUpdating: true,
-	isFake: true,
+	// `false` so Status “Lost connection” overlay stays off when SSE is healthy (Playwright + screenshots)
+	isFake: false,
 	dnd: {
 		enabled: true,
 		dndTimeEnabled: true,
@@ -109,7 +121,7 @@ export const settingsJson = {
 	hwRev: 'REV_A_EPD_2_13',
 	invertedColor: false,
 	ip: '192.168.20.231',
-	isFake: true,
+	isFake: false,
 	isLoaded: true,
 	lastBuildTime: Math.round(new Date().getTime() / 1000),
 	ledBrightness: 128,
@@ -237,6 +249,74 @@ export const initMock = async ({ page }: { page: Page }) => {
 	statusJson.data = await fetchLatestBlockHeight();
 	const latestRelease = await fetchLatestRelease();
 
+	// Chromium + Playwright’s fulfilled `text/event-stream` body does not reliably
+	// drive `EventSource` (open / custom `status` events). The real firmware sends
+	// `event: status` frames; we fake that behaviour so `statusStore.connected` flips
+	// on and the Status “Lost connection” overlay stays off in screenshots / tests.
+	await page.addInitScript(() => {
+		const Native = window.EventSource;
+		function PatchedEventSource(
+			url: string | URL,
+			eventSourceInitDict?: EventSourceInit
+		): EventSource {
+			const href = typeof url === 'string' ? url : url.href;
+			let pathname: string;
+			try {
+				pathname = new URL(href, window.location.origin).pathname;
+			} catch {
+				return new Native(url, eventSourceInitDict);
+			}
+			if (!pathname.endsWith('/events')) {
+				return new Native(url, eventSourceInitDict);
+			}
+
+			// `new EventTarget()` keeps native dispatch/addEventListener (no “Illegal invocation”
+			// from `Object.create(EventTarget.prototype)` + prototype.bind hacks).
+			type FakeEs = EventTarget & {
+				url: string;
+				readyState: number;
+				withCredentials: boolean;
+				onopen: ((this: EventSource, ev: Event) => void) | null;
+				onmessage: ((this: EventSource, ev: MessageEvent) => void) | null;
+				onerror: ((this: EventSource, ev: Event) => void) | null;
+				close: () => void;
+				CONNECTING: number;
+				OPEN: number;
+				CLOSED: number;
+			};
+			const relay = new EventTarget() as unknown as FakeEs;
+			relay.url = href;
+			relay.readyState = 0;
+			relay.withCredentials = eventSourceInitDict?.withCredentials ?? false;
+			relay.onopen = null;
+			relay.onmessage = null;
+			relay.onerror = null;
+			relay.CONNECTING = 0;
+			relay.OPEN = 1;
+			relay.CLOSED = 2;
+			relay.close = () => {
+				relay.readyState = 2;
+			};
+
+			queueMicrotask(() => {
+				relay.readyState = 1;
+				const openEv = new Event('open');
+				relay.dispatchEvent(openEv);
+				if (typeof relay.onopen === 'function') relay.onopen.call(relay as EventSource, openEv);
+				const statusEv = new MessageEvent('status', {
+					data: JSON.stringify({ isUpdating: true, isFake: false })
+				});
+				relay.dispatchEvent(statusEv);
+			});
+
+			return relay as unknown as EventSource;
+		}
+		PatchedEventSource.CONNECTING = 0;
+		PatchedEventSource.OPEN = 1;
+		PatchedEventSource.CLOSED = 2;
+		window.EventSource = PatchedEventSource as unknown as typeof EventSource;
+	});
+
 	await page.route('*/**/api/status', async (route) => {
 		await route.fulfill({ json: statusJson });
 	});
@@ -269,34 +349,6 @@ export const initMock = async ({ page }: { page: Page }) => {
 
 	await page.route('*/**/api/json/settings', async (route) => {
 		await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/json' } });
-	});
-
-	await page.route('**/events', async (route) => {
-		const newStatus = statusJson;
-		newStatus.data = ['BLOCK/HEIGHT', '8', '0', '0', '8', '1', '5'];
-		newStatus.isUpdating = true;
-
-		// Format the SSE message correctly
-		const sseMessage = `data: ${JSON.stringify(newStatus)}\n\n`;
-
-		// Create a readable stream for SSE
-		const stream = new ReadableStream({
-			start(controller) {
-				controller.enqueue(new TextEncoder().encode(sseMessage));
-				// Keep the connection open
-				// controller.close(); // Don't close if you want to send more events
-			}
-		});
-
-		await route.fulfill({
-			status: 200,
-			headers: {
-				'Content-Type': 'text/event-stream',
-				'Cache-Control': 'no-cache',
-				Connection: 'keep-alive'
-			},
-			body: stream
-		});
 	});
 
 	await page.route('**/api/v1/repos/btclock/btclock_v3/releases/latest', async (route) => {

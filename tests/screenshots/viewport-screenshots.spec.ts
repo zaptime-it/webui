@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { initMock, settingsJson, statusJson } from '../shared';
+import { waitForStatusConnected } from '../wait-for-status-connected';
 
 test.beforeEach(initMock);
 
@@ -45,6 +46,8 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 	if (await page.locator('#nav-language-dropdown').isVisible()) {
 		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
 	}
+
+	await waitForStatusConnected(page);
 
 	const screenshot = await page.screenshot({
 		path: `./test-results/screenshots/default-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`
@@ -120,6 +123,8 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }, 
 	if (await page.locator('#nav-language-dropdown').isVisible()) {
 		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
 	}
+
+	await waitForStatusConnected(page);
 
 	await page.screenshot({
 		path: `./test-results/screenshots/bitaxe-${test.info().project.name.toLowerCase().replace(' ', '_')}.png`

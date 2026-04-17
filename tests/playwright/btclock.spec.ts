@@ -9,9 +9,10 @@ test.beforeEach(initMock);
  *  HTML before Svelte has wired up event handlers and/or before the
  *  CollapseCards have content to show.
  *
- *  We *cannot* use `waitForLoadState('networkidle')` here — the SSE
- *  stream to `/events` stays open for the lifetime of the page, so the
- *  network never becomes idle. Wait for the first interactive widget
+ *  We avoid `waitForLoadState('networkidle')` here — Playwright mocks replace
+ *  `/events` with a synthetic `EventSource`, but waiting on UI that proves
+ *  settings + status are hydrated is more reliable than network heuristics.
+ *  Wait for the first interactive widget
  *  rendered by SettingsPanel (the "Show all" collapse-controller) plus
  *  a screen button (rendered via Status → ScreenButtons, proving the
  *  `/api/settings` fetch has succeeded) instead. */

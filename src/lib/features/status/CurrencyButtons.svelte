@@ -23,18 +23,16 @@
 </script>
 
 {#if show && settings?.actCurrencies}
-	<div class="flex justify-center mt-2">
-		<div class="join flex-wrap">
-			{#each settings.actCurrencies as c (c)}
-				<button
-					type="button"
-					class="btn btn-sm join-item btn-outline btn-success"
-					class:btn-active={status?.currency === c}
-					onclick={pick(c)}
-				>
-					{c}
-				</button>
-			{/each}
-		</div>
+	<div class="mt-2 flex flex-wrap justify-center gap-1">
+		{#each settings.actCurrencies as c (c)}
+			<button
+				type="button"
+				class="btn btn-xs sm:btn-sm btn-outline btn-success"
+				class:btn-active={status?.currency === c}
+				onclick={pick(c)}
+			>
+				{c}
+			</button>
+		{/each}
 	</div>
 {/if}

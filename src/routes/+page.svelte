@@ -75,24 +75,16 @@
 	<title>BTClock</title>
 </svelte:head>
 
-<div class="mx-auto w-full max-w-[1800px]">
-	<div class="grid w-full grid-cols-1 gap-4 md:gap-5 lg:grid-cols-12">
-		<section
-			id="control"
-			class="section-anchor min-w-0 accent-control lg:col-span-3 2xl:col-span-4"
-		>
-			<Control />
-		</section>
-		<section id="status" class="section-anchor min-w-0 accent-status lg:col-span-6 2xl:col-span-4">
-			<Status />
-		</section>
-		<section
-			id="settings"
-			class="section-anchor min-w-0 accent-settings lg:col-span-3 2xl:col-span-4"
-		>
-			<SettingsPanel />
-		</section>
-	</div>
+<div class="grid w-full grid-cols-1 gap-4 md:gap-5 lg:grid-cols-12">
+	<section id="control" class="section-anchor min-w-0 accent-control lg:col-span-4">
+		<Control />
+	</section>
+	<section id="status" class="section-anchor min-w-0 accent-status lg:col-span-4">
+		<Status />
+	</section>
+	<section id="settings" class="section-anchor min-w-0 accent-settings lg:col-span-4">
+		<SettingsPanel />
+	</section>
 </div>
 
 <style>
