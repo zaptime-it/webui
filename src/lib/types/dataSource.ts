@@ -1,6 +1,0 @@
-export enum DataSourceType {
-	BTCLOCK_SOURCE = 0,
-	THIRD_PARTY_SOURCE = 1,
-	NOSTR_SOURCE = 2,
-	CUSTOM_SOURCE = 3
-}
