@@ -1,457 +1,1286 @@
 {
-	"openapi": "3.0.3",
-	"info": {
-		"title": "BTClock API",
-		"version": "3.0",
-		"description": "BTClock V3 API"
-	},
-	"servers": [
-		{
-			"url": "/api/"
-		}
-	],
-	"paths": {
-		"/status": {
-			"get": {
-				"tags": ["system"],
-				"summary": "Get current status",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/system_status": {
-			"get": {
-				"tags": ["system"],
-				"summary": "Get system status",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/settings": {
-			"get": {
-				"tags": ["system"],
-				"summary": "Get current settings",
-				"responses": {
-					"200": {
-						"description": "successful operation",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ArrayOfLeds"
-								}
-							}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": ["system"],
-				"summary": "Save current settings",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Settings"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			},
-			"patch": {
-				"tags": ["system"],
-				"summary": "Save current settings",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Settings"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/action/pause": {
-			"get": {
-				"tags": ["timer"],
-				"summary": "Pause screen rotation",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/action/timer_restart": {
-			"get": {
-				"tags": ["timer"],
-				"summary": "Restart screen rotation",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/show/screen/{id}": {
-			"get": {
-				"tags": ["screens"],
-				"summary": "Set screen to show",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"schema": {
-							"type": "integer",
-							"default": 1
-						},
-						"required": true,
-						"description": "ID of screen to show"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/show/text/{text}": {
-			"get": {
-				"tags": ["screens"],
-				"summary": "Set text to show",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "text",
-						"schema": {
-							"type": "string",
-							"default": "text"
-						},
-						"required": true,
-						"description": "Text to show"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/show/custom": {
-			"post": {
-				"tags": ["screens"],
-				"summary": "Set text to show (advanced)",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CustomText"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/full_refresh": {
-			"get": {
-				"tags": ["system"],
-				"summary": "Force full refresh of all displays",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/lights": {
-			"get": {
-				"tags": ["lights"],
-				"summary": "Get LEDs status",
-				"responses": {
-					"200": {
-						"description": "successful operation",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ArrayOfLeds"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/lights/set": {
-			"patch": {
-				"tags": ["lights"],
-				"summary": "Set individual LEDs",
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/ArrayOfLedsInput"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "succesful operation"
-					},
-					"400": {
-						"description": "invalid colors or wrong amount of LEDs"
-					}
-				}
-			}
-		},
-		"/lights/color/{color}": {
-			"get": {
-				"tags": ["lights"],
-				"summary": "Turn on LEDs with specific color",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "color",
-						"schema": {
-							"type": "string",
-							"default": "FFCC00"
-						},
-						"required": true,
-						"description": "Color in RGB hex"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/lights/off": {
-			"get": {
-				"tags": ["lights"],
-				"summary": "Turn LEDs off",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
-		"/restart": {
-			"get": {
-				"tags": ["system"],
-				"summary": "Restart BTClock",
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		}
-	},
-	"components": {
-		"schemas": {
-			"RgbColorValues": {
-				"type": "object",
-				"properties": {
-					"red": {
-						"type": "integer",
-						"minimum": 0,
-						"maximum": 255,
-						"example": 255
-					},
-					"green": {
-						"type": "integer",
-						"minimum": 0,
-						"maximum": 255,
-						"example": 204
-					},
-					"blue": {
-						"type": "integer",
-						"minimum": 0,
-						"maximum": 255,
-						"example": 0
-					}
-				}
-			},
-			"RgbColorHex": {
-				"type": "object",
-				"properties": {
-					"hex": {
-						"type": "string",
-						"pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
-						"example": "#FFCC00"
-					}
-				}
-			},
-			"RgbColorValueAndHex": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/RgbColorValues"
-					},
-					{
-						"$ref": "#/components/schemas/RgbColorHex"
-					}
-				]
-			},
-			"RgbColorValueOrHex": {
-				"oneOf": [
-					{
-						"$ref": "#/components/schemas/RgbColorValues"
-					},
-					{
-						"$ref": "#/components/schemas/RgbColorHex"
-					}
-				]
-			},
-			"ArrayOfLeds": {
-				"type": "array",
-				"items": {
-					"$ref": "#/components/schemas/RgbColorValueAndHex"
-				}
-			},
-			"ArrayOfLedsInput": {
-				"type": "array",
-				"items": {
-					"$ref": "#/components/schemas/RgbColorValueOrHex"
-				}
-			},
-			"Settings": {
-				"type": "object",
-				"properties": {
-					"fetchEurPrice": {
-						"type": "boolean",
-						"description": "Fetch EUR price instead of USD"
-					},
-					"fgColor": {
-						"type": "string",
-						"default": 16777215,
-						"description": "ePaper foreground (text) color"
-					},
-					"bgColor": {
-						"type": "string",
-						"default": 0,
-						"description": "ePaper background color"
-					},
-					"ledTestOnPower": {
-						"type": "boolean",
-						"default": true,
-						"description": "Do LED test on power-on"
-					},
-					"ledFlashOnUpd": {
-						"type": "boolean",
-						"default": false,
-						"description": "Flash LEDs on new block"
-					},
-					"mdnsEnabled": {
-						"type": "boolean",
-						"default": true,
-						"description": "Enable mDNS"
-					},
-					"otaEnabled": {
-						"type": "boolean",
-						"default": true,
-						"description": "Enable over-the-air updates"
-					},
-					"stealFocus": {
-						"type": "boolean",
-						"default": false,
-						"description": "Steal focus on new block"
-					},
-					"mcapBigChar": {
-						"type": "boolean",
-						"default": false,
-						"description": "Use big characters for market cap screen"
-					},
-					"mempoolInstance": {
-						"type": "string",
-						"default": "mempool.space",
-						"description": "Mempool.space instance to connect to"
-					},
-					"ledBrightness": {
-						"type": "integer",
-						"default": 128,
-						"description": "Brightness of LEDs"
-					},
-					"fullRefreshMin": {
-						"type": "integer",
-						"default": 60,
-						"description": "Full refresh time of ePaper displays in minutes"
-					},
-					"screen[0]": {
-						"type": "boolean"
-					},
-					"screen[1]": {
-						"type": "boolean"
-					},
-					"screen[2]": {
-						"type": "boolean"
-					},
-					"screen[3]": {
-						"type": "boolean"
-					},
-					"screen[4]": {
-						"type": "boolean"
-					},
-					"screen[5]": {
-						"type": "boolean"
-					},
-					"screen[6]": {
-						"type": "boolean"
-					},
-					"tzOffset": {
-						"type": "integer",
-						"default": 60,
-						"description": "Timezone offset in minutes"
-					},
-					"minSecPriceUpd": {
-						"type": "integer",
-						"default": 30,
-						"description": "Minimum time between price updates in seconds"
-					},
-					"timePerScreen": {
-						"type": "integer",
-						"default": 30,
-						"description": "Time between screens when rotating in minutes"
-					},
-					"txPower": {
-						"type": "integer",
-						"description": "WiFi Tx Power"
-					}
-				}
-			},
-			"CustomText": {
-				"type": "array",
-				"items": {
-					"type": "string"
-				},
-				"minItems": 7,
-				"maxItems": 7
-			}
-		}
-	}
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BTClock API",
+    "version": "3.0",
+    "description": "BTClock V3 HTTP API as implemented in firmware `webserver.cpp`.\nREST routes are under `/api/...`; SSE lives at `/events`; OTA uploads use `/upload/...`.\nThe embedded web app may rewrite `/api` to `/` for same-origin routing.\nSeveral routes require HTTP Basic auth when the device has `httpAuthEnabled` (same as `GET /api/settings`).\n"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/status": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get current runtime status",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system_status": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get memory, filesystem, and WiFi metrics",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wifi_set_tx_power": {
+      "get": {
+        "tags": [
+          "network"
+        ],
+        "summary": "Set WiFi TX power (dBm enum value)",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "txPower",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ESP32 `wifi_power_t` value (e.g. 8 for 19.5 dBm). Must be in the supported range."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Power applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "setTxPower": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid txPower"
+          }
+        }
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get current settings",
+        "description": "May require HTTP Basic authentication when enabled on the device.",
+        "security": [
+          {
+            "basicAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/api/json/settings": {
+      "patch": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Apply partial settings update",
+        "description": "Sends a JSON object with only the keys to change. May require HTTP Basic authentication.\nUpdatable keys include string/uint/bool preference fields, `screens` array, `actCurrencies`,\n`timePerScreen` (minutes; stored as `timerSeconds`), `tzOffset` (minutes; stored as `gmtOffset` seconds),\n`txPower`, `dataSource`, `customEndpoint`, nested `dnd`, `invertedColor`, etc. See firmware `onApiSettingsPatch`.\n",
+        "security": [
+          {
+            "basicAuth": [
+
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/api/stop_datasources": {
+      "get": {
+        "tags": [
+          "datasources"
+        ],
+        "summary": "Stop price and block data connections",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/restart_datasources": {
+      "get": {
+        "tags": [
+          "datasources"
+        ],
+        "summary": "Restart data connections according to current data source mode",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/action/pause": {
+      "get": {
+        "tags": [
+          "timer"
+        ],
+        "summary": "Pause screen rotation timer",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/action/timer_restart": {
+      "get": {
+        "tags": [
+          "timer"
+        ],
+        "summary": "Resume screen rotation timer",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/show/screen/{s}": {
+      "get": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Switch to a screen by index",
+        "description": "Path form is rewritten to `/api/show/screen?s={s}`. Query `s` may also be used directly.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "s",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Screen index"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/show/text/{text}": {
+      "get": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Show one character per display (legacy text mode)",
+        "description": "Path is rewritten to `/api/show/text?t={text}`. Text is uppercased on the device.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "text",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/show/currency/{c}": {
+      "get": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Switch to an active fiat/crypto currency code",
+        "description": "Path rewritten to `/api/show/currency?c={c}`. Returns 404 if the currency is not active.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "c",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "Currency not in active list"
+          }
+        }
+      }
+    },
+    "/api/screen/next": {
+      "get": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Advance to next screen in rotation order",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/screen/previous": {
+      "get": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Go to previous screen in rotation order",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/show/custom": {
+      "post": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Set custom multi-line EPD content (JSON array)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomText"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "screens"
+        ],
+        "summary": "Same as POST — JSON array body",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomText"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/full_refresh": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Force full refresh of all EPD panels",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/lights": {
+      "get": {
+        "tags": [
+          "lights"
+        ],
+        "summary": "Get LED strip colors",
+        "responses": {
+          "200": {
+            "description": "JSON array of per-LED RGB values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfLeds"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lights/set": {
+      "patch": {
+        "tags": [
+          "lights"
+        ],
+        "summary": "Set each LED from a JSON array",
+        "description": "POST and PATCH are accepted by the firmware JSON handler. Empty array turns all LEDs off.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrayOfLedsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid colors, wrong LED count, or malformed JSON"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "lights"
+        ],
+        "summary": "Same as PATCH — set LEDs from JSON array",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrayOfLedsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid colors or wrong LED count"
+          }
+        }
+      }
+    },
+    "/api/lights/color/{color}": {
+      "get": {
+        "tags": [
+          "lights"
+        ],
+        "summary": "Set all LEDs to one RGB hex color",
+        "description": "Path rewritten to `/api/lights/color?c={color}`. Use six hex digits without `#`, or `off`.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "color",
+            "schema": {
+              "type": "string",
+              "example": "FFCC00"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns current LED array (same shape as GET /lights)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfLeds"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing color parameter"
+          }
+        }
+      }
+    },
+    "/api/lights/off": {
+      "get": {
+        "tags": [
+          "lights"
+        ],
+        "summary": "Turn all LEDs off",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/identify": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Flash LEDs with identify pattern",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/restart": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Restart the device",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/dnd/status": {
+      "get": {
+        "tags": [
+          "dnd"
+        ],
+        "summary": "Get Do-Not-Disturb status",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DndStatusApi"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dnd/enable": {
+      "post": {
+        "tags": [
+          "dnd"
+        ],
+        "summary": "Enable DND",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/dnd/disable": {
+      "post": {
+        "tags": [
+          "dnd"
+        ],
+        "summary": "Disable DND",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/firmware/auto_update": {
+      "get": {
+        "tags": [
+          "firmware"
+        ],
+        "summary": "Trigger OTA firmware check / update (only when OTA is enabled)",
+        "responses": {
+          "200": {
+            "description": "Update queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Update already in progress"
+          }
+        }
+      }
+    },
+    "/upload/firmware": {
+      "post": {
+        "tags": [
+          "firmware"
+        ],
+        "summary": "Upload a firmware binary (multipart)",
+        "description": "Available when OTA is enabled. Same handler as PlatformIO / ESP update flow.",
+        "responses": {
+          "200": {
+            "description": "Upload finished; connection may close before reboot"
+          }
+        }
+      }
+    },
+    "/upload/webui": {
+      "post": {
+        "tags": [
+          "firmware"
+        ],
+        "summary": "Upload WebUI / LittleFS image (multipart)",
+        "description": "Available when OTA is enabled.",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/frontlight/on": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Fade frontlight on (Rev B + frontlight hardware only)",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/frontlight/off": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Fade frontlight off",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/frontlight/flash": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Run frontlight flash effect",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/frontlight/status": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Frontlight levels per screen",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flStatus": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/frontlight/brightness": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Set frontlight brightness",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "b",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Brightness value (see device firmware)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Missing parameter"
+          }
+        }
+      }
+    },
+    "/api/frontlight/brightness/{b}": {
+      "get": {
+        "tags": [
+          "frontlight"
+        ],
+        "summary": "Set brightness via path (rewritten to query `b`)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "b",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Server-Sent Events stream of status updates",
+        "description": "Event name `status`; payload JSON matches `GET /status` plus `leds` and line `data` fields.",
+        "responses": {
+          "200": {
+            "description": "text/event-stream"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "ConnectionStatus": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "boolean"
+          },
+          "blocks": {
+            "type": "boolean"
+          },
+          "V2": {
+            "type": "boolean"
+          },
+          "nostr": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DndNestedStatus": {
+        "type": "object",
+        "description": "DND block embedded in `GET /status` SSE payload",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "dndTimeEnabled": {
+            "type": "boolean"
+          },
+          "startTime": {
+            "type": "string",
+            "example": "22:30"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "07:00"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DndStatusApi": {
+        "type": "object",
+        "description": "Response of `GET /api/dnd/status`",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "dndTimeEnabled": {
+            "type": "boolean"
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "endTime": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Status": {
+        "type": "object",
+        "description": "Response of `GET /api/status` (same core fields as SSE `status` events)",
+        "properties": {
+          "currentScreen": {
+            "type": "integer"
+          },
+          "numScreens": {
+            "type": "integer"
+          },
+          "timerRunning": {
+            "type": "boolean"
+          },
+          "isOTAUpdating": {
+            "type": "boolean"
+          },
+          "espUptime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "espFreeHeap": {
+            "type": "integer"
+          },
+          "espHeapSize": {
+            "type": "integer"
+          },
+          "connectionStatus": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          },
+          "rssi": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "description": "Current text/line per EPD",
+            "items": {
+              "type": "string"
+            }
+          },
+          "leds": {
+            "$ref": "#/components/schemas/ArrayOfLeds"
+          },
+          "dnd": {
+            "$ref": "#/components/schemas/DndNestedStatus"
+          },
+          "flStatus": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Present when hardware has frontlight support."
+          },
+          "lightLevel": {
+            "type": "integer",
+            "description": "Present when ambient light sensor is available."
+          }
+        }
+      },
+      "SystemStatus": {
+        "type": "object",
+        "properties": {
+          "espFreeHeap": {
+            "type": "integer"
+          },
+          "espHeapSize": {
+            "type": "integer"
+          },
+          "espFreePsram": {
+            "type": "integer"
+          },
+          "espPsramSize": {
+            "type": "integer"
+          },
+          "fsUsedBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fsTotalBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rssi": {
+            "type": "integer"
+          },
+          "txPower": {
+            "type": "integer"
+          }
+        }
+      },
+      "Screen": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DndSettings": {
+        "type": "object",
+        "description": "Nested object on `GET /settings` and allowed inside `PATCH` body",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "dndTimeEnabled": {
+            "type": "boolean"
+          },
+          "startHour": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "startMinute": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 59
+          },
+          "endHour": {
+            "type": "integer"
+          },
+          "endMinute": {
+            "type": "integer"
+          }
+        }
+      },
+      "Settings": {
+        "type": "object",
+        "description": "Full document returned by `GET /api/settings`. Exact optional fields depend on firmware build\n(e.g. `hasFrontlight`, `gitRev`). Matches the WebUI `Settings` TypeScript type.\n",
+        "properties": {
+          "numScreens": {
+            "type": "integer"
+          },
+          "invertedColor": {
+            "type": "boolean"
+          },
+          "timerSeconds": {
+            "type": "integer"
+          },
+          "timerRunning": {
+            "type": "boolean"
+          },
+          "minSecPriceUpd": {
+            "type": "integer"
+          },
+          "fullRefreshMin": {
+            "type": "integer"
+          },
+          "wpTimeout": {
+            "type": "integer"
+          },
+          "tzString": {
+            "type": "string"
+          },
+          "dataSource": {
+            "type": "integer"
+          },
+          "mempoolInstance": {
+            "type": "string"
+          },
+          "mempoolSecure": {
+            "type": "boolean"
+          },
+          "localPoolHost": {
+            "type": "string"
+          },
+          "nostrPubKey": {
+            "type": "string"
+          },
+          "nostrRelay": {
+            "type": "string"
+          },
+          "nostrZapNotify": {
+            "type": "boolean"
+          },
+          "nostrZapPubkey": {
+            "type": "string"
+          },
+          "ledFlashOnZap": {
+            "type": "boolean"
+          },
+          "scrnRestoreZap": {
+            "type": "boolean"
+          },
+          "fontName": {
+            "type": "string"
+          },
+          "availableFonts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customEndpoint": {
+            "type": "string"
+          },
+          "ledTestOnPower": {
+            "type": "boolean"
+          },
+          "ledFlashOnUpd": {
+            "type": "boolean"
+          },
+          "ledBrightness": {
+            "type": "integer"
+          },
+          "stealFocus": {
+            "type": "boolean"
+          },
+          "mcapBigChar": {
+            "type": "boolean"
+          },
+          "mdnsEnabled": {
+            "type": "boolean"
+          },
+          "otaEnabled": {
+            "type": "boolean"
+          },
+          "useSatsSymbol": {
+            "type": "boolean"
+          },
+          "useBlkCountdown": {
+            "type": "boolean"
+          },
+          "suffixPrice": {
+            "type": "boolean"
+          },
+          "disableLeds": {
+            "type": "boolean"
+          },
+          "mowMode": {
+            "type": "boolean"
+          },
+          "verticalDesc": {
+            "type": "boolean"
+          },
+          "blockFeeDec": {
+            "type": "boolean"
+          },
+          "blockFlashColor": {
+            "type": "integer"
+          },
+          "supplyPercent": {
+            "type": "boolean"
+          },
+          "refrScrnChange": {
+            "type": "boolean"
+          },
+          "inverseButtons": {
+            "type": "boolean"
+          },
+          "suffixShareDot": {
+            "type": "boolean"
+          },
+          "enableDebugLog": {
+            "type": "boolean"
+          },
+          "hostnamePrefix": {
+            "type": "string"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "txPower": {
+            "type": "integer"
+          },
+          "gitReleaseUrl": {
+            "type": "string"
+          },
+          "bitaxeEnabled": {
+            "type": "boolean"
+          },
+          "bitaxeHostname": {
+            "type": "string"
+          },
+          "miningPoolStats": {
+            "type": "boolean"
+          },
+          "miningPoolName": {
+            "type": "string"
+          },
+          "miningPoolUser": {
+            "type": "string"
+          },
+          "availablePools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "httpAuthEnabled": {
+            "type": "boolean"
+          },
+          "httpAuthUser": {
+            "type": "string"
+          },
+          "httpAuthPass": {
+            "type": "string"
+          },
+          "hasFrontlight": {
+            "type": "boolean"
+          },
+          "flDisable": {
+            "type": "boolean"
+          },
+          "flMaxBrightness": {
+            "type": "integer"
+          },
+          "flAlwaysOn": {
+            "type": "boolean"
+          },
+          "flEffectDelay": {
+            "type": "integer"
+          },
+          "flFlashOnUpd": {
+            "type": "boolean"
+          },
+          "flFlashOnZap": {
+            "type": "boolean"
+          },
+          "hasLightLevel": {
+            "type": "boolean"
+          },
+          "luxLightToggle": {
+            "type": "integer"
+          },
+          "flOffWhenDark": {
+            "type": "boolean"
+          },
+          "hwRev": {
+            "type": "string"
+          },
+          "fsRev": {
+            "type": "string"
+          },
+          "gitRev": {
+            "type": "string"
+          },
+          "gitTag": {
+            "type": "string"
+          },
+          "lastBuildTime": {
+            "type": "string"
+          },
+          "screens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Screen"
+            }
+          },
+          "actCurrencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "availableCurrencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "poolLogosUrl": {
+            "type": "string"
+          },
+          "ceEndpoint": {
+            "type": "string"
+          },
+          "ceDisableSSL": {
+            "type": "boolean"
+          },
+          "dnd": {
+            "$ref": "#/components/schemas/DndSettings"
+          }
+        }
+      },
+      "SettingsPatch": {
+        "description": "Partial document; omit keys you do not want to change. Keys mirror `Settings` and `onApiSettingsPatch` in firmware.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Settings"
+          }
+        ]
+      },
+      "RgbColorValues": {
+        "type": "object",
+        "properties": {
+          "red": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "example": 255
+          },
+          "green": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "example": 204
+          },
+          "blue": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "example": 0
+          }
+        }
+      },
+      "RgbColorHex": {
+        "type": "object",
+        "properties": {
+          "hex": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "example": "#FFCC00"
+          }
+        }
+      },
+      "RgbColorValueAndHex": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RgbColorValues"
+          },
+          {
+            "$ref": "#/components/schemas/RgbColorHex"
+          }
+        ]
+      },
+      "RgbColorValueOrHex": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RgbColorValues"
+          },
+          {
+            "$ref": "#/components/schemas/RgbColorHex"
+          }
+        ]
+      },
+      "ArrayOfLeds": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RgbColorValueAndHex"
+        }
+      },
+      "ArrayOfLedsInput": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RgbColorValueOrHex"
+        }
+      },
+      "CustomText": {
+        "type": "array",
+        "description": "One string per screen; length must match device `numScreens` (commonly 7 or 8).",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
