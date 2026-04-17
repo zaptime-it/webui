@@ -50,28 +50,28 @@
 				bind:value={data.httpAuthUser}
 				required
 			/>
-			<div>
-				<Field
-					id="httpAuthPass"
-					label={m['section.settings.httpAuthPass']()}
-					bind:value={data.httpAuthPass}
-					type={showHttpAuthPassword ? 'text' : 'password'}
-					placeholder={data.httpAuthPassSet ? '••••••••' : ''}
-					required={!data.httpAuthPassSet}
-					helpText={data.httpAuthPassSet
-						? m['section.settings.passwordSetLeaveBlank']()
-						: undefined}
-				/>
-				<div class="flex justify-end mt-1">
+			<Field
+				id="httpAuthPass"
+				label={m['section.settings.httpAuthPass']()}
+				bind:value={data.httpAuthPass}
+				type={showHttpAuthPassword ? 'text' : 'password'}
+				placeholder={data.httpAuthPassSet ? '••••••••' : ''}
+				required={!data.httpAuthPassSet}
+				helpText={data.httpAuthPassSet
+					? m['section.settings.passwordSetLeaveBlank']()
+					: undefined}
+			>
+				{#snippet action()}
 					<button
 						type="button"
-						class="btn btn-sm {showHttpAuthPassword ? 'btn-success' : 'btn-error'}"
+						class="join-item btn btn-sm {showHttpAuthPassword ? 'btn-success' : 'btn-error'}"
 						onclick={() => (showHttpAuthPassword = !showHttpAuthPassword)}
+						aria-label={showHttpAuthPassword ? 'Hide password' : 'Show password'}
 					>
 						{#if showHttpAuthPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
 					</button>
-				</div>
-			</div>
+				{/snippet}
+			</Field>
 		{/if}
 
 		<Field
@@ -116,16 +116,18 @@
 					helpText={data.otaPassSet
 						? m['section.settings.passwordSetLeaveBlank']()
 						: m['section.settings.otaPassHelp']()}
-				/>
-				<div class="flex justify-end mt-1">
-					<button
-						type="button"
-						class="btn btn-sm {showOtaPassword ? 'btn-success' : 'btn-error'}"
-						onclick={() => (showOtaPassword = !showOtaPassword)}
-					>
-						{#if showOtaPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
-					</button>
-				</div>
+				>
+					{#snippet action()}
+						<button
+							type="button"
+							class="join-item btn btn-sm {showOtaPassword ? 'btn-success' : 'btn-error'}"
+							onclick={() => (showOtaPassword = !showOtaPassword)}
+							aria-label={showOtaPassword ? 'Hide password' : 'Show password'}
+						>
+							{#if showOtaPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
+						</button>
+					{/snippet}
+				</Field>
 			</div>
 		{/if}
 		<SwitchField
