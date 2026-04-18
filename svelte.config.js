@@ -12,7 +12,10 @@ const config = {
 			precompress: false,
 			strict: true
 		}),
-		appDir: 'build'
+		appDir: 'build',
+		output: {
+			bundleStrategy: 'single'
+		}
 	}
 };
 

@@ -91,8 +91,7 @@ export default defineConfig({
 				entryFileNames: `[hash][extname]`,
 				chunkFileNames: `[hash][extname]`,
 				assetFileNames: `[hash][extname]`,
-				preserveModules: false,
-				manualChunks: () => 'app'
+				preserveModules: false
 			}
 		}
 	},
