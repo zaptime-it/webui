@@ -18,6 +18,7 @@
 			"useBigCharsMcap": "Verwende große Zeichen für die Marktkapitalisierung",
 			"useBlkCountdown": "Blocks Countdown zur Halbierung",
 			"useSatsSymbol": "Sats-Symbol verwenden",
+			"useMscwTime": "Moscow Time verwenden",
 			"suffixPrice": "Suffix-Preisformat",
 			"disableLeds": "Alle LED-Effekte deaktivieren",
 			"otaUpdates": "OTA updates",
@@ -42,6 +43,9 @@
 			"httpAuthUser": "WebUI-Benutzername",
 			"httpAuthPass": "WebUI-Passwort",
 			"httpAuthText": "Schützt nur die WebUI mit einem Passwort, nicht API-Aufrufe.",
+			"otaPass": "OTA-Update-Passwort",
+			"otaPassHelp": "Leer lassen, um OTA ohne Passwort zuzulassen.",
+			"passwordSetLeaveBlank": "Passwort ist gesetzt. Leer lassen, um es nicht zu ändern.",
 			"currencies": "Währungen",
 			"mowMode": "Mow suffixmodus",
 			"suffixShareDot": "Kompakte Suffix-Notation",
@@ -62,6 +66,7 @@
 			"enableDebugLog": "Debug-Protokoll aktivieren",
 			"bitaxeEnabled": "Bitaxe-Integration aktivieren",
 			"miningPoolStats": "Mining-Pool-Statistiken Integration Aktivieren",
+			"poolGlobalStats": "Pool-weite Hashrate anzeigen",
 			"nostrZapNotify": "Nostr Zap-Benachrichtigungen aktivieren",
 			"thirdPartySource": "mempool.space/coincap.io Verwenden",
 			"dataSource": {
@@ -79,7 +84,8 @@
 			"blockFlashColor": "LED farbe bei neuem Block",
 			"supplyPercent": "BTC-Angebot in Prozent anzeigen",
 			"refrScrnChange": "Vollständige Aktualisierung bei jedem Bildschirmwechsel",
-			"inverseButtons": "Tastennummern umkehren"
+			"inverseButtons": "Tastennummern umkehren",
+			"thirdPartyExtrasWarning": "Die Drittanbieter-Datenquelle (mempool.space/Kraken) ist sehr datenintensiv; Bitaxe, Mining-Pool-Statistiken oder Nostr-Zaps gleichzeitig zu aktivieren kann das Gerät einfrieren lassen. Bevorzuge die BTClock-Quelle oder einen eigenen Endpoint — wenn du dennoch Extras möchtest, aktiviere sie nicht alle auf einmal."
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

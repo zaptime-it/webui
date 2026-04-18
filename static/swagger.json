@@ -2,8 +2,8 @@
 	"openapi": "3.0.3",
 	"info": {
 		"title": "BTClock API",
-		"version": "3.0",
-		"description": "BTClock V3 HTTP API as implemented in firmware `webserver.cpp`.\nREST routes are under `/api/...`; SSE lives at `/events`; OTA uploads use `/upload/...`.\nThe embedded web app may rewrite `/api` to `/` for same-origin routing.\nSeveral routes require HTTP Basic auth when the device has `httpAuthEnabled` (same as `GET /api/settings`).\n"
+		"version": "3.4.0",
+		"description": "BTClock V3 HTTP API as implemented by the firmware `src/lib/net/webserver/` module.\nREST routes are under `/api/...`; SSE lives at `/events`; OTA uploads use `/upload/...`.\nThe embedded WebUI may rewrite `/api` to `/` for same-origin routing.\n\n## 3.4.0 breaking changes\n\n- State-changing routes moved from `GET` to `POST`. The legacy `GET`\n  forms (e.g. `GET /api/identify`, `GET /api/restart`,\n  `GET /api/action/pause`, `GET /api/full_refresh`,\n  `GET /api/show/*`, `GET /api/lights/*`, `GET /api/frontlight/*`) are\n  no longer registered.\n- Settings writes moved from `PATCH /api/json/settings` to\n  `PATCH /api/settings`. The old URL is gone.\n- `POST /api/show/custom` and `POST /api/lights/set` are POST-only;\n  the firmware no longer accepts PATCH on those routes.\n- The `customEndpoint` settings key is retired — use `ceEndpoint`\n  instead (there is no migration shim).\n- `GET /api/settings` no longer returns plaintext passwords; see the\n  `Settings` schema for the `httpAuthPassSet` / `otaPassSet`\n  booleans.\n\n## Auth\n\nWhen the device has `httpAuthEnabled = true`, *every* endpoint on this\nspec requires HTTP Basic auth, including the SSE stream and read-only\nstatus endpoints. When it is false (the factory default), no endpoint\nrequires auth. The auth contract is the same on all routes so it is\nonly called out explicitly here rather than duplicated per-path.\n"
 	},
 	"servers": [
 		{
@@ -15,6 +15,11 @@
 			"get": {
 				"tags": ["system"],
 				"summary": "Get current runtime status",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation",
@@ -25,6 +30,9 @@
 								}
 							}
 						}
+					},
+					"401": {
+						"description": "Authentication required"
 					}
 				}
 			}
@@ -33,6 +41,11 @@
 			"get": {
 				"tags": ["system"],
 				"summary": "Get memory, filesystem, and WiFi metrics",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation",
@@ -43,53 +56,18 @@
 								}
 							}
 						}
-					}
-				}
-			}
-		},
-		"/api/wifi_set_tx_power": {
-			"get": {
-				"tags": ["network"],
-				"summary": "Set WiFi TX power (dBm enum value)",
-				"parameters": [
-					{
-						"in": "query",
-						"name": "txPower",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						},
-						"description": "ESP32 `wifi_power_t` value (e.g. 8 for 19.5 dBm). Must be in the supported range."
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Power applied",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"setTxPower": {
-											"type": "string",
-											"example": "ok"
-										}
-									}
-								}
-							}
-						}
 					},
-					"400": {
-						"description": "Missing or invalid txPower"
+					"401": {
+						"description": "Authentication required"
 					}
 				}
 			}
 		},
 		"/api/settings": {
 			"get": {
-				"tags": ["system"],
+				"tags": ["settings"],
 				"summary": "Get current settings",
-				"description": "May require HTTP Basic authentication when enabled on the device.",
+				"description": "Returns the full settings document. Password fields are NEVER included in the response;\ninstead, `httpAuthPassSet` and `otaPassSet` booleans indicate whether one is currently stored.\n",
 				"security": [
 					{
 						"basicAuth": []
@@ -110,13 +88,11 @@
 						"description": "Authentication required"
 					}
 				}
-			}
-		},
-		"/api/json/settings": {
+			},
 			"patch": {
-				"tags": ["system"],
+				"tags": ["settings"],
 				"summary": "Apply partial settings update",
-				"description": "Sends a JSON object with only the keys to change. May require HTTP Basic authentication.\nUpdatable keys include string/uint/bool preference fields, `screens` array, `actCurrencies`,\n`timePerScreen` (minutes; stored as `timerSeconds`), `tzOffset` (minutes; stored as `gmtOffset` seconds),\n`txPower`, `dataSource`, `customEndpoint`, nested `dnd`, `invertedColor`, etc. See firmware `onApiSettingsPatch`.\n",
+				"description": "Send a JSON object with only the keys to change. Updatable keys include all `Settings`\npreference fields, the `screens` array, `actCurrencies`, the nested `dnd` block,\n`timePerScreen` (minutes, stored as `timerSeconds`), `tzOffset` (minutes, stored as\n`gmtOffset` seconds), `txPower`, `dataSource`, etc.\n\nTo set a password, include `httpAuthPass` / `otaPass` as a non-empty string.\nTo clear a stored password, send an empty string. Omit the key entirely to leave\nthe stored value unchanged — this is what clients should do when they are\nround-tripping a full settings form.\n",
 				"security": [
 					{
 						"basicAuth": []
@@ -142,10 +118,58 @@
 				}
 			}
 		},
+		"/api/wifi_set_tx_power": {
+			"post": {
+				"tags": ["network"],
+				"summary": "Set WiFi TX power (dBm enum value)",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "txPower",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ESP32 `wifi_power_t` value (e.g. 78 for 19.5 dBm)."
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Power applied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"setTxPower": {
+											"type": "string",
+											"example": "ok"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing or invalid txPower"
+					}
+				}
+			}
+		},
 		"/api/stop_datasources": {
-			"get": {
+			"post": {
 				"tags": ["datasources"],
 				"summary": "Stop price and block data connections",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -154,9 +178,14 @@
 			}
 		},
 		"/api/restart_datasources": {
-			"get": {
+			"post": {
 				"tags": ["datasources"],
 				"summary": "Restart data connections according to current data source mode",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -165,9 +194,14 @@
 			}
 		},
 		"/api/action/pause": {
-			"get": {
+			"post": {
 				"tags": ["timer"],
 				"summary": "Pause screen rotation timer",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -176,9 +210,14 @@
 			}
 		},
 		"/api/action/timer_restart": {
-			"get": {
+			"post": {
 				"tags": ["timer"],
 				"summary": "Resume screen rotation timer",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -186,20 +225,25 @@
 				}
 			}
 		},
-		"/api/show/screen/{s}": {
-			"get": {
+		"/api/show/screen": {
+			"post": {
 				"tags": ["screens"],
 				"summary": "Switch to a screen by index",
-				"description": "Path form is rewritten to `/api/show/screen?s={s}`. Query `s` may also be used directly.",
+				"description": "The firmware also registers the rewrite `/api/show/screen/{s}` → this URL. Prefer the\nquery-parameter form.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"parameters": [
 					{
-						"in": "path",
+						"in": "query",
 						"name": "s",
+						"required": true,
 						"schema": {
 							"type": "integer"
 						},
-						"required": true,
-						"description": "Screen index"
+						"description": "Screen index (0 … numScreens-1)"
 					}
 				],
 				"responses": {
@@ -209,19 +253,24 @@
 				}
 			}
 		},
-		"/api/show/text/{text}": {
-			"get": {
+		"/api/show/text": {
+			"post": {
 				"tags": ["screens"],
 				"summary": "Show one character per display (legacy text mode)",
-				"description": "Path is rewritten to `/api/show/text?t={text}`. Text is uppercased on the device.",
+				"description": "The firmware also registers rewrites `/api/show/text/{text}` and\n`/api/show/number/{number}` → this URL. Text is uppercased on the device.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"parameters": [
 					{
-						"in": "path",
-						"name": "text",
+						"in": "query",
+						"name": "t",
+						"required": true,
 						"schema": {
 							"type": "string"
-						},
-						"required": true
+						}
 					}
 				],
 				"responses": {
@@ -231,19 +280,24 @@
 				}
 			}
 		},
-		"/api/show/currency/{c}": {
-			"get": {
+		"/api/show/currency": {
+			"post": {
 				"tags": ["screens"],
 				"summary": "Switch to an active fiat/crypto currency code",
-				"description": "Path rewritten to `/api/show/currency?c={c}`. Returns 404 if the currency is not active.",
+				"description": "The firmware also registers `/api/show/currency/{c}` → this URL.\nReturns 404 if the currency is not in `actCurrencies`.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"parameters": [
 					{
-						"in": "path",
+						"in": "query",
 						"name": "c",
+						"required": true,
 						"schema": {
 							"type": "string"
-						},
-						"required": true
+						}
 					}
 				],
 				"responses": {
@@ -257,9 +311,14 @@
 			}
 		},
 		"/api/screen/next": {
-			"get": {
+			"post": {
 				"tags": ["screens"],
 				"summary": "Advance to next screen in rotation order",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -268,9 +327,14 @@
 			}
 		},
 		"/api/screen/previous": {
-			"get": {
+			"post": {
 				"tags": ["screens"],
 				"summary": "Go to previous screen in rotation order",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -282,25 +346,11 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Set custom multi-line EPD content (JSON array)",
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CustomText"
-							}
-						}
+				"security": [
+					{
+						"basicAuth": []
 					}
-				},
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			},
-			"patch": {
-				"tags": ["screens"],
-				"summary": "Same as POST — JSON array body",
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -319,9 +369,14 @@
 			}
 		},
 		"/api/full_refresh": {
-			"get": {
+			"post": {
 				"tags": ["system"],
 				"summary": "Force full refresh of all EPD panels",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -333,6 +388,11 @@
 			"get": {
 				"tags": ["lights"],
 				"summary": "Get LED strip colors",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "JSON array of per-LED RGB values",
@@ -348,32 +408,15 @@
 			}
 		},
 		"/api/lights/set": {
-			"patch": {
-				"tags": ["lights"],
-				"summary": "Set each LED from a JSON array",
-				"description": "POST and PATCH are accepted by the firmware JSON handler. Empty array turns all LEDs off.",
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/ArrayOfLedsInput"
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					},
-					"400": {
-						"description": "Invalid colors, wrong LED count, or malformed JSON"
-					}
-				}
-			},
 			"post": {
 				"tags": ["lights"],
-				"summary": "Same as PATCH — set LEDs from JSON array",
+				"summary": "Set each LED from a JSON array",
+				"description": "Empty array turns all LEDs off. Array length must equal the device's LED count.",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -389,30 +432,37 @@
 						"description": "successful operation"
 					},
 					"400": {
-						"description": "Invalid colors or wrong LED count"
+						"description": "Invalid colors",
+						"wrong LED count": null,
+						"or malformed JSON": null
 					}
 				}
 			}
 		},
-		"/api/lights/color/{color}": {
-			"get": {
+		"/api/lights/color": {
+			"post": {
 				"tags": ["lights"],
 				"summary": "Set all LEDs to one RGB hex color",
-				"description": "Path rewritten to `/api/lights/color?c={color}`. Use six hex digits without `#`, or `off`.",
+				"description": "The firmware also registers the rewrite `/api/lights/color/{color}` → this URL.\nUse six hex digits without `#`, or `off`.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"parameters": [
 					{
-						"in": "path",
-						"name": "color",
+						"in": "query",
+						"name": "c",
+						"required": true,
 						"schema": {
 							"type": "string",
 							"example": "FFCC00"
-						},
-						"required": true
+						}
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Returns current LED array (same shape as GET /lights)",
+						"description": "Returns current LED array (same shape as GET /api/lights)",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -428,9 +478,14 @@
 			}
 		},
 		"/api/lights/off": {
-			"get": {
+			"post": {
 				"tags": ["lights"],
 				"summary": "Turn all LEDs off",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -439,9 +494,14 @@
 			}
 		},
 		"/api/identify": {
-			"get": {
+			"post": {
 				"tags": ["system"],
 				"summary": "Flash LEDs with identify pattern",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -450,9 +510,15 @@
 			}
 		},
 		"/api/restart": {
-			"get": {
+			"post": {
 				"tags": ["system"],
 				"summary": "Restart the device",
+				"description": "Response is flushed before the reboot; the connection will then close.",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -464,6 +530,11 @@
 			"get": {
 				"tags": ["dnd"],
 				"summary": "Get Do-Not-Disturb status",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation",
@@ -481,7 +552,12 @@
 		"/api/dnd/enable": {
 			"post": {
 				"tags": ["dnd"],
-				"summary": "Enable DND",
+				"summary": "Enable manual DND override",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -492,7 +568,12 @@
 		"/api/dnd/disable": {
 			"post": {
 				"tags": ["dnd"],
-				"summary": "Disable DND",
+				"summary": "Disable manual DND override",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -501,9 +582,14 @@
 			}
 		},
 		"/api/firmware/auto_update": {
-			"get": {
+			"post": {
 				"tags": ["firmware"],
 				"summary": "Trigger OTA firmware check / update (only when OTA is enabled)",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Update queued",
@@ -530,7 +616,12 @@
 			"post": {
 				"tags": ["firmware"],
 				"summary": "Upload a firmware binary (multipart)",
-				"description": "Available when OTA is enabled. Same handler as PlatformIO / ESP update flow.",
+				"description": "Streams the multipart body directly to `Update.write()` with on-the-fly SHA-256.\nAvailable when OTA is enabled.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "Upload finished; connection may close before reboot"
@@ -543,6 +634,11 @@
 				"tags": ["firmware"],
 				"summary": "Upload WebUI / LittleFS image (multipart)",
 				"description": "Available when OTA is enabled.",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -551,9 +647,14 @@
 			}
 		},
 		"/api/frontlight/on": {
-			"get": {
+			"post": {
 				"tags": ["frontlight"],
 				"summary": "Fade frontlight on (Rev B + frontlight hardware only)",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -562,9 +663,14 @@
 			}
 		},
 		"/api/frontlight/off": {
-			"get": {
+			"post": {
 				"tags": ["frontlight"],
 				"summary": "Fade frontlight off",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -573,9 +679,14 @@
 			}
 		},
 		"/api/frontlight/flash": {
-			"get": {
+			"post": {
 				"tags": ["frontlight"],
 				"summary": "Run frontlight flash effect",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -587,6 +698,11 @@
 			"get": {
 				"tags": ["frontlight"],
 				"summary": "Frontlight levels per screen",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "successful operation",
@@ -610,17 +726,24 @@
 			}
 		},
 		"/api/frontlight/brightness": {
-			"get": {
+			"post": {
 				"tags": ["frontlight"],
 				"summary": "Set frontlight brightness",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
 						"name": "b",
+						"required": true,
 						"schema": {
-							"type": "integer"
-						},
-						"description": "Brightness value (see device firmware)"
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 65535
+						}
 					}
 				],
 				"responses": {
@@ -633,32 +756,16 @@
 				}
 			}
 		},
-		"/api/frontlight/brightness/{b}": {
-			"get": {
-				"tags": ["frontlight"],
-				"summary": "Set brightness via path (rewritten to query `b`)",
-				"parameters": [
-					{
-						"in": "path",
-						"name": "b",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "successful operation"
-					}
-				}
-			}
-		},
 		"/events": {
 			"get": {
 				"tags": ["system"],
 				"summary": "Server-Sent Events stream of status updates",
-				"description": "Event name `status`; payload JSON matches `GET /status` plus `leds` and line `data` fields.",
+				"description": "Event name `status`; payload JSON matches `GET /api/status` (shares `buildStatusJson()`).\nA `welcome` event is emitted on connect.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "text/event-stream"
@@ -694,7 +801,7 @@
 			},
 			"DndNestedStatus": {
 				"type": "object",
-				"description": "DND block embedded in `GET /status` SSE payload",
+				"description": "DND block embedded in `GET /api/status` and SSE payload",
 				"properties": {
 					"enabled": {
 						"type": "boolean"
@@ -738,7 +845,7 @@
 			},
 			"Status": {
 				"type": "object",
-				"description": "Response of `GET /api/status` (same core fields as SSE `status` events)",
+				"description": "Response of `GET /api/status` (same builder as SSE `status` events).",
 				"properties": {
 					"currentScreen": {
 						"type": "integer"
@@ -844,7 +951,7 @@
 			},
 			"DndSettings": {
 				"type": "object",
-				"description": "Nested object on `GET /settings` and allowed inside `PATCH` body",
+				"description": "Nested object on `GET /api/settings` and allowed inside `PATCH` body",
 				"properties": {
 					"enabled": {
 						"type": "boolean"
@@ -863,16 +970,20 @@
 						"maximum": 59
 					},
 					"endHour": {
-						"type": "integer"
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 23
 					},
 					"endMinute": {
-						"type": "integer"
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 59
 					}
 				}
 			},
 			"Settings": {
 				"type": "object",
-				"description": "Full document returned by `GET /api/settings`. Exact optional fields depend on firmware build\n(e.g. `hasFrontlight`, `gitRev`). Matches the WebUI `Settings` TypeScript type.\n",
+				"description": "Full document returned by `GET /api/settings`. Exact optional fields depend on firmware\nbuild (e.g. `hasFrontlight`, `gitRev`). Matches the WebUI `Settings` TypeScript type.\n\nPasswords are NEVER returned. The `httpAuthPassSet` and `otaPassSet` booleans indicate\nwhether one is currently stored; to change them, PATCH the corresponding write-only\nkeys (`httpAuthPass`, `otaPass`) on `/api/settings`.\n",
 				"properties": {
 					"numScreens": {
 						"type": "integer"
@@ -899,7 +1010,9 @@
 						"type": "string"
 					},
 					"dataSource": {
-						"type": "integer"
+						"type": "integer",
+						"description": "0 BTCLOCK_SOURCE, 1 THIRD_PARTY_SOURCE, 2 NOSTR_SOURCE, 3 CUSTOM_SOURCE\n",
+						"enum": [0, 1, 2, 3]
 					},
 					"mempoolInstance": {
 						"type": "string"
@@ -937,9 +1050,6 @@
 							"type": "string"
 						}
 					},
-					"customEndpoint": {
-						"type": "string"
-					},
 					"ledTestOnPower": {
 						"type": "boolean"
 					},
@@ -960,6 +1070,11 @@
 					},
 					"otaEnabled": {
 						"type": "boolean"
+					},
+					"otaPassSet": {
+						"type": "boolean",
+						"readOnly": true,
+						"description": "True when the device has a non-empty ArduinoOTA password stored."
 					},
 					"useSatsSymbol": {
 						"type": "boolean"
@@ -1042,8 +1157,10 @@
 					"httpAuthUser": {
 						"type": "string"
 					},
-					"httpAuthPass": {
-						"type": "string"
+					"httpAuthPassSet": {
+						"type": "boolean",
+						"readOnly": true,
+						"description": "True when the device has a non-empty WebUI auth password stored."
 					},
 					"hasFrontlight": {
 						"type": "boolean"
@@ -1123,10 +1240,26 @@
 				}
 			},
 			"SettingsPatch": {
-				"description": "Partial document; omit keys you do not want to change. Keys mirror `Settings` and `onApiSettingsPatch` in firmware.",
+				"description": "Partial settings document; omit keys you do not want to change. Keys mirror `Settings`\nand `onApiSettingsPatch` in firmware. The two password fields below are write-only;\nGET /api/settings does not return them.\n",
+				"type": "object",
 				"allOf": [
 					{
 						"$ref": "#/components/schemas/Settings"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"httpAuthPass": {
+								"type": "string",
+								"writeOnly": true,
+								"description": "Set a WebUI password (non-empty) or clear it (empty string). Omit to leave unchanged.\n"
+							},
+							"otaPass": {
+								"type": "string",
+								"writeOnly": true,
+								"description": "Set an ArduinoOTA password (non-empty) or clear it (empty string). Omit to leave unchanged.\n"
+							}
+						}
 					}
 				]
 			},

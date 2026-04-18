@@ -11,11 +11,11 @@ jobs:
       all_changed_and_modified_files_count: ${{ steps.changed-files.outputs.all_changed_and_modified_files_count }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get changed files count
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files_ignore: 'doc/**,README.md,Dockerfile,.*'
           files_ignore_separator: ','
@@ -34,11 +34,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+        with:
+          package_json_file: package.json
+      - uses: actions/setup-node@v6
         with:
           token: ${{ secrets.GH_TOKEN }}
           node-version: lts/*

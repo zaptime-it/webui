@@ -42,10 +42,31 @@
 		e.preventDefault();
 		const current = settingsStore.data;
 		if (!current) return;
-		const { gitRev: _gitRev, ip: _ip, lastBuildTime: _lbt, ...patch } = current;
+		const {
+			gitRev: _gitRev,
+			ip: _ip,
+			lastBuildTime: _lbt,
+			// Read-only flags sent by the device as the "password is stored" indicator.
+			// Never PATCH them back — they are computed, not user-editable.
+			httpAuthPassSet: _haps,
+			otaPassSet: _ops,
+			...rest
+		} = current;
 		void _gitRev;
 		void _ip;
 		void _lbt;
+		void _haps;
+		void _ops;
+
+		// 3.4.0 password handling: the GET response carries *Set booleans,
+		// not plaintext. Only patch httpAuthPass / otaPass if the user typed
+		// a new value. Sending an empty string would clear whatever the
+		// device currently has stored, which is almost never what anyone
+		// submitting the full form actually wants.
+		const patch: Partial<typeof rest> = { ...rest };
+		if (!patch.httpAuthPass) delete patch.httpAuthPass;
+		if (!patch.otaPass) delete patch.otaPass;
+
 		try {
 			const res = await settingsStore.save(patch);
 			if (res.ok) toast.success(m['section.settings.settingsSaved']());

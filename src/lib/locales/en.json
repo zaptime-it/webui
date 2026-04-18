@@ -17,6 +17,7 @@
 			"useBigCharsMcap": "Use big characters for market cap",
 			"useBlkCountdown": "Blocks countdown for halving",
 			"useSatsSymbol": "Use sats symbol",
+			"useMscwTime": "Use Moscow Time",
 			"suffixPrice": "Suffix price format",
 			"disableLeds": "Disable all LEDs effects",
 			"otaUpdates": "OTA updates",
@@ -47,6 +48,7 @@
 			"miningPoolStats": "Enable Mining Pool Stats integration",
 			"miningPoolName": "Mining Pool",
 			"miningPoolUser": "Mining Pool username or api key",
+			"poolGlobalStats": "Show pool-wide hashrate",
 			"nostrZapPubkey": "Nostr Zap pubkey",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
 			"convertingValidNpub": "Converting valid npub to pubkey",
@@ -55,6 +57,9 @@
 			"httpAuthUser": "WebUI Username",
 			"httpAuthPass": "WebUI Password",
 			"httpAuthText": "Only password-protects WebUI, not API-calls.",
+			"otaPass": "OTA update password",
+			"otaPassHelp": "Leave blank to allow password-less OTA.",
+			"passwordSetLeaveBlank": "Password is set. Leave blank to keep unchanged.",
 			"currencies": "Currencies",
 			"customSource": "Use custom data source endpoint",
 			"useNostrTooltip": "Very experimental and unstable. Nostr data source is not required for Nostr Zap notifications.",
@@ -96,7 +101,8 @@
 			"blockFlashColor": "LED color on new block",
 			"supplyPercent": "Show BTC supply in percent",
 			"refrScrnChange": "Full refresh on each screen change",
-			"inverseButtons": "Inverse push button numbers"
+			"inverseButtons": "Inverse push button numbers",
+			"thirdPartyExtrasWarning": "The third-party data source (mempool.space/Kraken) is very data-intensive; enabling Bitaxe, mining pool stats or Nostr zaps alongside it may freeze the device. Prefer the BTClock source or a custom endpoint — if you still want extras, don't enable them all at once."
 		},
 		"control": {
 			"systemInfo": "System info",

@@ -18,6 +18,8 @@
 			"useBigCharsMcap": "Gebruik grote tekens bij market cap",
 			"useBlkCountdown": "Blocks aftellen voor halving",
 			"useSatsSymbol": "Gebruik sats symbol",
+			"useMscwTime": "Moscow Time gebruiken",
+			"poolGlobalStats": "Toon pool-brede hashrate",
 			"fetchEuroPrice": "Toon € prijs",
 			"screens": "Schermen",
 			"hostnamePrefix": "Hostnaam voorvoegsel",
@@ -42,6 +44,9 @@
 			"httpAuthUser": "WebUI-gebruikersnaam",
 			"httpAuthPass": "WebUI-wachtwoord",
 			"httpAuthText": "Beveiligd enkel WebUI, niet de API.",
+			"otaPass": "OTA-update-wachtwoord",
+			"otaPassHelp": "Laat leeg om OTA zonder wachtwoord toe te staan.",
+			"passwordSetLeaveBlank": "Wachtwoord is ingesteld. Laat leeg om het ongewijzigd te laten.",
 			"currencies": "Valuta's",
 			"mowMode": "Mow achtervoegsel",
 			"suffixShareDot": "Achtervoegsel compacte notatie",
@@ -70,7 +75,8 @@
 			"blockFlashColor": "LED kleur bij nieuw blok",
 			"supplyPercent": "Toon BTC-aanbod in procenten",
 			"refrScrnChange": "Volledige verversing bij elke schermwijziging",
-			"inverseButtons": "Omgekeerde drukknopnummers"
+			"inverseButtons": "Omgekeerde drukknopnummers",
+			"thirdPartyExtrasWarning": "De externe gegevensbron (mempool.space/Kraken) is erg data-intensief; Bitaxe, mining-pool-statistieken of Nostr-zaps tegelijk inschakelen kan het apparaat laten vastlopen. Gebruik bij voorkeur de BTClock-bron of een aangepast endpoint — wil je toch extra's, schakel ze dan niet allemaal tegelijk in."
 		},
 		"control": {
 			"systemInfo": "Systeeminformatie",

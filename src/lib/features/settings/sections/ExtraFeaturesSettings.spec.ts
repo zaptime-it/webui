@@ -40,6 +40,29 @@ describe('ExtraFeaturesSettings test buttons', () => {
 		for (const p of patterns) expect(src).not.toMatch(p);
 	});
 
+	test('pool-wide hashrate toggle only appears for pools that expose /api/v1/pool', () => {
+		// The toggle is gated in the template by `supportsGlobalStats`, which
+		// is a derived Set-membership check. The hardcoded list mirrors the
+		// firmware's MiningPoolInterface::supportsGlobalStats() overrides;
+		// adding a third pool requires updates on both sides.
+		expect(src).toMatch(/poolsWithGlobalStats = new Set\(\['noderunners', 'satoshiradio'\]\)/);
+		expect(src).toContain('const supportsGlobalStats = $derived(');
+		// Toggle renders only inside the supportsGlobalStats guard.
+		expect(src).toMatch(
+			/\{#if supportsGlobalStats\}[\s\S]*?id="poolGlobalStats"[\s\S]*?bind:checked=\{data\.poolGlobalStats\}/
+		);
+	});
+
+	test('username field is disabled + optional when global-hashrate mode is on', () => {
+		// When the user opts into the pool-wide hashrate, the per-user field
+		// is irrelevant. Disable it + drop the `required` attribute so the
+		// form doesn't block submit, but keep it visible so toggling off
+		// restores the stored value without re-entry.
+		expect(src).toMatch(
+			/id="miningPoolUser"[\s\S]*?required=\{!\(supportsGlobalStats && data\.poolGlobalStats\)\}[\s\S]*?disabled=\{supportsGlobalStats && data\.poolGlobalStats\}/
+		);
+	});
+
 	test('handlers use describeError + FetchError so toasts are actionable', () => {
 		// Regression: the old handlers read `(err as Error).message`, which
 		// surfaced the browser's raw `TypeError: Failed to fetch` in the

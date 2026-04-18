@@ -17,7 +17,12 @@
 
 	const data = $derived(settingsStore.data!);
 
-	let showPassword = $state(false);
+	// 3.4.0: GET /api/settings no longer returns httpAuthPass / otaPass.
+	// The form input is a PATCH-only buffer; empty means "don't change".
+	// `*Set` booleans from the device tell us whether one is currently stored
+	// so the UI can show "password is set" / "no password set".
+	let showHttpAuthPassword = $state(false);
+	let showOtaPassword = $state(false);
 
 	const wifiTxPowerOptions: Array<[string, number]> = [
 		['Default', 80],
@@ -45,24 +50,26 @@
 				bind:value={data.httpAuthUser}
 				required
 			/>
-			<div>
-				<Field
-					id="httpAuthPass"
-					label={m['section.settings.httpAuthPass']()}
-					bind:value={data.httpAuthPass}
-					type={showPassword ? 'text' : 'password'}
-					required
-				/>
-				<div class="flex justify-end mt-1">
+			<Field
+				id="httpAuthPass"
+				label={m['section.settings.httpAuthPass']()}
+				bind:value={data.httpAuthPass}
+				type={showHttpAuthPassword ? 'text' : 'password'}
+				placeholder={data.httpAuthPassSet ? '••••••••' : ''}
+				required={!data.httpAuthPassSet}
+				helpText={data.httpAuthPassSet ? m['section.settings.passwordSetLeaveBlank']() : undefined}
+			>
+				{#snippet action()}
 					<button
 						type="button"
-						class="btn btn-sm {showPassword ? 'btn-success' : 'btn-error'}"
-						onclick={() => (showPassword = !showPassword)}
+						class="join-item btn btn-sm {showHttpAuthPassword ? 'btn-success' : 'btn-error'}"
+						onclick={() => (showHttpAuthPassword = !showHttpAuthPassword)}
+						aria-label={showHttpAuthPassword ? 'Hide password' : 'Show password'}
 					>
-						{#if showPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
+						{#if showHttpAuthPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
 					</button>
-				</div>
-			</div>
+				{/snippet}
+			</Field>
 		{/if}
 
 		<Field
@@ -96,6 +103,31 @@
 			bind:checked={data.otaEnabled}
 			label="{m['section.settings.otaUpdates']()} ({m['restartRequired']()})"
 		/>
+		{#if data.otaEnabled}
+			<div class="md:col-span-2 lg:col-span-1 2xl:col-span-2">
+				<Field
+					id="otaPass"
+					label={m['section.settings.otaPass']()}
+					bind:value={data.otaPass}
+					type={showOtaPassword ? 'text' : 'password'}
+					placeholder={data.otaPassSet ? '••••••••' : ''}
+					helpText={data.otaPassSet
+						? m['section.settings.passwordSetLeaveBlank']()
+						: m['section.settings.otaPassHelp']()}
+				>
+					{#snippet action()}
+						<button
+							type="button"
+							class="join-item btn btn-sm {showOtaPassword ? 'btn-success' : 'btn-error'}"
+							onclick={() => (showOtaPassword = !showOtaPassword)}
+							aria-label={showOtaPassword ? 'Hide password' : 'Show password'}
+						>
+							{#if showOtaPassword}<EyeOff size="16" />{:else}<Eye size="16" />{/if}
+						</button>
+					{/snippet}
+				</Field>
+			</div>
+		{/if}
 		<SwitchField
 			id="mdnsEnabled"
 			bind:checked={data.mdnsEnabled}

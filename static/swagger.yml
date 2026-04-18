@@ -2,52 +2,116 @@
 openapi: 3.0.3
 info:
   title: BTClock API
-  version: '3.0'
+  version: '3.4.0'
   description: |
-    BTClock V3 HTTP API as implemented in firmware `webserver.cpp`.
+    BTClock V3 HTTP API as implemented by the firmware `src/lib/net/webserver/` module.
     REST routes are under `/api/...`; SSE lives at `/events`; OTA uploads use `/upload/...`.
-    The embedded web app may rewrite `/api` to `/` for same-origin routing.
-    Several routes require HTTP Basic auth when the device has `httpAuthEnabled` (same as `GET /api/settings`).
+    The embedded WebUI may rewrite `/api` to `/` for same-origin routing.
+
+    ## 3.4.0 breaking changes
+
+    - State-changing routes moved from `GET` to `POST`. The legacy `GET`
+      forms (e.g. `GET /api/identify`, `GET /api/restart`,
+      `GET /api/action/pause`, `GET /api/full_refresh`,
+      `GET /api/show/*`, `GET /api/lights/*`, `GET /api/frontlight/*`) are
+      no longer registered.
+    - Settings writes moved from `PATCH /api/json/settings` to
+      `PATCH /api/settings`. The old URL is gone.
+    - `POST /api/show/custom` and `POST /api/lights/set` are POST-only;
+      the firmware no longer accepts PATCH on those routes.
+    - The `customEndpoint` settings key is retired — use `ceEndpoint`
+      instead (there is no migration shim).
+    - `GET /api/settings` no longer returns plaintext passwords; see the
+      `Settings` schema for the `httpAuthPassSet` / `otaPassSet`
+      booleans.
+
+    ## Auth
+
+    When the device has `httpAuthEnabled = true`, *every* endpoint on this
+    spec requires HTTP Basic auth, including the SSE stream and read-only
+    status endpoints. When it is false (the factory default), no endpoint
+    requires auth. The auth contract is the same on all routes so it is
+    only called out explicitly here rather than duplicated per-path.
 servers:
   - url: '/'
 paths:
   '/api/status':
     get:
-      tags:
-        - system
+      tags: [system]
       summary: Get current runtime status
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: successful operation
           content:
             application/json:
-              schema:
-                '$ref': '#/components/schemas/Status'
+              schema: { '$ref': '#/components/schemas/Status' }
+        '401':
+          description: Authentication required
   '/api/system_status':
     get:
-      tags:
-        - system
+      tags: [system]
       summary: Get memory, filesystem, and WiFi metrics
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: successful operation
           content:
             application/json:
-              schema:
-                '$ref': '#/components/schemas/SystemStatus'
-  '/api/wifi_set_tx_power':
+              schema: { '$ref': '#/components/schemas/SystemStatus' }
+        '401':
+          description: Authentication required
+  '/api/settings':
     get:
-      tags:
-        - network
+      tags: [settings]
+      summary: Get current settings
+      description: |
+        Returns the full settings document. Password fields are NEVER included in the response;
+        instead, `httpAuthPassSet` and `otaPassSet` booleans indicate whether one is currently stored.
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema: { '$ref': '#/components/schemas/Settings' }
+        '401':
+          description: Authentication required
+    patch:
+      tags: [settings]
+      summary: Apply partial settings update
+      description: |
+        Send a JSON object with only the keys to change. Updatable keys include all `Settings`
+        preference fields, the `screens` array, `actCurrencies`, the nested `dnd` block,
+        `timePerScreen` (minutes, stored as `timerSeconds`), `tzOffset` (minutes, stored as
+        `gmtOffset` seconds), `txPower`, `dataSource`, etc.
+
+        To set a password, include `httpAuthPass` / `otaPass` as a non-empty string.
+        To clear a stored password, send an empty string. Omit the key entirely to leave
+        the stored value unchanged — this is what clients should do when they are
+        round-tripping a full settings form.
+      security: [{ basicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { '$ref': '#/components/schemas/SettingsPatch' }
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: Authentication required
+  '/api/wifi_set_tx_power':
+    post:
+      tags: [network]
       summary: Set WiFi TX power (dBm enum value)
+      security: [{ basicAuth: [] }]
       parameters:
         - in: query
           name: txPower
           required: true
-          schema:
-            type: integer
-          description: ESP32 `wifi_power_t` value (e.g. 8 for 19.5 dBm). Must be in
-            the supported range.
+          schema: { type: integer }
+          description: ESP32 `wifi_power_t` value (e.g. 78 for 19.5 dBm).
       responses:
         '200':
           description: Power applied
@@ -56,310 +120,214 @@ paths:
               schema:
                 type: object
                 properties:
-                  setTxPower:
-                    type: string
-                    example: ok
+                  setTxPower: { type: string, example: ok }
         '400':
           description: Missing or invalid txPower
-  '/api/settings':
-    get:
-      tags:
-        - system
-      summary: Get current settings
-      description: May require HTTP Basic authentication when enabled on the device.
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/Settings'
-        '401':
-          description: Authentication required
-  '/api/json/settings':
-    patch:
-      tags:
-        - system
-      summary: Apply partial settings update
-      description: |
-        Sends a JSON object with only the keys to change. May require HTTP Basic authentication.
-        Updatable keys include string/uint/bool preference fields, `screens` array, `actCurrencies`,
-        `timePerScreen` (minutes; stored as `timerSeconds`), `tzOffset` (minutes; stored as `gmtOffset` seconds),
-        `txPower`, `dataSource`, `customEndpoint`, nested `dnd`, `invertedColor`, etc. See firmware `onApiSettingsPatch`.
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              '$ref': '#/components/schemas/SettingsPatch'
-      responses:
-        '200':
-          description: successful operation
-        '401':
-          description: Authentication required
   '/api/stop_datasources':
-    get:
-      tags:
-        - datasources
+    post:
+      tags: [datasources]
       summary: Stop price and block data connections
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/restart_datasources':
-    get:
-      tags:
-        - datasources
+    post:
+      tags: [datasources]
       summary: Restart data connections according to current data source mode
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/action/pause':
-    get:
-      tags:
-        - timer
+    post:
+      tags: [timer]
       summary: Pause screen rotation timer
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/action/timer_restart':
-    get:
-      tags:
-        - timer
+    post:
+      tags: [timer]
       summary: Resume screen rotation timer
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
-  '/api/show/screen/{s}':
-    get:
-      tags:
-        - screens
+        '200': { description: successful operation }
+  '/api/show/screen':
+    post:
+      tags: [screens]
       summary: Switch to a screen by index
-      description: Path form is rewritten to `/api/show/screen?s={s}`. Query `s` may
-        also be used directly.
+      description: |
+        The firmware also registers the rewrite `/api/show/screen/{s}` → this URL. Prefer the
+        query-parameter form.
+      security: [{ basicAuth: [] }]
       parameters:
-        - in: path
+        - in: query
           name: s
-          schema:
-            type: integer
           required: true
-          description: Screen index
+          schema: { type: integer }
+          description: Screen index (0 … numScreens-1)
       responses:
-        '200':
-          description: successful operation
-  '/api/show/text/{text}':
-    get:
-      tags:
-        - screens
+        '200': { description: successful operation }
+  '/api/show/text':
+    post:
+      tags: [screens]
       summary: Show one character per display (legacy text mode)
-      description: Path is rewritten to `/api/show/text?t={text}`. Text is uppercased
-        on the device.
+      description: |
+        The firmware also registers rewrites `/api/show/text/{text}` and
+        `/api/show/number/{number}` → this URL. Text is uppercased on the device.
+      security: [{ basicAuth: [] }]
       parameters:
-        - in: path
-          name: text
-          schema:
-            type: string
+        - in: query
+          name: t
           required: true
+          schema: { type: string }
       responses:
-        '200':
-          description: successful operation
-  '/api/show/currency/{c}':
-    get:
-      tags:
-        - screens
+        '200': { description: successful operation }
+  '/api/show/currency':
+    post:
+      tags: [screens]
       summary: Switch to an active fiat/crypto currency code
-      description: Path rewritten to `/api/show/currency?c={c}`. Returns 404 if the
-        currency is not active.
+      description: |
+        The firmware also registers `/api/show/currency/{c}` → this URL.
+        Returns 404 if the currency is not in `actCurrencies`.
+      security: [{ basicAuth: [] }]
       parameters:
-        - in: path
+        - in: query
           name: c
-          schema:
-            type: string
           required: true
+          schema: { type: string }
       responses:
-        '200':
-          description: successful operation
-        '404':
-          description: Currency not in active list
+        '200': { description: successful operation }
+        '404': { description: Currency not in active list }
   '/api/screen/next':
-    get:
-      tags:
-        - screens
+    post:
+      tags: [screens]
       summary: Advance to next screen in rotation order
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/screen/previous':
-    get:
-      tags:
-        - screens
+    post:
+      tags: [screens]
       summary: Go to previous screen in rotation order
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/show/custom':
     post:
-      tags:
-        - screens
+      tags: [screens]
       summary: Set custom multi-line EPD content (JSON array)
+      security: [{ basicAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              '$ref': '#/components/schemas/CustomText'
+            schema: { '$ref': '#/components/schemas/CustomText' }
       responses:
-        '200':
-          description: successful operation
-    patch:
-      tags:
-        - screens
-      summary: Same as POST — JSON array body
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              '$ref': '#/components/schemas/CustomText'
-      responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/full_refresh':
-    get:
-      tags:
-        - system
+    post:
+      tags: [system]
       summary: Force full refresh of all EPD panels
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/lights':
     get:
-      tags:
-        - lights
+      tags: [lights]
       summary: Get LED strip colors
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: JSON array of per-LED RGB values
           content:
             application/json:
-              schema:
-                '$ref': '#/components/schemas/ArrayOfLeds'
+              schema: { '$ref': '#/components/schemas/ArrayOfLeds' }
   '/api/lights/set':
-    patch:
-      tags:
-        - lights
-      summary: Set each LED from a JSON array
-      description: POST and PATCH are accepted by the firmware JSON handler. Empty
-        array turns all LEDs off.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              '$ref': '#/components/schemas/ArrayOfLedsInput'
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Invalid colors, wrong LED count, or malformed JSON
     post:
-      tags:
-        - lights
-      summary: Same as PATCH — set LEDs from JSON array
+      tags: [lights]
+      summary: Set each LED from a JSON array
+      description: Empty array turns all LEDs off. Array length must equal the device's LED count.
+      security: [{ basicAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              '$ref': '#/components/schemas/ArrayOfLedsInput'
+            schema: { '$ref': '#/components/schemas/ArrayOfLedsInput' }
       responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Invalid colors or wrong LED count
-  '/api/lights/color/{color}':
-    get:
-      tags:
-        - lights
+        '200': { description: successful operation }
+        '400': { description: Invalid colors, wrong LED count, or malformed JSON }
+  '/api/lights/color':
+    post:
+      tags: [lights]
       summary: Set all LEDs to one RGB hex color
-      description: Path rewritten to `/api/lights/color?c={color}`. Use six hex digits
-        without `#`, or `off`.
+      description: |
+        The firmware also registers the rewrite `/api/lights/color/{color}` → this URL.
+        Use six hex digits without `#`, or `off`.
+      security: [{ basicAuth: [] }]
       parameters:
-        - in: path
-          name: color
-          schema:
-            type: string
-            example: FFCC00
+        - in: query
+          name: c
           required: true
+          schema: { type: string, example: FFCC00 }
       responses:
         '200':
-          description: Returns current LED array (same shape as GET /lights)
+          description: Returns current LED array (same shape as GET /api/lights)
           content:
             application/json:
-              schema:
-                '$ref': '#/components/schemas/ArrayOfLeds'
-        '400':
-          description: Missing color parameter
+              schema: { '$ref': '#/components/schemas/ArrayOfLeds' }
+        '400': { description: Missing color parameter }
   '/api/lights/off':
-    get:
-      tags:
-        - lights
+    post:
+      tags: [lights]
       summary: Turn all LEDs off
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/identify':
-    get:
-      tags:
-        - system
+    post:
+      tags: [system]
       summary: Flash LEDs with identify pattern
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/restart':
-    get:
-      tags:
-        - system
+    post:
+      tags: [system]
       summary: Restart the device
+      description: Response is flushed before the reboot; the connection will then close.
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/dnd/status':
     get:
-      tags:
-        - dnd
+      tags: [dnd]
       summary: Get Do-Not-Disturb status
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: successful operation
           content:
             application/json:
-              schema:
-                '$ref': '#/components/schemas/DndStatusApi'
+              schema: { '$ref': '#/components/schemas/DndStatusApi' }
   '/api/dnd/enable':
     post:
-      tags:
-        - dnd
-      summary: Enable DND
+      tags: [dnd]
+      summary: Enable manual DND override
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/dnd/disable':
     post:
-      tags:
-        - dnd
-      summary: Disable DND
+      tags: [dnd]
+      summary: Disable manual DND override
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/firmware/auto_update':
-    get:
-      tags:
-        - firmware
+    post:
+      tags: [firmware]
       summary: Trigger OTA firmware check / update (only when OTA is enabled)
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: Update queued
@@ -368,58 +336,53 @@ paths:
               schema:
                 type: object
                 properties:
-                  msg:
-                    type: string
+                  msg: { type: string }
         '503':
           description: Update already in progress
   '/upload/firmware':
     post:
-      tags:
-        - firmware
+      tags: [firmware]
       summary: Upload a firmware binary (multipart)
-      description: Available when OTA is enabled. Same handler as PlatformIO / ESP
-        update flow.
+      description: |
+        Streams the multipart body directly to `Update.write()` with on-the-fly SHA-256.
+        Available when OTA is enabled.
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: Upload finished; connection may close before reboot
+        '200': { description: Upload finished; connection may close before reboot }
   '/upload/webui':
     post:
-      tags:
-        - firmware
+      tags: [firmware]
       summary: Upload WebUI / LittleFS image (multipart)
       description: Available when OTA is enabled.
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/frontlight/on':
-    get:
-      tags:
-        - frontlight
+    post:
+      tags: [frontlight]
       summary: Fade frontlight on (Rev B + frontlight hardware only)
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/frontlight/off':
-    get:
-      tags:
-        - frontlight
+    post:
+      tags: [frontlight]
       summary: Fade frontlight off
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/frontlight/flash':
-    get:
-      tags:
-        - frontlight
+    post:
+      tags: [frontlight]
       summary: Run frontlight flash effect
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
   '/api/frontlight/status':
     get:
-      tags:
-        - frontlight
+      tags: [frontlight]
       summary: Frontlight levels per screen
+      security: [{ basicAuth: [] }]
       responses:
         '200':
           description: successful operation
@@ -430,48 +393,30 @@ paths:
                 properties:
                   flStatus:
                     type: array
-                    items:
-                      type: integer
+                    items: { type: integer }
   '/api/frontlight/brightness':
-    get:
-      tags:
-        - frontlight
+    post:
+      tags: [frontlight]
       summary: Set frontlight brightness
+      security: [{ basicAuth: [] }]
       parameters:
         - in: query
           name: b
-          schema:
-            type: integer
-          description: Brightness value (see device firmware)
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Missing parameter
-  '/api/frontlight/brightness/{b}':
-    get:
-      tags:
-        - frontlight
-      summary: Set brightness via path (rewritten to query `b`)
-      parameters:
-        - in: path
-          name: b
           required: true
-          schema:
-            type: integer
+          schema: { type: integer, minimum: 0, maximum: 65535 }
       responses:
-        '200':
-          description: successful operation
+        '200': { description: successful operation }
+        '400': { description: Missing parameter }
   '/events':
     get:
-      tags:
-        - system
+      tags: [system]
       summary: Server-Sent Events stream of status updates
-      description: Event name `status`; payload JSON matches `GET /status` plus `leds`
-        and line `data` fields.
+      description: |
+        Event name `status`; payload JSON matches `GET /api/status` (shares `buildStatusJson()`).
+        A `welcome` event is emitted on connect.
+      security: [{ basicAuth: [] }]
       responses:
-        '200':
-          description: text/event-stream
+        '200': { description: text/event-stream }
 components:
   securitySchemes:
     basicAuth:
@@ -481,83 +426,51 @@ components:
     ConnectionStatus:
       type: object
       properties:
-        price:
-          type: boolean
-        blocks:
-          type: boolean
-        V2:
-          type: boolean
-        nostr:
-          type: boolean
+        price: { type: boolean }
+        blocks: { type: boolean }
+        V2: { type: boolean }
+        nostr: { type: boolean }
     DndNestedStatus:
       type: object
-      description: DND block embedded in `GET /status` SSE payload
+      description: DND block embedded in `GET /api/status` and SSE payload
       properties:
-        enabled:
-          type: boolean
-        dndTimeEnabled:
-          type: boolean
-        startTime:
-          type: string
-          example: '22:30'
-        endTime:
-          type: string
-          example: '07:00'
-        active:
-          type: boolean
+        enabled: { type: boolean }
+        dndTimeEnabled: { type: boolean }
+        startTime: { type: string, example: '22:30' }
+        endTime: { type: string, example: '07:00' }
+        active: { type: boolean }
     DndStatusApi:
       type: object
       description: Response of `GET /api/dnd/status`
       properties:
-        enabled:
-          type: boolean
-        dndTimeEnabled:
-          type: boolean
-        startTime:
-          type: string
-        endTime:
-          type: string
-        active:
-          type: boolean
+        enabled: { type: boolean }
+        dndTimeEnabled: { type: boolean }
+        startTime: { type: string }
+        endTime: { type: string }
+        active: { type: boolean }
     Status:
       type: object
-      description: Response of `GET /api/status` (same core fields as SSE `status`
-        events)
+      description: Response of `GET /api/status` (same builder as SSE `status` events).
       properties:
-        currentScreen:
-          type: integer
-        numScreens:
-          type: integer
-        timerRunning:
-          type: boolean
-        isOTAUpdating:
-          type: boolean
-        espUptime:
-          type: integer
-          format: int64
-        espFreeHeap:
-          type: integer
-        espHeapSize:
-          type: integer
-        connectionStatus:
-          '$ref': '#/components/schemas/ConnectionStatus'
-        rssi:
-          type: integer
-        currency:
-          type: string
+        currentScreen: { type: integer }
+        numScreens: { type: integer }
+        timerRunning: { type: boolean }
+        isOTAUpdating: { type: boolean }
+        espUptime: { type: integer, format: int64 }
+        espFreeHeap: { type: integer }
+        espHeapSize: { type: integer }
+        connectionStatus: { '$ref': '#/components/schemas/ConnectionStatus' }
+        rssi: { type: integer }
+        currency: { type: string }
         data:
           type: array
           description: Current text/line per EPD
-          items:
-            type: string
-        leds:
-          '$ref': '#/components/schemas/ArrayOfLeds'
-        dnd:
-          '$ref': '#/components/schemas/DndNestedStatus'
+          items: { type: string }
+        leds: { '$ref': '#/components/schemas/ArrayOfLeds' }
+        dnd: { '$ref': '#/components/schemas/DndNestedStatus' }
         flStatus:
           type: array
-          items:
-            type: integer
+          items: { type: integer }
           description: Present when hardware has frontlight support.
         lightLevel:
           type: integer
@@ -565,246 +478,163 @@ components:
     SystemStatus:
       type: object
       properties:
-        espFreeHeap:
-          type: integer
-        espHeapSize:
-          type: integer
-        espFreePsram:
-          type: integer
-        espPsramSize:
-          type: integer
-        fsUsedBytes:
-          type: integer
-          format: int64
-        fsTotalBytes:
-          type: integer
-          format: int64
-        rssi:
-          type: integer
-        txPower:
-          type: integer
+        espFreeHeap: { type: integer }
+        espHeapSize: { type: integer }
+        espFreePsram: { type: integer }
+        espPsramSize: { type: integer }
+        fsUsedBytes: { type: integer, format: int64 }
+        fsTotalBytes: { type: integer, format: int64 }
+        rssi: { type: integer }
+        txPower: { type: integer }
     Screen:
       type: object
       properties:
-        id:
-          type: integer
-        name:
-          type: string
-        enabled:
-          type: boolean
+        id: { type: integer }
+        name: { type: string }
+        enabled: { type: boolean }
     DndSettings:
       type: object
-      description: Nested object on `GET /settings` and allowed inside `PATCH` body
+      description: Nested object on `GET /api/settings` and allowed inside `PATCH` body
       properties:
-        enabled:
-          type: boolean
-        dndTimeEnabled:
-          type: boolean
-        startHour:
-          type: integer
-          minimum: 0
-          maximum: 23
-        startMinute:
-          type: integer
-          minimum: 0
-          maximum: 59
-        endHour:
-          type: integer
-        endMinute:
-          type: integer
+        enabled: { type: boolean }
+        dndTimeEnabled: { type: boolean }
+        startHour: { type: integer, minimum: 0, maximum: 23 }
+        startMinute: { type: integer, minimum: 0, maximum: 59 }
+        endHour: { type: integer, minimum: 0, maximum: 23 }
+        endMinute: { type: integer, minimum: 0, maximum: 59 }
     Settings:
       type: object
       description: |
-        Full document returned by `GET /api/settings`. Exact optional fields depend on firmware build
-        (e.g. `hasFrontlight`, `gitRev`). Matches the WebUI `Settings` TypeScript type.
+        Full document returned by `GET /api/settings`. Exact optional fields depend on firmware
+        build (e.g. `hasFrontlight`, `gitRev`). Matches the WebUI `Settings` TypeScript type.
+
+        Passwords are NEVER returned. The `httpAuthPassSet` and `otaPassSet` booleans indicate
+        whether one is currently stored; to change them, PATCH the corresponding write-only
+        keys (`httpAuthPass`, `otaPass`) on `/api/settings`.
       properties:
-        numScreens:
-          type: integer
-        invertedColor:
-          type: boolean
-        timerSeconds:
-          type: integer
-        timerRunning:
-          type: boolean
-        minSecPriceUpd:
-          type: integer
-        fullRefreshMin:
-          type: integer
-        wpTimeout:
-          type: integer
-        tzString:
-          type: string
+        numScreens: { type: integer }
+        invertedColor: { type: boolean }
+        timerSeconds: { type: integer }
+        timerRunning: { type: boolean }
+        minSecPriceUpd: { type: integer }
+        fullRefreshMin: { type: integer }
+        wpTimeout: { type: integer }
+        tzString: { type: string }
         dataSource:
           type: integer
-        mempoolInstance:
-          type: string
-        mempoolSecure:
-          type: boolean
-        localPoolHost:
-          type: string
-        nostrPubKey:
-          type: string
-        nostrRelay:
-          type: string
-        nostrZapNotify:
-          type: boolean
-        nostrZapPubkey:
-          type: string
-        ledFlashOnZap:
-          type: boolean
-        scrnRestoreZap:
-          type: boolean
-        fontName:
-          type: string
+          description: |
+            0 BTCLOCK_SOURCE, 1 THIRD_PARTY_SOURCE, 2 NOSTR_SOURCE, 3 CUSTOM_SOURCE
+          enum: [0, 1, 2, 3]
+        mempoolInstance: { type: string }
+        mempoolSecure: { type: boolean }
+        localPoolHost: { type: string }
+        nostrPubKey: { type: string }
+        nostrRelay: { type: string }
+        nostrZapNotify: { type: boolean }
+        nostrZapPubkey: { type: string }
+        ledFlashOnZap: { type: boolean }
+        scrnRestoreZap: { type: boolean }
+        fontName: { type: string }
         availableFonts:
           type: array
-          items:
-            type: string
-        customEndpoint:
-          type: string
-        ledTestOnPower:
+          items: { type: string }
+        ledTestOnPower: { type: boolean }
+        ledFlashOnUpd: { type: boolean }
+        ledBrightness: { type: integer }
+        stealFocus: { type: boolean }
+        mcapBigChar: { type: boolean }
+        mdnsEnabled: { type: boolean }
+        otaEnabled: { type: boolean }
+        otaPassSet:
           type: boolean
-        ledFlashOnUpd:
-          type: boolean
-        ledBrightness:
-          type: integer
-        stealFocus:
-          type: boolean
-        mcapBigChar:
-          type: boolean
-        mdnsEnabled:
-          type: boolean
-        otaEnabled:
-          type: boolean
-        useSatsSymbol:
-          type: boolean
-        useBlkCountdown:
-          type: boolean
-        suffixPrice:
-          type: boolean
-        disableLeds:
-          type: boolean
-        mowMode:
-          type: boolean
-        verticalDesc:
-          type: boolean
-        blockFeeDec:
-          type: boolean
-        blockFlashColor:
-          type: integer
-        supplyPercent:
-          type: boolean
-        refrScrnChange:
-          type: boolean
-        inverseButtons:
-          type: boolean
-        suffixShareDot:
-          type: boolean
-        enableDebugLog:
-          type: boolean
-        hostnamePrefix:
-          type: string
-        hostname:
-          type: string
-        ip:
-          type: string
-        txPower:
-          type: integer
-        gitReleaseUrl:
-          type: string
-        bitaxeEnabled:
-          type: boolean
-        bitaxeHostname:
-          type: string
-        miningPoolStats:
-          type: boolean
-        miningPoolName:
-          type: string
-        miningPoolUser:
-          type: string
+          readOnly: true
+          description: True when the device has a non-empty ArduinoOTA password stored.
+        useSatsSymbol: { type: boolean }
+        useBlkCountdown: { type: boolean }
+        suffixPrice: { type: boolean }
+        disableLeds: { type: boolean }
+        mowMode: { type: boolean }
+        verticalDesc: { type: boolean }
+        blockFeeDec: { type: boolean }
+        blockFlashColor: { type: integer }
+        supplyPercent: { type: boolean }
+        refrScrnChange: { type: boolean }
+        inverseButtons: { type: boolean }
+        suffixShareDot: { type: boolean }
+        enableDebugLog: { type: boolean }
+        hostnamePrefix: { type: string }
+        hostname: { type: string }
+        ip: { type: string }
+        txPower: { type: integer }
+        gitReleaseUrl: { type: string }
+        bitaxeEnabled: { type: boolean }
+        bitaxeHostname: { type: string }
+        miningPoolStats: { type: boolean }
+        miningPoolName: { type: string }
+        miningPoolUser: { type: string }
         availablePools:
           type: array
-          items:
-            type: string
-        httpAuthEnabled:
+          items: { type: string }
+        httpAuthEnabled: { type: boolean }
+        httpAuthUser: { type: string }
+        httpAuthPassSet:
           type: boolean
-        httpAuthUser:
-          type: string
-        httpAuthPass:
-          type: string
-        hasFrontlight:
-          type: boolean
-        flDisable:
-          type: boolean
-        flMaxBrightness:
-          type: integer
-        flAlwaysOn:
-          type: boolean
-        flEffectDelay:
-          type: integer
-        flFlashOnUpd:
-          type: boolean
-        flFlashOnZap:
-          type: boolean
-        hasLightLevel:
-          type: boolean
-        luxLightToggle:
-          type: integer
-        flOffWhenDark:
-          type: boolean
-        hwRev:
-          type: string
-        fsRev:
-          type: string
-        gitRev:
-          type: string
-        gitTag:
-          type: string
-        lastBuildTime:
-          type: string
+          readOnly: true
+          description: True when the device has a non-empty WebUI auth password stored.
+        hasFrontlight: { type: boolean }
+        flDisable: { type: boolean }
+        flMaxBrightness: { type: integer }
+        flAlwaysOn: { type: boolean }
+        flEffectDelay: { type: integer }
+        flFlashOnUpd: { type: boolean }
+        flFlashOnZap: { type: boolean }
+        hasLightLevel: { type: boolean }
+        luxLightToggle: { type: integer }
+        flOffWhenDark: { type: boolean }
+        hwRev: { type: string }
+        fsRev: { type: string }
+        gitRev: { type: string }
+        gitTag: { type: string }
+        lastBuildTime: { type: string }
         screens:
           type: array
-          items:
-            '$ref': '#/components/schemas/Screen'
+          items: { '$ref': '#/components/schemas/Screen' }
         actCurrencies:
           type: array
-          items:
-            type: string
+          items: { type: string }
         availableCurrencies:
           type: array
-          items:
-            type: string
-        poolLogosUrl:
-          type: string
-        ceEndpoint:
-          type: string
-        ceDisableSSL:
-          type: boolean
-        dnd:
-          '$ref': '#/components/schemas/DndSettings'
+          items: { type: string }
+        poolLogosUrl: { type: string }
+        ceEndpoint: { type: string }
+        ceDisableSSL: { type: boolean }
+        dnd: { '$ref': '#/components/schemas/DndSettings' }
     SettingsPatch:
-      description: Partial document; omit keys you do not want to change. Keys mirror
-        `Settings` and `onApiSettingsPatch` in firmware.
+      description: |
+        Partial settings document; omit keys you do not want to change. Keys mirror `Settings`
+        and `onApiSettingsPatch` in firmware. The two password fields below are write-only;
+        GET /api/settings does not return them.
+      type: object
       allOf:
         - '$ref': '#/components/schemas/Settings'
+        - type: object
+          properties:
+            httpAuthPass:
+              type: string
+              writeOnly: true
+              description: |
+                Set a WebUI password (non-empty) or clear it (empty string). Omit to leave unchanged.
+            otaPass:
+              type: string
+              writeOnly: true
+              description: |
+                Set an ArduinoOTA password (non-empty) or clear it (empty string). Omit to leave unchanged.
     RgbColorValues:
       type: object
       properties:
-        red:
-          type: integer
-          minimum: 0
-          maximum: 255
-          example: 255
-        green:
-          type: integer
-          minimum: 0
-          maximum: 255
-          example: 204
-        blue:
-          type: integer
-          minimum: 0
-          maximum: 255
-          example: 0
+        red: { type: integer, minimum: 0, maximum: 255, example: 255 }
+        green: { type: integer, minimum: 0, maximum: 255, example: 204 }
+        blue: { type: integer, minimum: 0, maximum: 255, example: 0 }
     RgbColorHex:
       type: object
       properties:
@@ -822,16 +652,12 @@ components:
         - '$ref': '#/components/schemas/RgbColorHex'
     ArrayOfLeds:
       type: array
-      items:
-        '$ref': '#/components/schemas/RgbColorValueAndHex'
+      items: { '$ref': '#/components/schemas/RgbColorValueAndHex' }
     ArrayOfLedsInput:
       type: array
-      items:
-        '$ref': '#/components/schemas/RgbColorValueOrHex'
+      items: { '$ref': '#/components/schemas/RgbColorValueOrHex' }
     CustomText:
       type: array
-      description: One string per screen; length must match device `numScreens` (commonly
-        7 or 8).
+      description: One string per screen; length must match device `numScreens` (commonly 7 or 8).
       minItems: 1
-      items:
-        type: string
+      items: { type: string }

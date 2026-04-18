@@ -32,6 +32,18 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).not.toContain('@md:grid-cols-2');
 	});
 
+	test('ScreenSpecificSettings exposes the Moscow Time toggle bound to useMscwTime', () => {
+		// The toggle lets users switch the USD sats-per-currency screen between
+		// the legacy "MSCW/TIME" label and the generic "SATS/USD" label that the
+		// other currencies use. Asserting against the source keeps parity with
+		// the other switches in this grid and avoids mounting the full settings
+		// store just to check a single SwitchField.
+		const src = read('ScreenSpecificSettings.svelte');
+		expect(src).toContain('id="useMscwTime"');
+		expect(src).toContain('bind:checked={data.useMscwTime}');
+		expect(src).toContain("m['section.settings.useMscwTime']()");
+	});
+
 	test('ScreenSpecificSettings screens + currencies grids are viewport-responsive', () => {
 		const src = read('ScreenSpecificSettings.svelte');
 		expect(src).toContain('data-testid="screens-grid"');

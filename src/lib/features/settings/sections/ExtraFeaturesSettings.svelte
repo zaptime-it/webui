@@ -9,6 +9,7 @@
 	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
 	import { fetchBitaxeInfo, fetchLocalPoolInfo, FetchError } from '$lib/api/external';
 	import { toast } from '$lib/stores/toast.svelte';
+	import { DataSourceType } from '$lib/types/settings';
 
 	const describeError = (err: unknown, opts: { thing: string }): [string, string] => {
 		if (err instanceof FetchError) {
@@ -75,6 +76,12 @@
 		])
 	);
 
+	// Pools that expose a ckpool-style /api/v1/pool endpoint — the firmware
+	// knows this via MiningPoolInterface::supportsGlobalStats(). Kept in sync
+	// by convention: add a pool here if you add the override in firmware.
+	const poolsWithGlobalStats = new Set(['noderunners', 'satoshiradio']);
+	const supportsGlobalStats = $derived(poolsWithGlobalStats.has(data.miningPoolName));
+
 	const zapInvalid = $derived(!isValidHexPubKey(data.nostrZapPubkey ?? ''));
 </script>
 
@@ -115,6 +122,16 @@
 				min={0}
 				max={59}
 			/>
+		</div>
+	{/if}
+
+	{#if data.dataSource === DataSourceType.THIRD_PARTY_SOURCE && ('bitaxeEnabled' in data || 'miningPoolStats' in data || 'nostrZapNotify' in data)}
+		<div class="alert alert-warning text-sm mt-4">
+			<span
+				>⚠️ <strong>{m['warning']()}</strong>: {m[
+					'section.settings.thirdPartyExtrasWarning'
+				]()}</span
+			>
 		</div>
 	{/if}
 
@@ -188,11 +205,19 @@
 							{/snippet}
 						</Field>
 					{/if}
+					{#if supportsGlobalStats}
+						<SwitchField
+							id="poolGlobalStats"
+							bind:checked={data.poolGlobalStats}
+							label={m['section.settings.poolGlobalStats']()}
+						/>
+					{/if}
 					<Field
 						id="miningPoolUser"
 						label={m['section.settings.miningPoolUser']()}
 						bind:value={data.miningPoolUser}
-						required
+						required={!(supportsGlobalStats && data.poolGlobalStats)}
+						disabled={supportsGlobalStats && data.poolGlobalStats}
 					/>
 				</div>
 			{/if}

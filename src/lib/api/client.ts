@@ -2,6 +2,13 @@
  * Typed wrappers for every BTClock HTTP endpoint. Replaces the scattered
  * `fetch(\`${PUBLIC_BASE_URL}/api/...\`)` calls from Control/Status/Settings/
  * FirmwareUpdater/DisplaySettings/ExtraFeaturesSettings.
+ *
+ * 3.4.0 API realignment:
+ *  - State-changing endpoints moved from GET to POST; read-only ones stay GET.
+ *  - Settings writes moved from POST /api/json/settings to PATCH /api/settings.
+ *  - `lightsSet` moved from PATCH to POST (firmware only registers POST now).
+ *  - Firmware no longer returns plaintext passwords; callers must filter
+ *    unset/empty password fields out of the PATCH body (see patchSettings).
  */
 
 import { PUBLIC_BASE_URL } from '$lib/config';
@@ -15,13 +22,16 @@ const asJson = async <T>(res: Response): Promise<T> => {
 	return (await res.json()) as T;
 };
 
+const post = (path: string): Promise<Response> =>
+	fetch(url(path), { method: 'POST', credentials: 'same-origin' });
+
 /* ----- settings ----- */
 
 export const getSettings = async (): Promise<Settings> =>
 	asJson<Settings>(await fetch(url('/api/settings'), { credentials: 'same-origin' }));
 
 export const patchSettings = async (body: Partial<Settings>): Promise<Response> =>
-	fetch(url('/api/json/settings'), {
+	fetch(url('/api/settings'), {
 		method: 'PATCH',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'same-origin',
@@ -34,48 +44,49 @@ export const getStatus = async (): Promise<Status> =>
 	asJson<Status>(await fetch(url('/api/status'), { credentials: 'same-origin' }));
 
 /* ----- show actions ----- */
+// Firmware exposes path-template rewrites for these, but the query-parameter
+// form is the "real" route. Use it directly so there is one URL shape, not
+// two-with-a-server-side-rewrite.
 
 export const showText = (text: string): Promise<Response> =>
-	fetch(url(`/api/show/text/${encodeURIComponent(text)}`));
+	post(`/api/show/text?t=${encodeURIComponent(text)}`);
 
-export const showScreen = (id: number): Promise<Response> => fetch(url(`/api/show/screen/${id}`));
+export const showScreen = (id: number): Promise<Response> => post(`/api/show/screen?s=${id}`);
 
 export const showCurrency = (code: string): Promise<Response> =>
-	fetch(url(`/api/show/currency/${encodeURIComponent(code)}`));
+	post(`/api/show/currency?c=${encodeURIComponent(code)}`);
 
 /* ----- LEDs ----- */
 
 export const lightsSet = (leds: Pick<LedStatus, 'hex'>[]): Promise<Response> =>
 	fetch(url('/api/lights/set'), {
-		method: 'PATCH',
+		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		credentials: 'same-origin',
 		body: JSON.stringify(leds)
 	});
 
-export const lightsOff = (): Promise<Response> => fetch(url('/api/lights/off'));
+export const lightsOff = (): Promise<Response> => post('/api/lights/off');
 
 /* ----- frontlight ----- */
 
-export const frontlightOn = (): Promise<Response> => fetch(url('/api/frontlight/on'));
-export const frontlightOff = (): Promise<Response> => fetch(url('/api/frontlight/off'));
-export const frontlightFlash = (): Promise<Response> => fetch(url('/api/frontlight/flash'));
+export const frontlightOn = (): Promise<Response> => post('/api/frontlight/on');
+export const frontlightOff = (): Promise<Response> => post('/api/frontlight/off');
+export const frontlightFlash = (): Promise<Response> => post('/api/frontlight/flash');
 export const frontlightBrightness = (value: number): Promise<Response> =>
-	fetch(url(`/api/frontlight/brightness/${value}`));
+	post(`/api/frontlight/brightness?b=${value}`);
 
 /* ----- system ----- */
 
-export const restartClock = (): Promise<Response> => fetch(url('/api/restart'));
-export const forceFullRefresh = (): Promise<Response> => fetch(url('/api/full_refresh'));
+export const restartClock = (): Promise<Response> => post('/api/restart');
+export const forceFullRefresh = (): Promise<Response> => post('/api/full_refresh');
 
 /* ----- timer + DnD ----- */
 
-export const pauseTimer = (): Promise<Response> => fetch(url('/api/action/pause'));
-export const timerRestart = (): Promise<Response> => fetch(url('/api/action/timer_restart'));
-export const dndEnable = (): Promise<Response> =>
-	fetch(url('/api/dnd/enable'), { method: 'POST', credentials: 'same-origin' });
-
-export const dndDisable = (): Promise<Response> =>
-	fetch(url('/api/dnd/disable'), { method: 'POST', credentials: 'same-origin' });
+export const pauseTimer = (): Promise<Response> => post('/api/action/pause');
+export const timerRestart = (): Promise<Response> => post('/api/action/timer_restart');
+export const dndEnable = (): Promise<Response> => post('/api/dnd/enable');
+export const dndDisable = (): Promise<Response> => post('/api/dnd/disable');
 
 /* ----- firmware ----- */
 
@@ -87,7 +98,7 @@ export const firmwareAutoUpdate = async (): Promise<{
 	ok: boolean;
 	payload: FirmwareAutoUpdateResponse;
 }> => {
-	const res = await fetch(url('/api/firmware/auto_update'));
+	const res = await post('/api/firmware/auto_update');
 	const payload = (await res.json()) as FirmwareAutoUpdateResponse;
 	return { ok: res.ok, payload };
 };

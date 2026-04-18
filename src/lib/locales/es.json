@@ -16,6 +16,7 @@
 			"useBigCharsMcap": "Utilice caracteres grandes para la market cap",
 			"useBlkCountdown": "Cuenta regresiva en bloques",
 			"useSatsSymbol": "Usar símbolo sats",
+			"useMscwTime": "Usar Moscow Time",
 			"fetchEuroPrice": "Obtener precio en €",
 			"timeBetweenPriceUpdates": "Tiempo entre actualizaciones de precios",
 			"ledPowerOnTest": "Prueba de encendido del LED",
@@ -41,6 +42,9 @@
 			"httpAuthUser": "Nombre de usuario WebUI",
 			"httpAuthPass": "Contraseña WebUI",
 			"httpAuthText": "Solo la WebUI está protegida con contraseña, no las llamadas API.",
+			"otaPass": "Contraseña de actualización OTA",
+			"otaPassHelp": "Déjalo en blanco para permitir OTA sin contraseña.",
+			"passwordSetLeaveBlank": "La contraseña está configurada. Déjalo en blanco para mantenerla.",
 			"currencies": "Monedas",
 			"mowMode": "Modo de sufijo Mow",
 			"suffixShareDot": "Notación compacta de sufijo",
@@ -61,6 +65,7 @@
 			"enableDebugLog": "Habilitar registro de depuración",
 			"bitaxeEnabled": "Habilitar la integración de Bitaxe",
 			"miningPoolStats": "Habilitar la integración de estadísticas del grupo minero",
+			"poolGlobalStats": "Mostrar hashrate global del pool",
 			"nostrZapNotify": "Habilitar notificaciones de Nostr Zap",
 			"thirdPartySource": "Utilice mempool.space/coincap.io",
 			"dataSource": {
@@ -78,7 +83,8 @@
 			"blockFlashColor": "Color del LED en el nuevo bloque",
 			"supplyPercent": "Mostrar el suministro de BTC en porcentaje",
 			"refrScrnChange": "Actualización completa en cada cambio de pantalla.",
-			"inverseButtons": "Números de pulsador inversos"
+			"inverseButtons": "Números de pulsador inversos",
+			"thirdPartyExtrasWarning": "La fuente de datos de terceros (mempool.space/Kraken) consume muchos datos; habilitar Bitaxe, estadísticas de pool de minería o zaps de Nostr a la vez puede bloquear el dispositivo. Usa preferentemente la fuente BTClock o un endpoint personalizado — si aun así quieres extras, no los actives todos a la vez."
 		},
 		"control": {
 			"turnOff": "Apagar",
