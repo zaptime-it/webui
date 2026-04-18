@@ -83,7 +83,8 @@
 			"blockFlashColor": "Color del LED en el nuevo bloque",
 			"supplyPercent": "Mostrar el suministro de BTC en porcentaje",
 			"refrScrnChange": "Actualización completa en cada cambio de pantalla.",
-			"inverseButtons": "Números de pulsador inversos"
+			"inverseButtons": "Números de pulsador inversos",
+			"thirdPartyExtrasWarning": "La fuente de datos de terceros (mempool.space/Kraken) consume muchos datos; habilitar Bitaxe, estadísticas de pool de minería o zaps de Nostr a la vez puede bloquear el dispositivo. Usa preferentemente la fuente BTClock o un endpoint personalizado — si aun así quieres extras, no los actives todos a la vez."
 		},
 		"control": {
 			"turnOff": "Apagar",

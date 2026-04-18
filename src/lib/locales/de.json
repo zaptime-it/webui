@@ -84,7 +84,8 @@
 			"blockFlashColor": "LED farbe bei neuem Block",
 			"supplyPercent": "BTC-Angebot in Prozent anzeigen",
 			"refrScrnChange": "Vollständige Aktualisierung bei jedem Bildschirmwechsel",
-			"inverseButtons": "Tastennummern umkehren"
+			"inverseButtons": "Tastennummern umkehren",
+			"thirdPartyExtrasWarning": "Die Drittanbieter-Datenquelle (mempool.space/Kraken) ist sehr datenintensiv; Bitaxe, Mining-Pool-Statistiken oder Nostr-Zaps gleichzeitig zu aktivieren kann das Gerät einfrieren lassen. Bevorzuge die BTClock-Quelle oder einen eigenen Endpoint — wenn du dennoch Extras möchtest, aktiviere sie nicht alle auf einmal."
 		},
 		"control": {
 			"systemInfo": "Systeminfo",

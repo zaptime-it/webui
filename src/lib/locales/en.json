@@ -101,7 +101,8 @@
 			"blockFlashColor": "LED color on new block",
 			"supplyPercent": "Show BTC supply in percent",
 			"refrScrnChange": "Full refresh on each screen change",
-			"inverseButtons": "Inverse push button numbers"
+			"inverseButtons": "Inverse push button numbers",
+			"thirdPartyExtrasWarning": "The third-party data source (mempool.space/Kraken) is very data-intensive; enabling Bitaxe, mining pool stats or Nostr zaps alongside it may freeze the device. Prefer the BTClock source or a custom endpoint — if you still want extras, don't enable them all at once."
 		},
 		"control": {
 			"systemInfo": "System info",

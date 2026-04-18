@@ -9,6 +9,7 @@
 	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
 	import { fetchBitaxeInfo, fetchLocalPoolInfo, FetchError } from '$lib/api/external';
 	import { toast } from '$lib/stores/toast.svelte';
+	import { DataSourceType } from '$lib/types/settings';
 
 	const describeError = (err: unknown, opts: { thing: string }): [string, string] => {
 		if (err instanceof FetchError) {
@@ -121,6 +122,16 @@
 				min={0}
 				max={59}
 			/>
+		</div>
+	{/if}
+
+	{#if data.dataSource === DataSourceType.THIRD_PARTY_SOURCE && ('bitaxeEnabled' in data || 'miningPoolStats' in data || 'nostrZapNotify' in data)}
+		<div class="alert alert-warning text-sm mt-4">
+			<span
+				>⚠️ <strong>{m['warning']()}</strong>: {m[
+					'section.settings.thirdPartyExtrasWarning'
+				]()}</span
+			>
 		</div>
 	{/if}
 
