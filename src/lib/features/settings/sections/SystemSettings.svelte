@@ -57,9 +57,7 @@
 				type={showHttpAuthPassword ? 'text' : 'password'}
 				placeholder={data.httpAuthPassSet ? '••••••••' : ''}
 				required={!data.httpAuthPassSet}
-				helpText={data.httpAuthPassSet
-					? m['section.settings.passwordSetLeaveBlank']()
-					: undefined}
+				helpText={data.httpAuthPassSet ? m['section.settings.passwordSetLeaveBlank']() : undefined}
 			>
 				{#snippet action()}
 					<button

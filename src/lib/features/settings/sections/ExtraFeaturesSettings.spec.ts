@@ -45,9 +45,7 @@ describe('ExtraFeaturesSettings test buttons', () => {
 		// is a derived Set-membership check. The hardcoded list mirrors the
 		// firmware's MiningPoolInterface::supportsGlobalStats() overrides;
 		// adding a third pool requires updates on both sides.
-		expect(src).toMatch(
-			/poolsWithGlobalStats = new Set\(\['noderunners', 'satoshiradio'\]\)/
-		);
+		expect(src).toMatch(/poolsWithGlobalStats = new Set\(\['noderunners', 'satoshiradio'\]\)/);
 		expect(src).toContain('const supportsGlobalStats = $derived(');
 		// Toggle renders only inside the supportsGlobalStats guard.
 		expect(src).toMatch(
