@@ -28,7 +28,7 @@ jobs:
     needs: check-changes
     runs-on: docker
     container:
-      image: ghcr.io/catthehacker/ubuntu:js-22.04
+      image: ghcr.io/catthehacker/ubuntu:js-24.04
     if: ${{ needs.check-changes.outputs.all_changed_and_modified_files_count >= 1 }}
     permissions:
       contents: write
