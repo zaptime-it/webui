@@ -22,6 +22,8 @@
 			"poolGlobalStats": "Toon pool-brede hashrate",
 			"fetchEuroPrice": "Toon € prijs",
 			"screens": "Schermen",
+			"dragToReorder": "Sleep rijen of gebruik de pijlen om de volgorde te wijzigen",
+			"perCurrency": "per valuta",
 			"hostnamePrefix": "Hostnaam voorvoegsel",
 			"mempoolnstance": "Mempool instantie",
 			"suffixPrice": "Achtervoegsel prijs formaat",
@@ -31,6 +33,7 @@
 			"wifiTxPowerText": "Meestal hoeft dit niet aangepast te worden.",
 			"settingsSaved": "Instellingen opgeslagen",
 			"errorSavingSettings": "Fout bij opslaan instellingen",
+			"unsavedChanges": "Niet opgeslagen wijzigingen",
 			"ownDataSource": "BTClock-gegevensbron gebruiken",
 			"flMaxBrightness": "Displaylicht helderheid",
 			"flAlwaysOn": "Displaylicht altijd aan",
@@ -135,7 +138,9 @@
 		"save": "Opslaan",
 		"reset": "Herstel",
 		"restart": "Herstart",
-		"forceFullRefresh": "Forceer scherm verversen"
+		"forceFullRefresh": "Forceer scherm verversen",
+		"moveUp": "Omhoog verplaatsen",
+		"moveDown": "Omlaag verplaatsen"
 	},
 	"timer": {
 		"running": "actief",

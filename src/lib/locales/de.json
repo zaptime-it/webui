@@ -27,10 +27,13 @@
 			"shortAmountsWarning": "Geringe Beträge können die Lebensdauer der Displays verkürzen",
 			"tzOffsetHelpText": "Ein Neustart ist erforderlich, um den TZ-Offset anzuwenden.",
 			"screens": "Bildschirme",
+			"dragToReorder": "Zeilen ziehen oder Pfeile verwenden, um die Reihenfolge zu ändern",
+			"perCurrency": "pro Währung",
 			"wifiTxPowerText": "In den meisten Fällen muss dies nicht eingestellt werden.",
 			"wifiTxPower": "WiFi-TX-Leistung",
 			"settingsSaved": "Einstellungen gespeichert",
 			"errorSavingSettings": "Fehler beim Speichern der Einstellungen",
+			"unsavedChanges": "Ungespeicherte Änderungen",
 			"ownDataSource": "BTClock-Datenquelle",
 			"flAlwaysOn": "Displaybeleuchtung immer an",
 			"flEffectDelay": "Displaybeleuchtungeffekt Geschwindigkeit",
@@ -145,7 +148,9 @@
 		"save": "Speichern",
 		"reset": "Zurücksetzen",
 		"restart": "Neustart",
-		"forceFullRefresh": "Vollständige Aktualisierung erzwingen"
+		"forceFullRefresh": "Vollständige Aktualisierung erzwingen",
+		"moveUp": "Nach oben",
+		"moveDown": "Nach unten"
 	},
 	"timer": {
 		"running": "läuft",

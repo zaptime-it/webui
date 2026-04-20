@@ -17,3 +17,6 @@ package-lock.json
 yarn.lock
 src/lib/paraglide
 src/lib/timezones.json
+
+# Beads stealth-mode workspace files (auto-generated, not checked in).
+.beads/

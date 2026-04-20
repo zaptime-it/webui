@@ -6,6 +6,8 @@
 			"backgroundColor": "Color de fondo",
 			"ledBrightness": "Brillo LED",
 			"screens": "Pantallas",
+			"dragToReorder": "Arrastra las filas o usa las flechas para reordenar",
+			"perCurrency": "por moneda",
 			"shortAmountsWarning": "Pequeñas cantidades pueden acortar la vida útil de los displays",
 			"fullRefreshEvery": "Actualización completa cada",
 			"timePerScreen": "Tiempo por pantalla",
@@ -29,6 +31,7 @@
 			"wifiTxPowerText": "En la mayoría de los casos no es necesario configurar esto.",
 			"settingsSaved": "Configuración guardada",
 			"errorSavingSettings": "Error al guardar la configuración",
+			"unsavedChanges": "Cambios sin guardar",
 			"ownDataSource": "fuente de datos BTClock",
 			"flMaxBrightness": "Brillo de luz de la pantalla",
 			"flAlwaysOn": "Luz de la pantalla siempre encendida",
@@ -135,7 +138,9 @@
 		"save": "Guardar",
 		"reset": "Restaurar",
 		"restart": "Reiniciar",
-		"forceFullRefresh": "Forzar refresco"
+		"forceFullRefresh": "Forzar refresco",
+		"moveUp": "Subir",
+		"moveDown": "Bajar"
 	},
 	"colors": {
 		"black": "Negro",

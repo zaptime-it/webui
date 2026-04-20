@@ -26,10 +26,13 @@
 			"shortAmountsWarning": "Short amounts might shorten lifespan of the displays",
 			"tzOffsetHelpText": "A restart is required to apply TZ offset.",
 			"screens": "Screens",
+			"dragToReorder": "Drag rows or use the arrows to change rotation order",
+			"perCurrency": "per currency",
 			"wifiTxPowerText": "In most cases this does not need to be set.",
 			"wifiTxPower": "WiFi TX power",
 			"settingsSaved": "Settings saved",
 			"errorSavingSettings": "Error saving settings",
+			"unsavedChanges": "Unsaved changes",
 			"ownDataSource": "BTClock data source",
 			"flMaxBrightness": "Frontlight brightness",
 			"flAlwaysOn": "Frontlight always on",
@@ -164,7 +167,9 @@
 		"save": "Save",
 		"reset": "Reset",
 		"restart": "Restart",
-		"forceFullRefresh": "Force full refresh"
+		"forceFullRefresh": "Force full refresh",
+		"moveUp": "Move up",
+		"moveDown": "Move down"
 	},
 	"timer": {
 		"running": "running",

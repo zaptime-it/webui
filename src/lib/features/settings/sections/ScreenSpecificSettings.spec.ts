@@ -44,13 +44,19 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain("m['section.settings.useMscwTime']()");
 	});
 
-	test('ScreenSpecificSettings screens + currencies grids are viewport-responsive', () => {
+	test('ScreenSpecificSettings exposes the screens + currencies sections', () => {
 		const src = read('ScreenSpecificSettings.svelte');
+		// Both the screens block and the currencies block became reorderable
+		// lists (ScreenRotationList / CurrencyRotationList), so they no longer
+		// use the RESPONSIVE grid classes. The wrapping divs keep the testids
+		// so existing layout + navigation assertions can still locate them.
 		expect(src).toContain('data-testid="screens-grid"');
+		expect(src).toContain('ScreenRotationList');
 		expect(src).toContain('data-testid="currencies-grid"');
-		// Both additional grids share the same responsive class string.
+		expect(src).toContain('CurrencyRotationList');
+		// Only the top switches grid still uses the responsive layout.
 		const matches = src.match(new RegExp(RESPONSIVE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'));
-		expect(matches?.length ?? 0).toBeGreaterThanOrEqual(3);
+		expect(matches?.length ?? 0).toBeGreaterThanOrEqual(1);
 	});
 
 	test('DisplaySettings switch grid uses the viewport breakpoints', () => {

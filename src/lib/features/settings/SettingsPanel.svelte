@@ -67,6 +67,14 @@
 		if (!patch.httpAuthPass) delete patch.httpAuthPass;
 		if (!patch.otaPass) delete patch.otaPass;
 
+		// Screen rotation order travels in the `order` field per entry.
+		// Stamp the current array index so the firmware can treat the save
+		// as a reorder PATCH (it requires the full set, every entry with
+		// an `order`) rather than a visibility-only PATCH.
+		if (patch.screens) {
+			patch.screens = patch.screens.map((s, i) => ({ ...s, order: i }));
+		}
+
 		try {
 			const res = await settingsStore.save(patch);
 			if (res.ok) toast.success(m['section.settings.settingsSaved']());
@@ -79,8 +87,19 @@
 
 <div class="card bg-base-100 shadow @container" id="settings-card">
 	<div class="card-body space-y-4">
-		<div class="flex items-center justify-between">
-			<h2 class="card-title">{m['section.settings.title']()}</h2>
+		<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+			<h2 class="card-title">
+				{m['section.settings.title']()}
+				{#if settingsStore.isDirty}
+					<span
+						class="badge badge-warning badge-sm ml-2 align-middle whitespace-nowrap"
+						data-testid="settings-dirty-badge"
+						role="status"
+					>
+						{m['section.settings.unsavedChanges']()}
+					</span>
+				{/if}
+			</h2>
 			<small class="space-x-1">
 				<button type="button" id="showAllBtn" class="link link-primary" onclick={showAll}>
 					{m['section.settings.showAll']()}
@@ -105,11 +124,16 @@
 				<ExtraFeaturesSettings bind:isOpen={extraOpen} {miningPoolMap} />
 				<SystemSettings bind:isOpen={systemOpen} />
 
-				<div class="flex gap-2 mt-4">
-					<button type="submit" class="btn btn-sm btn-primary">
+				<div class="flex items-center gap-2 mt-4">
+					<button type="submit" class="btn btn-sm btn-primary" disabled={!settingsStore.isDirty}>
 						{m['button.save']()}
 					</button>
-					<button type="button" class="btn btn-sm" onclick={handleReset}>
+					<button
+						type="button"
+						class="btn btn-sm"
+						onclick={handleReset}
+						disabled={!settingsStore.isDirty}
+					>
 						{m['button.reset']()}
 					</button>
 				</div>
