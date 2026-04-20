@@ -26,6 +26,14 @@ export interface Screen {
 	id: number;
 	name: string;
 	enabled: boolean;
+	/**
+	 * Zero-based position in the rotation sequence. The firmware emits this
+	 * explicitly so the UI doesn't depend on JsonArray iteration order, and
+	 * so a reorder PATCH has an unambiguous field to write back. Required
+	 * on GET; required on PATCH only when reordering — the SettingsPanel
+	 * submit handler augments each entry with its current index.
+	 */
+	order: number;
 }
 
 export interface DndSettings {

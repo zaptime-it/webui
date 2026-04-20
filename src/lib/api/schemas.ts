@@ -18,7 +18,8 @@ export const dndSettingsSchema = v.object({
 export const screenSchema = v.object({
 	id: v.number(),
 	name: v.string(),
-	enabled: v.boolean()
+	enabled: v.boolean(),
+	order: v.number()
 });
 
 export const settingsSchema = v.looseObject({

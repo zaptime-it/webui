@@ -31,6 +31,7 @@
 		"msgpack-es": "^0.0.5",
 		"nostr-tools": "^2.23.3",
 		"patch-package": "^8.0.1",
+		"svelte-dnd-action": "^0.9.69",
 		"valibot": "^1.3.1"
 	},
 	"devDependencies": {

@@ -2,6 +2,8 @@
 	import * as m from '$lib/paraglide/messages';
 	import CollapseCard from '$lib/ui/CollapseCard.svelte';
 	import SwitchField from '$lib/ui/SwitchField.svelte';
+	import ScreenRotationList from './ScreenRotationList.svelte';
+	import CurrencyRotationList from './CurrencyRotationList.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
 
@@ -84,38 +86,24 @@
 		/>
 	</div>
 
-	<div class="mt-4">
+	<div class="mt-4" data-testid="screens-grid">
 		<h5 class="font-semibold mb-2">{m['section.settings.screens']()}</h5>
-		<div
-			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1"
-			data-testid="screens-grid"
-		>
-			{#each data.screens as s (s.id)}
-				<SwitchField id="screens_{s.id}" bind:checked={s.enabled} label={s.name} />
-			{/each}
-		</div>
+		<ScreenRotationList
+			bind:screens={data.screens}
+			activeCurrencyCount={data.actCurrencies?.length ?? 0}
+		/>
 	</div>
 
 	{#if showCurrencies && data.availableCurrencies}
-		<div class="mt-4">
+		<div class="mt-4" data-testid="currencies-grid">
 			<h5 class="font-semibold">{m['section.settings.currencies']()}</h5>
 			<small>{m['restartRequired']()}</small>
-			<div
-				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1 mt-2"
-				data-testid="currencies-grid"
-			>
-				{#each data.availableCurrencies as c (c)}
-					<label class="label cursor-pointer justify-start gap-2 py-1" for="currency_{c}">
-						<input
-							id="currency_{c}"
-							type="checkbox"
-							class="checkbox checkbox-sm"
-							bind:group={data.actCurrencies}
-							value={c}
-						/>
-						<span class="label-text">{c}</span>
-					</label>
-				{/each}
+			<div class="mt-2">
+				<CurrencyRotationList
+					availableCurrencies={data.availableCurrencies}
+					actCurrencies={data.actCurrencies}
+					onChange={(next) => (data.actCurrencies = next)}
+				/>
 			</div>
 		</div>
 	{/if}
