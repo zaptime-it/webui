@@ -23,6 +23,11 @@ def process_directory(input_dir, output_dir):
                 print(f'Compressed: {input_file_path} -> {output_file_path}')
 
 input_directory = 'dist'
-output_directory = 'build_gz'
+# Files must land under build_gz/www/ so the root of the LittleFS image
+# created by `littlefs-python create data/build_gz …` matches the
+# webserver's expectation at runtime (kWebRootBase = "/lfs/www" in
+# components/webserver/control_server.cpp). Without the www/ prefix
+# every static GET 404's against a fresh flash.
+output_directory = 'build_gz/www'
 
 process_directory(input_directory, output_directory)
