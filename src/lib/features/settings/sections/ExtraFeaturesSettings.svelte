@@ -141,7 +141,7 @@
 			<SwitchField
 				id="bitaxeEnabled"
 				bind:checked={data.bitaxeEnabled}
-				label="{m['section.settings.bitaxeEnabled']()} ({m['restartRequired']()})"
+				label={m['section.settings.bitaxeEnabled']()}
 			/>
 			{#if data.bitaxeEnabled}
 				<div class="mt-2 space-y-2">
@@ -174,7 +174,7 @@
 			<SwitchField
 				id="miningPoolStats"
 				bind:checked={data.miningPoolStats}
-				label="{m['section.settings.miningPoolStats']()} ({m['restartRequired']()})"
+				label={m['section.settings.miningPoolStats']()}
 			/>
 			{#if data.miningPoolStats}
 				<div class="mt-2 space-y-2">
@@ -236,7 +236,7 @@
 			<SwitchField
 				id="nostrZapNotify"
 				bind:checked={data.nostrZapNotify}
-				label="{m['section.settings.nostrZapNotify']()} ({m['restartRequired']()})"
+				label={m['section.settings.nostrZapNotify']()}
 			/>
 			{#if data.nostrZapNotify}
 				<div

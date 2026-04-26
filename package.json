@@ -12,6 +12,8 @@
 		"serve:test": "vite build --config vite.config.test.ts && vite preview --config vite.config.test.ts --host 127.0.0.1 --port 4173 --strictPort",
 		"preview": "vite preview",
 		"paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
+		"generate:settings-meta": "python3 scripts/generate-settings-meta.py",
+		"check:settings-meta": "python3 scripts/generate-settings-meta.py --out /tmp/btclock-webui-settings-check.ts && diff -q src/lib/types/settings.generated.ts /tmp/btclock-webui-settings-check.ts",
 		"check": "pnpm paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "pnpm paraglide:compile && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
