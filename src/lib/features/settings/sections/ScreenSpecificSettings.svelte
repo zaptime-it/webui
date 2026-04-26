@@ -6,6 +6,7 @@
 	import CurrencyRotationList from './CurrencyRotationList.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
+	import { previewSatsSymbol, previewSuffixPrice } from '$lib/util/screenPreview';
 
 	interface Props {
 		isOpen?: boolean;
@@ -19,6 +20,15 @@
 			(data.dataSource === DataSourceType.BTCLOCK_SOURCE ||
 				data.dataSource === DataSourceType.CUSTOM_SOURCE ||
 				data.dataSource === DataSourceType.THIRD_PARTY_SOURCE)
+	);
+
+	const satsSymbolPreview = $derived(previewSatsSymbol({ useSatsSymbol: data?.useSatsSymbol }));
+	const suffixPricePreview = $derived(
+		previewSuffixPrice({
+			suffixPrice: data?.suffixPrice,
+			mowMode: data?.mowMode,
+			suffixShareDot: data?.suffixShareDot
+		})
 	);
 </script>
 
@@ -42,21 +52,35 @@
 			bind:checked={data.useBlkCountdown}
 			label={m['section.settings.useBlkCountdown']()}
 		/>
-		<SwitchField
-			id="useSatsSymbol"
-			bind:checked={data.useSatsSymbol}
-			label={m['section.settings.useSatsSymbol']()}
-		/>
+		<div class="flex items-center justify-between gap-2">
+			<SwitchField
+				id="useSatsSymbol"
+				bind:checked={data.useSatsSymbol}
+				label={m['section.settings.useSatsSymbol']()}
+			/>
+			<code
+				class="text-xs px-1.5 py-0.5 rounded bg-base-200 text-base-content/70 whitespace-nowrap"
+				data-testid="useSatsSymbol-preview"
+				aria-hidden="true">{satsSymbolPreview}</code
+			>
+		</div>
 		<SwitchField
 			id="useMscwTime"
 			bind:checked={data.useMscwTime}
 			label={m['section.settings.useMscwTime']()}
 		/>
-		<SwitchField
-			id="suffixPrice"
-			bind:checked={data.suffixPrice}
-			label={m['section.settings.suffixPrice']()}
-		/>
+		<div class="flex items-center justify-between gap-2">
+			<SwitchField
+				id="suffixPrice"
+				bind:checked={data.suffixPrice}
+				label={m['section.settings.suffixPrice']()}
+			/>
+			<code
+				class="text-xs px-1.5 py-0.5 rounded bg-base-200 text-base-content/70 whitespace-nowrap"
+				data-testid="suffixPrice-preview"
+				aria-hidden="true">{suffixPricePreview}</code
+			>
+		</div>
 		<SwitchField
 			id="mowMode"
 			bind:checked={data.mowMode}
