@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterAll, vi } from 'vitest';
-import { parseSettingsError, patchSettings } from './client';
+import { getSettings, getStatus, parseSettingsError, patchSettings } from './client';
 
 describe('parseSettingsError', () => {
 	test('handles "<field>:<reason>"', () => {
@@ -88,5 +88,83 @@ describe('patchSettings response envelope', () => {
 		expect(res.ok).toBe(false);
 		expect(res.body).toBeNull();
 		expect(res.text).toBe('plain text complaint');
+	});
+});
+
+describe('cold-start schema validation', () => {
+	const fetchMock = vi.fn();
+	const originalFetch = globalThis.fetch;
+
+	beforeEach(() => {
+		globalThis.fetch = fetchMock as unknown as typeof fetch;
+		fetchMock.mockReset();
+	});
+
+	afterAll(() => {
+		globalThis.fetch = originalFetch;
+	});
+
+	const validSettingsBody = () =>
+		JSON.stringify({
+			numScreens: 7,
+			timerSeconds: 30,
+			dataSource: 0,
+			screens: [{ id: 0, name: 'Block Height', enabled: true, order: 0 }],
+			dnd: {
+				enabled: false,
+				dndTimeEnabled: false,
+				startHour: 0,
+				startMinute: 0,
+				endHour: 0,
+				endMinute: 0
+			}
+		});
+
+	const jsonResponse = (body: string, status = 200) =>
+		new Response(body, { status, headers: { 'Content-Type': 'application/json' } });
+
+	test('getSettings parses a valid payload and passes through unknown fields', async () => {
+		fetchMock.mockResolvedValueOnce(
+			jsonResponse(
+				JSON.stringify({
+					...JSON.parse(validSettingsBody()),
+					somethingTheFirmwareAddedLater: 42
+				})
+			)
+		);
+		const s = await getSettings();
+		expect(s.numScreens).toBe(7);
+		// looseObject should retain unknown forward-compat fields.
+		expect((s as unknown as Record<string, unknown>).somethingTheFirmwareAddedLater).toBe(42);
+	});
+
+	test('getSettings throws on schema violations', async () => {
+		fetchMock.mockResolvedValueOnce(
+			jsonResponse(JSON.stringify({ numScreens: 'seven', dataSource: 0 }))
+		);
+		await expect(getSettings()).rejects.toThrow();
+	});
+
+	test('getStatus parses a valid status payload', async () => {
+		fetchMock.mockResolvedValueOnce(
+			jsonResponse(
+				JSON.stringify({
+					data: ['1', '2'],
+					espFreeHeap: 100,
+					espHeapSize: 200,
+					leds: [],
+					connectionStatus: { price: true, blocks: true }
+				})
+			)
+		);
+		const s = await getStatus();
+		expect(s.espFreeHeap).toBe(100);
+	});
+
+	test('getStatus throws on schema violations', async () => {
+		fetchMock.mockResolvedValueOnce(
+			jsonResponse(JSON.stringify({ data: 'oops', leds: [] }))
+		);
+		await expect(getStatus()).rejects.toThrow();
 	});
 });

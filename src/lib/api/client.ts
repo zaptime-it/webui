@@ -12,6 +12,7 @@
  */
 
 import { PUBLIC_BASE_URL } from '$lib/config';
+import { parseSettings, parseStatus } from '$lib/api/schemas';
 import type { Settings } from '$lib/types/settings';
 import type { LedStatus, Status } from '$lib/types/status';
 
@@ -86,8 +87,17 @@ const postEnv = async (path: string): Promise<ApiResult> => envelope(await post(
 
 /* ----- settings ----- */
 
-export const getSettings = async (): Promise<Settings> =>
-	asJson<Settings>(await fetch(url('/api/settings'), { credentials: 'same-origin' }));
+// Cold-start path runs Valibot validation: any future contract change that
+// removes a required field (numScreens, timerSeconds, dataSource, screens,
+// dnd) will fail here loudly rather than producing a half-rendered UI later.
+// The SSE hot path deliberately skips this — frames arrive too frequently
+// to make per-frame validation worth the cost.
+export const getSettings = async (): Promise<Settings> => {
+	const raw = await asJson<unknown>(
+		await fetch(url('/api/settings'), { credentials: 'same-origin' })
+	);
+	return parseSettings(raw) as Settings;
+};
 
 export interface SettingsErrorBody {
 	error?: string;
@@ -107,8 +117,12 @@ export const patchSettings = async (
 
 /* ----- status ----- */
 
-export const getStatus = async (): Promise<Status> =>
-	asJson<Status>(await fetch(url('/api/status'), { credentials: 'same-origin' }));
+export const getStatus = async (): Promise<Status> => {
+	const raw = await asJson<unknown>(
+		await fetch(url('/api/status'), { credentials: 'same-origin' })
+	);
+	return parseStatus(raw) as Status;
+};
 
 /* ----- show actions ----- */
 // Firmware exposes path-template rewrites for these, but the query-parameter
