@@ -5,10 +5,15 @@ humans setting up the toolchain; this file is what an agent should read
 to understand **what's already built**, **how the pieces fit together**,
 and **where to make changes safely**.
 
-For the firmware-side picture (what the device exposes, what each
-endpoint touches), see [`docs/ARCHITECTURE.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/ARCHITECTURE.md)
-in the firmware repo. For the field schema reference (every settings key +
-bounds + boot-only flag), see [`docs/SETTINGS.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/SETTINGS.md).
+For the WebUI-side architecture diagrams (build pipeline, runtime
+data flow, settings save lifecycle, connection/OTA state machine),
+see [`doc/ARCHITECTURE.md`](doc/ARCHITECTURE.md) — pairs with this
+file. For the firmware-side picture (what the device exposes, what
+each endpoint touches), see
+[`docs/ARCHITECTURE.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/ARCHITECTURE.md)
+in the firmware repo. For the field schema reference (every settings
+key + bounds + boot-only flag), see
+[`docs/SETTINGS.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/SETTINGS.md).
 The relative `../docs/` paths only resolve when the WebUI is checked out
 as `data/` inside the firmware tree; the absolute links work everywhere.
 
