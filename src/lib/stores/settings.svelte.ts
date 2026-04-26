@@ -18,9 +18,18 @@ import type { Settings, SettingsState } from '$lib/types/settings';
 
 type PristineMap = Map<keyof Settings, string>;
 
-const state = $state<{ value: SettingsState; pristine: PristineMap | null }>({
+const state = $state<{
+	value: SettingsState;
+	pristine: PristineMap | null;
+	// Set by checkRemoteDrift() when the device's current /api/settings
+	// disagrees with our pristine baseline (another tab saved, firmware
+	// rebooted with reset settings, factory reset). Cleared on the next
+	// successful load() or save().
+	hasRemoteDrift: boolean;
+}>({
 	value: { status: 'loading' },
-	pristine: null
+	pristine: null,
+	hasRemoteDrift: false
 });
 
 const derived = $derived.by(() => state.value);
@@ -82,15 +91,51 @@ export const settingsStore = {
 	isFieldDirty(key: keyof Settings): boolean {
 		return this.dirtyKeys.has(key);
 	},
+	/**
+	 * Best-effort detection that another tab (or the device itself) has
+	 * mutated settings since we last loaded. The firmware doesn't expose
+	 * a version field, so we re-fetch and compare against pristine: any
+	 * differing key means the baseline is stale. Returns true when drift
+	 * is detected; sets `hasRemoteDrift` so the UI can surface a banner.
+	 *
+	 * Note: this is a heuristic, not a CAS — two tabs racing identical
+	 * edits will not collide. A real fix needs a firmware-side version /
+	 * If-Match-style PATCH guard. Until then, focus-based revalidation
+	 * catches the common "I forgot a tab was open" case.
+	 */
+	async checkRemoteDrift(): Promise<boolean> {
+		if (state.value.status !== 'ready' || state.pristine === null) return false;
+		try {
+			const fresh = deriveTimePerScreen(await getSettings());
+			const stale = computeDirtyKeys(fresh, state.pristine);
+			// Drop derived keys + any keys the user has actively edited locally
+			// (those are *expected* to differ; reporting them as drift would
+			// false-alarm on every dirty form).
+			const localDirty = computeDirtyKeys(state.value.data, state.pristine);
+			for (const k of localDirty) stale.delete(k);
+			state.hasRemoteDrift = stale.size > 0;
+			return state.hasRemoteDrift;
+		} catch {
+			return false;
+		}
+	},
+	get hasRemoteDrift(): boolean {
+		return state.hasRemoteDrift;
+	},
+	dismissRemoteDrift() {
+		state.hasRemoteDrift = false;
+	},
 	async load(): Promise<void> {
 		try {
 			const raw = await getSettings();
 			const data = deriveTimePerScreen(raw);
 			state.value = { status: 'ready', data };
 			state.pristine = buildPristine(data);
+			state.hasRemoteDrift = false;
 		} catch (err) {
 			state.value = { status: 'error', error: (err as Error).message };
 			state.pristine = null;
+			state.hasRemoteDrift = false;
 		}
 	},
 	async save(patch: Partial<Settings>): Promise<ApiResult<SettingsErrorBody>> {
@@ -101,7 +146,10 @@ export const settingsStore = {
 			// The device accepted the PATCH, so the new working copy becomes
 			// the pristine baseline. A failed save leaves the form dirty so
 			// the user can retry or reset.
-			if (res.ok) state.pristine = buildPristine(data);
+			if (res.ok) {
+				state.pristine = buildPristine(data);
+				state.hasRemoteDrift = false;
+			}
 		}
 		return res;
 	},

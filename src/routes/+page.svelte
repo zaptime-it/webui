@@ -65,8 +65,20 @@
 		const onResize = () => setupObserver();
 		window.addEventListener('resize', onResize);
 
+		// Revalidate settings on window focus / tab visibility — catches the
+		// "another tab saved" case without needing a firmware version field.
+		// Cheap one-shot GET; the SSE hot path keeps status fresh on its own.
+		const onFocus = () => {
+			if (settingsStore.isReady) void settingsStore.checkRemoteDrift();
+		};
+		window.addEventListener('focus', onFocus);
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'visible') onFocus();
+		});
+
 		return () => {
 			window.removeEventListener('resize', onResize);
+			window.removeEventListener('focus', onFocus);
 			observer?.disconnect();
 			statusStore.disconnect();
 		};

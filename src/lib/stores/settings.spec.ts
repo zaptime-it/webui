@@ -197,6 +197,53 @@ describe('settingsStore.dirtyKeys (per-field)', () => {
 		expect(keys).not.toContain('timePerScreen');
 	});
 
+	test('checkRemoteDrift detects another tab having saved a different value', async () => {
+		// Initial load establishes pristine. We then issue a fresh GET and
+		// see a different `numScreens` — that's drift, regardless of local
+		// edits.
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		expect(store.hasRemoteDrift).toBe(false);
+
+		const evolved = sampleSettings();
+		(evolved as unknown as { numScreens: number }).numScreens = 4;
+		getSettingsMock.mockResolvedValueOnce(evolved);
+		const drifted = await store.checkRemoteDrift();
+		expect(drifted).toBe(true);
+		expect(store.hasRemoteDrift).toBe(true);
+	});
+
+	test('checkRemoteDrift ignores keys the local user is currently editing', async () => {
+		// If the local form is dirty on `stealFocus`, a fresh GET that also
+		// shows a different `stealFocus` is *expected* — that's our own
+		// pending edit, not someone else's. Drift should only fire on
+		// fields the user hasn't touched.
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		store.set('stealFocus', true);
+
+		const evolved = sampleSettings();
+		(evolved as unknown as { stealFocus: boolean }).stealFocus = true;
+		getSettingsMock.mockResolvedValueOnce(evolved);
+		const drifted = await store.checkRemoteDrift();
+		expect(drifted).toBe(false);
+	});
+
+	test('dismissRemoteDrift clears the flag', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		const evolved = sampleSettings();
+		(evolved as unknown as { numScreens: number }).numScreens = 4;
+		getSettingsMock.mockResolvedValueOnce(evolved);
+		await store.checkRemoteDrift();
+		expect(store.hasRemoteDrift).toBe(true);
+		store.dismissRemoteDrift();
+		expect(store.hasRemoteDrift).toBe(false);
+	});
+
 	test('successful save clears dirtyKeys back to empty', async () => {
 		getSettingsMock.mockResolvedValueOnce(sampleSettings());
 		patchSettingsMock.mockResolvedValueOnce({

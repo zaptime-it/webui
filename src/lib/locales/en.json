@@ -34,6 +34,7 @@
 			"settingsSaved": "Settings saved",
 			"errorSavingSettings": "Error saving settings",
 			"unsavedChanges": "Unsaved changes",
+			"remoteDriftWarning": "Settings have changed on the device since you loaded the page. Reload to see the latest values.",
 			"ownDataSource": "BTClock data source",
 			"flMaxBrightness": "Frontlight brightness",
 			"flAlwaysOn": "Frontlight always on",
@@ -174,7 +175,9 @@
 		"restart": "Restart",
 		"forceFullRefresh": "Force full refresh",
 		"moveUp": "Move up",
-		"moveDown": "Move down"
+		"moveDown": "Move down",
+		"reload": "Reload",
+		"dismiss": "Dismiss"
 	},
 	"timer": {
 		"running": "running",

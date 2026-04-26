@@ -35,6 +35,7 @@
 			"settingsSaved": "Instellingen opgeslagen",
 			"errorSavingSettings": "Fout bij opslaan instellingen",
 			"unsavedChanges": "Niet opgeslagen wijzigingen",
+			"remoteDriftWarning": "Instellingen zijn op het apparaat gewijzigd sinds je deze pagina laadde. Herlaad om de huidige waarden te zien.",
 			"ownDataSource": "BTClock-gegevensbron gebruiken",
 			"flMaxBrightness": "Displaylicht helderheid",
 			"flAlwaysOn": "Displaylicht altijd aan",
@@ -145,7 +146,9 @@
 		"restart": "Herstart",
 		"forceFullRefresh": "Forceer scherm verversen",
 		"moveUp": "Omhoog verplaatsen",
-		"moveDown": "Omlaag verplaatsen"
+		"moveDown": "Omlaag verplaatsen",
+		"reload": "Herladen",
+		"dismiss": "Sluiten"
 	},
 	"timer": {
 		"running": "actief",

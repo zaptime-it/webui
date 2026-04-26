@@ -178,6 +178,33 @@
 				<strong role="status">Loading…</strong>
 			</div>
 		{:else}
+			{#if settingsStore.hasRemoteDrift}
+				<div
+					role="alert"
+					class="alert alert-warning alert-sm flex flex-col items-start gap-2 sm:flex-row sm:items-center"
+					data-testid="remote-drift-banner"
+				>
+					<span class="grow">{m['section.settings.remoteDriftWarning']()}</span>
+					<div class="flex gap-2">
+						<button
+							type="button"
+							class="btn btn-xs btn-primary"
+							onclick={async () => {
+								await settingsStore.load();
+							}}
+						>
+							{m['button.reload']()}
+						</button>
+						<button
+							type="button"
+							class="btn btn-xs btn-ghost"
+							onclick={() => settingsStore.dismissRemoteDrift()}
+						>
+							{m['button.dismiss']()}
+						</button>
+					</div>
+				</div>
+			{/if}
 			<form onsubmit={handleSubmit} class="space-y-4">
 				<ScreenSpecificSettings bind:isOpen={screenOpen} />
 				<DisplaySettings bind:isOpen={displayOpen} />
