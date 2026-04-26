@@ -138,7 +138,11 @@
 			"lightSensor": "Light sensor",
 			"nostrConnection": "Nostr Relay connection",
 			"doNotDisturb": "Do not disturb",
-			"timeBasedDnd": "Time-based schedule"
+			"timeBasedDnd": "Time-based schedule",
+			"lostConnectionTitle": "Lost connection",
+			"lostConnectionBody": "Trying to reconnect…",
+			"otaInProgressTitle": "Updating firmware",
+			"otaInProgressBody": "Device will restart shortly."
 		},
 		"firmwareUpdater": {
 			"fileUploadFailed": "File upload failed. Make sure you have selected the correct file and try again.",

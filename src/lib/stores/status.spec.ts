@@ -123,6 +123,41 @@ describe('statusStore.connected', () => {
 	});
 });
 
+describe('statusStore.otaInProgress', () => {
+	beforeEach(() => {
+		capturedHandlers = null;
+		vi.resetModules();
+	});
+
+	test('flips on beginOtaUpload(), clears on endOtaUpload()', async () => {
+		const store = await loadStore();
+		expect(store.otaInProgress).toBe(false);
+		store.beginOtaUpload();
+		expect(store.otaInProgress).toBe(true);
+		store.endOtaUpload();
+		expect(store.otaInProgress).toBe(false);
+	});
+
+	test('SSE reconnect (markConnected via onOpen) clears the flag', async () => {
+		const store = await loadStore();
+		store.connect();
+		store.beginOtaUpload();
+		expect(store.otaInProgress).toBe(true);
+		capturedHandlers?.onOpen?.();
+		expect(store.otaInProgress).toBe(false);
+	});
+
+	test('firmware-reported isOTAUpdating also surfaces as otaInProgress', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		// onOpen just cleared the flag; a status frame with isOTAUpdating=true
+		// should still report otaInProgress through the data path.
+		capturedHandlers?.onStatus({ isOTAUpdating: true });
+		expect(store.otaInProgress).toBe(true);
+	});
+});
+
 describe('statusStore.rssiPercent', () => {
 	beforeEach(() => {
 		capturedHandlers = null;

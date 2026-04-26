@@ -118,7 +118,11 @@
 			"lightSensor": "Sensor de luz",
 			"nostrConnection": "Conexión de relé Nostr",
 			"doNotDisturb": "No molestar",
-			"timeBasedDnd": "Horario basado en el tiempo"
+			"timeBasedDnd": "Horario basado en el tiempo",
+			"lostConnectionTitle": "Conexión perdida",
+			"lostConnectionBody": "Intentando reconectar…",
+			"otaInProgressTitle": "Actualizando firmware",
+			"otaInProgressBody": "El dispositivo se reiniciará en breve."
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Archivo cargado exitosamente, reiniciando el dispositivo. Recargando WebUI en {countdown} segundos",

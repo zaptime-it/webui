@@ -16,6 +16,7 @@
 
 	const lightMode = $derived(!settings?.invertedColor);
 	const connected = $derived(statusStore.connected && !(status?.isFake ?? false));
+	const otaInProgress = $derived(statusStore.otaInProgress);
 
 	const toggleTimer = (running: boolean) => (e: Event) => {
 		e.preventDefault();
@@ -46,10 +47,15 @@
 			{#if status?.data}
 				<section class={lightMode ? 'lightMode' : 'darkMode'} style="position: relative;">
 					{#if !connected}
-						<div class="connection-lost-overlay">
+						<div class="connection-lost-overlay" data-testid="connection-lost-overlay">
 							<div class="overlay-content">
-								<h4>Lost connection</h4>
-								<p>Trying to reconnect...</p>
+								{#if otaInProgress}
+									<h4>{m['section.status.otaInProgressTitle']()}</h4>
+									<p>{m['section.status.otaInProgressBody']()}</p>
+								{:else}
+									<h4>{m['section.status.lostConnectionTitle']()}</h4>
+									<p>{m['section.status.lostConnectionBody']()}</p>
+								{/if}
 							</div>
 						</div>
 					{/if}

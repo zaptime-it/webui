@@ -36,13 +36,18 @@
 		success = false;
 		error = false;
 		progress = 0;
+		statusStore.beginOtaUpload();
 		try {
 			await fn(file, (p) => (progress = p));
 			success = true;
 			countdownReload(10);
+			// Leave otaInProgress=true through the post-upload reboot window so
+			// the disconnect overlay keeps reading "Updating firmware…" until
+			// the device reconnects. markConnected() clears it.
 		} catch (err) {
 			console.error(err);
 			error = true;
+			statusStore.endOtaUpload();
 		}
 	};
 

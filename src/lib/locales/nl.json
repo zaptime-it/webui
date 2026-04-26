@@ -109,7 +109,11 @@
 			"lightSensor": "Licht sensor",
 			"nostrConnection": "Nostr Relay-verbinding",
 			"doNotDisturb": "Niet storen",
-			"timeBasedDnd": "Op tijd gebaseerd schema"
+			"timeBasedDnd": "Op tijd gebaseerd schema",
+			"lostConnectionTitle": "Verbinding verloren",
+			"lostConnectionBody": "Bezig opnieuw verbinden…",
+			"otaInProgressTitle": "Firmware bijwerken",
+			"otaInProgressBody": "Apparaat herstart binnenkort."
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Bestand geüpload, apparaat herstart. WebUI opnieuw geladen over {countdown} seconden",

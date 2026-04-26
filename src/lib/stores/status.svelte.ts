@@ -20,10 +20,20 @@ const rssiToPercent = (rssi: number): number => {
 	return Math.min(Math.max(pct, 0), 100);
 };
 
-const state = $state<{ value: StatusState; isUpdating: boolean; connected: boolean }>({
+const state = $state<{
+	value: StatusState;
+	isUpdating: boolean;
+	connected: boolean;
+	// True from the moment UploadForm streams a binary until the device
+	// either re-broadcasts a status frame (firmware's auto-clear) or the
+	// caller invokes `endOtaUpload()`. Used by the disconnect overlay so
+	// the user sees "Updating firmware…" instead of "Trying to reconnect".
+	otaInProgress: boolean;
+}>({
 	value: { status: 'loading' },
 	isUpdating: false,
-	connected: false
+	connected: false,
+	otaInProgress: false
 });
 
 const mergeStatus = (incoming: Partial<Status>) => {
@@ -43,6 +53,11 @@ const mergeStatus = (incoming: Partial<Status>) => {
 
 const markConnected = () => {
 	state.connected = true;
+	// SSE re-opened — assume the OTA window has closed. The firmware is
+	// the authoritative source via `status.isOTAUpdating`, but a clean
+	// reconnect is also a reliable post-OTA signal because the device
+	// only stops accepting new HTTP after the upload finalises.
+	state.otaInProgress = false;
 	// Clear the stale `isFake` marker from the previous disconnect so the
 	// overlay disappears as soon as the stream reopens, even before the
 	// first `status` frame arrives.
@@ -76,6 +91,15 @@ export const statusStore = {
 	},
 	get connected(): boolean {
 		return state.connected;
+	},
+	/**
+	 * True while either the firmware reports `isOTAUpdating` or the local
+	 * UploadForm has a transfer in flight. The Status overlay swaps its
+	 * "Trying to reconnect…" copy for "Updating firmware…" when this is
+	 * true, so users don't think the device crashed mid-update.
+	 */
+	get otaInProgress(): boolean {
+		return state.otaInProgress || (this.data?.isOTAUpdating ?? false);
 	},
 	get memoryFreePercent(): number {
 		const d = this.data;
@@ -121,5 +145,18 @@ export const statusStore = {
 		disposer?.();
 		disposer = null;
 		state.connected = false;
+	},
+	/**
+	 * UploadForm calls `beginOtaUpload()` immediately before sending the
+	 * binary and `endOtaUpload()` on failure (success path is implicit —
+	 * the device reboots and `markConnected()` clears the flag). Using a
+	 * locally-set flag means the overlay updates the moment the upload
+	 * begins, before the firmware has any chance to reply.
+	 */
+	beginOtaUpload() {
+		state.otaInProgress = true;
+	},
+	endOtaUpload() {
+		state.otaInProgress = false;
 	}
 };

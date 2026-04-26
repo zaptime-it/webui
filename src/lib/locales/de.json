@@ -119,7 +119,11 @@
 			"lightSensor": "Lichtsensor",
 			"nostrConnection": "Nostr Relay-Verbindung",
 			"doNotDisturb": "Bitte nicht stören",
-			"timeBasedDnd": "Zeitbasierter Zeitplan"
+			"timeBasedDnd": "Zeitbasierter Zeitplan",
+			"lostConnectionTitle": "Verbindung verloren",
+			"lostConnectionBody": "Versuche, erneut zu verbinden…",
+			"otaInProgressTitle": "Firmware wird aktualisiert",
+			"otaInProgressBody": "Gerät startet in Kürze neu."
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Datei erfolgreich hochgeladen, Gerät neu gestartet. WebUI in {countdown} Sekunden neu geladen",
