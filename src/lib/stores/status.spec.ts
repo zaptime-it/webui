@@ -123,6 +123,61 @@ describe('statusStore.connected', () => {
 	});
 });
 
+describe('statusStore optimistic overrides', () => {
+	beforeEach(() => {
+		capturedHandlers = null;
+		vi.resetModules();
+	});
+
+	test('applyOptimistic shadows the server-reported timerRunning', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ timerRunning: false });
+		expect(store.timerRunning).toBe(false);
+		store.applyOptimistic({ timerRunning: true });
+		expect(store.timerRunning).toBe(true);
+	});
+
+	test('next SSE frame clears optimistic overlay', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ timerRunning: false });
+		store.applyOptimistic({ timerRunning: true });
+		// Server eventually catches up — the frame may or may not match
+		// the override. Either way, the overlay should drop and the UI
+		// should render server truth from now on.
+		capturedHandlers?.onStatus({ timerRunning: false });
+		expect(store.timerRunning).toBe(false);
+	});
+
+	test('clearOptimistic snaps back to server truth (failed API path)', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ timerRunning: false, dnd: { active: false, enabled: false } });
+		store.applyOptimistic({ timerRunning: true, dndActive: true, dndEnabled: true });
+		expect(store.timerRunning).toBe(true);
+		expect(store.dndActive).toBe(true);
+		store.clearOptimistic();
+		expect(store.timerRunning).toBe(false);
+		expect(store.dndActive).toBe(false);
+		expect(store.dndEnabled).toBe(false);
+	});
+
+	test('partial overrides leave the other field reading from server', async () => {
+		const store = await loadStore();
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ timerRunning: true, dnd: { active: false, enabled: false } });
+		store.applyOptimistic({ dndEnabled: true });
+		expect(store.dndEnabled).toBe(true);
+		// timerRunning should still report the server value, not undefined.
+		expect(store.timerRunning).toBe(true);
+	});
+});
+
 describe('statusStore.otaInProgress', () => {
 	beforeEach(() => {
 		capturedHandlers = null;

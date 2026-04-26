@@ -18,15 +18,34 @@
 	const connected = $derived(statusStore.connected && !(status?.isFake ?? false));
 	const otaInProgress = $derived(statusStore.otaInProgress);
 
-	const toggleTimer = (running: boolean) => (e: Event) => {
+	// Optimistic toggle: flip the local view first, then fire. If the call
+	// rejects, snap back to server truth (clearOptimistic) so the button
+	// doesn't lie. The next SSE frame also clears the overlay on its own.
+	const toggleTimer = (running: boolean) => async (e: Event) => {
 		e.preventDefault();
-		(running ? pauseTimer() : timerRestart()).catch(() => {});
+		statusStore.applyOptimistic({ timerRunning: !running });
+		try {
+			const res = await (running ? pauseTimer() : timerRestart());
+			if (!res.ok) statusStore.clearOptimistic();
+		} catch {
+			statusStore.clearOptimistic();
+		}
 	};
 
-	const toggleDnd = (enabled: boolean) => (e: Event) => {
+	const toggleDnd = (enabled: boolean) => async (e: Event) => {
 		e.preventDefault();
-		(enabled ? dndDisable() : dndEnable()).catch(() => {});
+		statusStore.applyOptimistic({ dndEnabled: !enabled, dndActive: !enabled });
+		try {
+			const res = await (enabled ? dndDisable() : dndEnable());
+			if (!res.ok) statusStore.clearOptimistic();
+		} catch {
+			statusStore.clearOptimistic();
+		}
 	};
+
+	const timerRunning = $derived(statusStore.timerRunning ?? false);
+	const dndActive = $derived(statusStore.dndActive ?? false);
+	const dndEnabled = $derived(statusStore.dndEnabled ?? false);
 </script>
 
 <div class="card bg-base-100 shadow @container" id="status-card">
@@ -68,13 +87,11 @@
 						<button
 							id="timerStatusText"
 							type="button"
-							class="btn btn-xs gap-1 self-start {status?.timerRunning
-								? 'btn-success'
-								: 'btn-ghost'}"
-							onclick={toggleTimer(!!status?.timerRunning)}
-							aria-pressed={!!status?.timerRunning}
+							class="btn btn-xs gap-1 self-start {timerRunning ? 'btn-success' : 'btn-ghost'}"
+							onclick={toggleTimer(timerRunning)}
+							aria-pressed={timerRunning}
 						>
-							{#if status?.timerRunning}
+							{#if timerRunning}
 								<span aria-hidden="true">⏵</span>
 								{m['timer.running']()}
 							{:else}
@@ -89,13 +106,11 @@
 						<button
 							id="dndStatusText"
 							type="button"
-							class="btn btn-xs gap-1 self-start {status?.dnd?.active
-								? 'btn-warning'
-								: 'btn-ghost'}"
-							onclick={toggleDnd(!!status?.dnd?.enabled)}
-							aria-pressed={!!status?.dnd?.active}
+							class="btn btn-xs gap-1 self-start {dndActive ? 'btn-warning' : 'btn-ghost'}"
+							onclick={toggleDnd(dndEnabled)}
+							aria-pressed={dndActive}
 						>
-							{#if status?.dnd?.active}
+							{#if dndActive}
 								<span aria-hidden="true">⏵</span> On
 							{:else}
 								<span aria-hidden="true">⏸</span> Off

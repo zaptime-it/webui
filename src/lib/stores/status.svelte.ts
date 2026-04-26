@@ -20,6 +20,17 @@ const rssiToPercent = (rssi: number): number => {
 	return Math.min(Math.max(pct, 0), 100);
 };
 
+// Optimistic overlay for control actions. The user clicks Pause / DND, we
+// flip the local view immediately, fire the API call, and reconcile when
+// the next SSE frame arrives. If the API call fails we snap back. Without
+// this, slow WiFi makes every click feel broken because the button doesn't
+// react until the firmware re-broadcasts.
+type OptimisticOverrides = {
+	timerRunning?: boolean;
+	dndActive?: boolean;
+	dndEnabled?: boolean;
+};
+
 const state = $state<{
 	value: StatusState;
 	isUpdating: boolean;
@@ -29,11 +40,13 @@ const state = $state<{
 	// caller invokes `endOtaUpload()`. Used by the disconnect overlay so
 	// the user sees "Updating firmware…" instead of "Trying to reconnect".
 	otaInProgress: boolean;
+	optimistic: OptimisticOverrides;
 }>({
 	value: { status: 'loading' },
 	isUpdating: false,
 	connected: false,
-	otaInProgress: false
+	otaInProgress: false,
+	optimistic: {}
 });
 
 const mergeStatus = (incoming: Partial<Status>) => {
@@ -49,6 +62,11 @@ const mergeStatus = (incoming: Partial<Status>) => {
 	} else {
 		state.value = { status: 'ready', data: incoming as Status };
 	}
+	// A fresh frame is the authoritative truth — drop any optimistic
+	// overlay that's still hanging around. Either the firmware reflects
+	// our request (overlay matched, removing it is a no-op) or it doesn't
+	// (overlay snaps back to server truth, also correct).
+	state.optimistic = {};
 };
 
 const markConnected = () => {
@@ -91,6 +109,32 @@ export const statusStore = {
 	},
 	get connected(): boolean {
 		return state.connected;
+	},
+	/**
+	 * timerRunning, taking optimistic overrides into account. UI components
+	 * should read this instead of `data.timerRunning` so a clicked button
+	 * flips immediately while the SSE frame is in flight.
+	 */
+	get timerRunning(): boolean | undefined {
+		return state.optimistic.timerRunning ?? this.data?.timerRunning;
+	},
+	get dndActive(): boolean | undefined {
+		return state.optimistic.dndActive ?? this.data?.dnd?.active;
+	},
+	get dndEnabled(): boolean | undefined {
+		return state.optimistic.dndEnabled ?? this.data?.dnd?.enabled;
+	},
+	/**
+	 * Apply an optimistic override before firing an API call. Pass the
+	 * subset of fields you intend to change. Cleared automatically by the
+	 * next SSE frame; pass `null` for a field to clear it manually (the
+	 * snap-back path on API failure).
+	 */
+	applyOptimistic(patch: OptimisticOverrides): void {
+		state.optimistic = { ...state.optimistic, ...patch };
+	},
+	clearOptimistic(): void {
+		state.optimistic = {};
 	},
 	/**
 	 * True while either the firmware reports `isOTAUpdating` or the local
