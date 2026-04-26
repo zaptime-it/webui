@@ -10,6 +10,7 @@
 	import CurrencyButtons from './CurrencyButtons.svelte';
 	import ResourceBars from './ResourceBars.svelte';
 	import ConnectionStatus from './ConnectionStatus.svelte';
+	import LedSwatch from '$lib/ui/LedSwatch.svelte';
 
 	const settings = $derived(settingsStore.data);
 	const status = $derived(statusStore.data);
@@ -132,15 +133,9 @@
 			<hr class="border-base-300" />
 
 			{#if !settings?.disableLeds && status?.leds}
-				<div class="flex flex-wrap justify-evenly gap-2">
+				<div class="flex flex-wrap justify-evenly gap-2" data-testid="led-indicators">
 					{#each status.leds as led, i (i)}
-						<input
-							type="color"
-							class="led-indicator"
-							value={led.hex}
-							disabled
-							aria-label="LED {i + 1}"
-						/>
+						<LedSwatch hex={led.hex} label="LED {i + 1}" />
 					{/each}
 				</div>
 				<hr class="border-base-300" />
@@ -153,28 +148,3 @@
 	</div>
 </div>
 
-<style>
-	.led-indicator {
-		width: 2.25rem;
-		height: 2.25rem;
-		padding: 0.15rem;
-		border: 1px solid var(--color-base-300, oklch(87% 0.01 250));
-		border-radius: 0.375rem;
-		background: transparent;
-		box-sizing: border-box;
-		appearance: none;
-		-webkit-appearance: none;
-		cursor: default;
-	}
-	.led-indicator::-webkit-color-swatch-wrapper {
-		padding: 0;
-	}
-	.led-indicator::-webkit-color-swatch {
-		border: none;
-		border-radius: 0.25rem;
-	}
-	.led-indicator::-moz-color-swatch {
-		border: none;
-		border-radius: 0.25rem;
-	}
-</style>
