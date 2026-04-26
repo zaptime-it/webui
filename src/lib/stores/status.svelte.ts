@@ -9,6 +9,17 @@ import { getStatus } from '$lib/api/client';
 import { connectStatusStream } from '$lib/api/sse';
 import type { Status, StatusState } from '$lib/types/status';
 
+// RSSI → percent linear mapping. -100 dBm reads as 0 % (link near death),
+// -50 dBm reads as 100 % (excellent). Anything stronger than -50 dBm
+// clamps at 100 %, anything weaker than -100 dBm clamps at 0 %.
+const RSSI_FLOOR_DBM = -100;
+const RSSI_CEILING_DBM = -50;
+const rssiToPercent = (rssi: number): number => {
+	const span = RSSI_CEILING_DBM - RSSI_FLOOR_DBM; // 50 dBm
+	const pct = ((rssi - RSSI_FLOOR_DBM) / span) * 100;
+	return Math.min(Math.max(pct, 0), 100);
+};
+
 const state = $state<{ value: StatusState; isUpdating: boolean; connected: boolean }>({
 	value: { status: 'loading' },
 	isUpdating: false,
@@ -72,8 +83,7 @@ export const statusStore = {
 		return Math.floor((d.espFreeHeap / d.espHeapSize) * 100);
 	},
 	get rssiPercent(): number {
-		const rssi = this.data?.rssi ?? -100;
-		return Math.min(Math.max(2 * (rssi + 100), 0), 100);
+		return rssiToPercent(this.data?.rssi ?? RSSI_FLOOR_DBM);
 	},
 	get wifiStrengthColor(): string {
 		const p = this.rssiPercent;

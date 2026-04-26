@@ -122,3 +122,45 @@ describe('statusStore.connected', () => {
 		expect(store.data?.isFake).toBe(true);
 	});
 });
+
+describe('statusStore.rssiPercent', () => {
+	beforeEach(() => {
+		capturedHandlers = null;
+		vi.resetModules();
+	});
+
+	const feed = (store: { connect: () => void }, rssi: number) => {
+		store.connect();
+		capturedHandlers?.onOpen?.();
+		capturedHandlers?.onStatus({ rssi });
+	};
+
+	test('-50 dBm and stronger maps to 100 %', async () => {
+		const store = await loadStore();
+		feed(store, -50);
+		expect(store.rssiPercent).toBe(100);
+		feed(store, -30);
+		expect(store.rssiPercent).toBe(100);
+	});
+
+	test('-100 dBm and weaker maps to 0 %', async () => {
+		const store = await loadStore();
+		feed(store, -100);
+		expect(store.rssiPercent).toBe(0);
+		feed(store, -120);
+		expect(store.rssiPercent).toBe(0);
+	});
+
+	test('mid-range linearly between floor and ceiling', async () => {
+		const store = await loadStore();
+		feed(store, -75);
+		expect(store.rssiPercent).toBe(50);
+		feed(store, -65);
+		expect(store.rssiPercent).toBe(70);
+	});
+
+	test('missing data falls back to 0 %', async () => {
+		const store = await loadStore();
+		expect(store.rssiPercent).toBe(0);
+	});
+});
