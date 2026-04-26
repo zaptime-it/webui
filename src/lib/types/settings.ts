@@ -67,6 +67,14 @@ export interface Settings {
 	refrScrnChange: boolean;
 	inverseButtons: boolean;
 	suffixShareDot: boolean;
+	/**
+	 * v4-only — drops the leading zero on single-digit hours
+	 * (`07:00` → `7:00`). The clock screen reads this on every render and
+	 * the on_settings_patched hook calls MarkDirty, so a PATCH repaints
+	 * the next frame without a reboot. Optional because a v3 device
+	 * never emits this key — `'hideLeadZero' in data` gates the UI.
+	 */
+	hideLeadZero?: boolean;
 
 	// Data source
 	minSecPriceUpd: number;
@@ -113,6 +121,12 @@ export interface Settings {
 	hostname: string;
 	ip: string;
 	txPower: number;
+	/**
+	 * v4-only — soft-watchdog. If WiFi stays down for this many minutes
+	 * the device reboots itself. Default 10 minutes (matches the legacy
+	 * Arduino main.cpp checkWiFiConnection cadence). 0 disables.
+	 */
+	wifiRebootMin?: number;
 
 	// HTTP auth. `httpAuthPass` is PATCH-only (form input buffer); the
 	// device only reports whether one is stored via `httpAuthPassSet`.
@@ -129,14 +143,31 @@ export interface Settings {
 	// Bitaxe
 	bitaxeEnabled: boolean;
 	bitaxeHostname: string;
+	/**
+	 * v4-only — Bitaxe LAN poll cadence in seconds. BitaxeSource::Run()
+	 * re-reads NVS every tick, so PATCHes land on the next poll without
+	 * a reboot. Bounds: 5..300 (matches firmware FieldSpec). Optional
+	 * for v3 compatibility.
+	 */
+	bitaxePollSec?: number;
 
 	// Mining pool
 	miningPoolStats: boolean;
 	miningPoolName: string;
 	miningPoolUser: string;
+	/**
+	 * v4-only — secondary identifier scoped under miningPoolUser. Foundry:
+	 * subaccount path segment; Braiins/CKPool: worker name. Optional.
+	 */
+	poolWorker?: string;
 	poolGlobalStats: boolean;
 	availablePools: string[];
 	poolLogosUrl: string;
+	/**
+	 * v4-only — mining-pool HTTPS poll cadence in seconds. Runtime-editable
+	 * per PoolDataSource::poll_interval_ms(). Bounds: 10..3600.
+	 */
+	poolPollSec?: number;
 
 	// Currency
 	actCurrencies: string[];

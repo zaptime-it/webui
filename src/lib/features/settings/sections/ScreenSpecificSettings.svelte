@@ -69,6 +69,13 @@
 			bind:checked={data.useMscwTime}
 			label={m['section.settings.useMscwTime']()}
 		/>
+		{#if 'hideLeadZero' in data}
+			<SwitchField
+				id="hideLeadZero"
+				bind:checked={data.hideLeadZero}
+				label={m['section.settings.hideLeadZero']()}
+			/>
+		{/if}
 		<div class="flex items-center justify-between gap-2">
 			<SwitchField
 				id="suffixPrice"

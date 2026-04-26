@@ -95,6 +95,17 @@
 			required
 			suffix={m['time.seconds']()}
 		/>
+		{#if 'wifiRebootMin' in data}
+			<NumberField
+				id="wifiRebootMin"
+				label={m['section.settings.wifiRebootMin']()}
+				bind:value={data.wifiRebootMin}
+				min={0}
+				max={120}
+				step={1}
+				suffix={m['time.minutes']()}
+			/>
+		{/if}
 	</div>
 
 	<div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1">

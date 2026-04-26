@@ -163,6 +163,15 @@
 							</button>
 						{/snippet}
 					</Field>
+					{#if 'bitaxePollSec' in data}
+						<NumberField
+							id="bitaxePollSec"
+							label={m['section.settings.bitaxePollSec']()}
+							bind:value={data.bitaxePollSec}
+							min={5}
+							max={300}
+						/>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -219,6 +228,22 @@
 						required={!(supportsGlobalStats && data.poolGlobalStats)}
 						disabled={supportsGlobalStats && data.poolGlobalStats}
 					/>
+					{#if 'poolWorker' in data}
+						<Field
+							id="poolWorker"
+							label={m['section.settings.poolWorker']()}
+							bind:value={data.poolWorker}
+						/>
+					{/if}
+					{#if 'poolPollSec' in data}
+						<NumberField
+							id="poolPollSec"
+							label={m['section.settings.poolPollSec']()}
+							bind:value={data.poolPollSec}
+							min={10}
+							max={3600}
+						/>
+					{/if}
 				</div>
 			{/if}
 		</div>
