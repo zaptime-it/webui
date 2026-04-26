@@ -25,6 +25,15 @@ info:
       `Settings` schema for the `httpAuthPassSet` / `otaPassSet`
       booleans.
 
+    ## Validation errors
+
+    `PATCH /api/settings` returns `400 Bad Request` with a JSON body
+    `{ "error": "<field>:<reason>" }` when a value fails validation —
+    see the response definition on that endpoint for the full
+    vocabulary. The WebUI's `parseSettingsError` helper splits this
+    into `{ field, reason }` so the offending input can be highlighted
+    and scrolled into view.
+
     ## Auth
 
     When the device has `httpAuthEnabled = true`, *every* endpoint on this
@@ -98,7 +107,32 @@ paths:
             schema: { '$ref': '#/components/schemas/SettingsPatch' }
       responses:
         '200':
-          description: successful operation
+          description: |
+            Settings accepted. Body is empty when no boot-only fields were
+            touched, otherwise `{ "rebootRequired": true }`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rebootRequired: { type: boolean, example: true }
+        '400':
+          description: |
+            Validation failed. The body carries a single `error` string of
+            the form `<field>:<reason>` (e.g. `fontName:unknown`,
+            `timerSeconds:bad_type`, `screens:dup_id`) — or, for the
+            inverted numeric out-of-range form, `range:<field>`. The
+            WebUI's `parseSettingsError` helper splits the two halves so
+            it can highlight the offending input.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    type: string
+                    example: fontName:unknown
         '401':
           description: Authentication required
   '/api/wifi_set_tx_power':
@@ -412,8 +446,26 @@ paths:
       tags: [system]
       summary: Server-Sent Events stream of status updates
       description: |
-        Event name `status`; payload JSON matches `GET /api/status` (shares `buildStatusJson()`).
-        A `welcome` event is emitted on connect.
+        Event stream for live status updates. The firmware emits three
+        kinds of frames over the wire:
+
+        - `event: welcome` — sent once on connect; payload is the
+          stringified IP address of the client.
+        - `event: status` — payload JSON matches `GET /api/status`
+          (shares `buildStatusJson()`). One frame is pushed on every
+          state change (block height update, screen rotation, LED
+          colour change, DND transition, etc.).
+        - `data: closing` (no `event:` prefix, default `message`
+          listener) — sent immediately before the firmware closes the
+          connection cleanly (e.g. when the LFS image is being swapped
+          during an OTA finalisation). Clients should reconnect after
+          a short delay; this is a graceful handoff, not a failure.
+
+        Reconnect strategy: 1 s on first `error`, doubling to a 30 s
+        cap (see `src/lib/api/sse.ts::computeBackoffMs` in the WebUI),
+        and 5 s after a `closing` message. The "lost connection"
+        overlay reads its label from `statusStore.otaInProgress` so
+        users see "Updating firmware…" during an OTA reconnect.
       security: [{ basicAuth: [] }]
       responses:
         '200': { description: text/event-stream }
