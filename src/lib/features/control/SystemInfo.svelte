@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import * as m from '$lib/paraglide/messages';
 	import Skeleton from '$lib/ui/Skeleton.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
@@ -11,6 +12,28 @@
 		const ms = typeof t === 'number' ? t * 1000 : Number(t) * 1000;
 		return new Date(ms).toLocaleString();
 	});
+
+	// Dismissal is keyed on the (gitRev, fsRev) pair: a fresh build of either
+	// component invalidates the dismissal, so a real divergence after an
+	// intentional upgrade re-prompts the user. Stored in sessionStorage so
+	// closing the tab also resets — we don't want a permanent "I don't care"
+	// hiding a genuine compatibility issue weeks later.
+	const dismissalKey = $derived(
+		data?.gitRev && data?.fsRev ? `fwMismatchDismissed:${data.gitRev}:${data.fsRev}` : ''
+	);
+	let dismissed = $state(false);
+	$effect(() => {
+		if (!browser || !dismissalKey) {
+			dismissed = false;
+			return;
+		}
+		dismissed = sessionStorage.getItem(dismissalKey) === '1';
+	});
+	const dismiss = () => {
+		if (!browser || !dismissalKey) return;
+		sessionStorage.setItem(dismissalKey, '1');
+		dismissed = true;
+	};
 </script>
 
 <section class="space-y-2">
@@ -33,9 +56,20 @@
 		<dt>{m['section.control.hostname']()}</dt>
 		<dd class="mono"><Skeleton value={data?.hostname ?? ''} /></dd>
 	</dl>
-	{#if mismatch}
-		<div class="alert alert-warning text-sm">
+	{#if mismatch && !dismissed}
+		<div
+			class="alert alert-warning text-sm flex items-start justify-between gap-2"
+			data-testid="fw-mismatch-banner"
+		>
 			<span>⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwCommitMismatch']()}</span>
+			<button
+				type="button"
+				class="btn btn-ghost btn-xs shrink-0"
+				onclick={dismiss}
+				data-testid="fw-mismatch-dismiss"
+			>
+				{m['button.dismiss']()}
+			</button>
 		</div>
 	{/if}
 </section>
