@@ -147,6 +147,38 @@ describe('section tabs: mobile styling overrides', () => {
 	});
 });
 
+describe('mobile tabbed layout: only the active section renders below md', () => {
+	// At sub-md widths each section gets `mobile-tab-section` plus a
+	// reactive `mobile-active` class driven by `activeSection.id`, and the
+	// inactive sections are `display:none` via CSS. This eliminates the
+	// long vertical scroll through Control + Status + Settings on phones.
+
+	test('every home-page section gets the mobile-tab-section + mobile-active classes', () => {
+		// Each <section> should be tagged with both mobile-tab-section
+		// and a class:mobile-active binding tied to the activeSection store.
+		const tagged = pageSrc.match(/mobile-tab-section/g) ?? [];
+		expect(tagged.length).toBeGreaterThanOrEqual(3);
+		const reactive = pageSrc.match(/class:mobile-active=\{section === '[^']+'\}/g) ?? [];
+		expect(reactive).toEqual([
+			"class:mobile-active={section === 'control'}",
+			"class:mobile-active={section === 'status'}",
+			"class:mobile-active={section === 'settings'}"
+		]);
+	});
+
+	test('inactive sections are aria-hidden so screen readers skip them on mobile', () => {
+		const ariaHidden = pageSrc.match(
+			/aria-hidden=\{section !== '[^']+' \? 'true' : undefined\}/g
+		);
+		expect(ariaHidden?.length ?? 0).toBe(3);
+	});
+
+	test('CSS hides non-active sections under 768px and restores grid above', () => {
+		expect(pageSrc).toMatch(/@media \(max-width: 767px\)\s*\{[\s\S]*?\.mobile-tab-section\s*\{[^}]*display:\s*none/);
+		expect(pageSrc).toMatch(/\.mobile-tab-section\.mobile-active\s*\{[^}]*display:\s*block/);
+	});
+});
+
 describe('mobile drawer: pinned to the viewport together with the navbar', () => {
 	// Previously only `.navbar` was `sticky top-0`, so when the user scrolled
 	// past the top of the page and then tapped the hamburger button, the

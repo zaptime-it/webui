@@ -11,6 +11,8 @@
 	const MD_BREAKPOINT = 768;
 	const SECTION_IDS: readonly SectionId[] = ['control', 'status', 'settings'];
 
+	const section = $derived(activeSection.id);
+
 	let observer: IntersectionObserver | undefined;
 
 	const setupObserver = () => {
@@ -76,13 +78,28 @@
 </svelte:head>
 
 <div class="grid w-full grid-cols-1 gap-4 md:gap-5 lg:grid-cols-12">
-	<section id="control" class="section-anchor min-w-0 accent-control lg:col-span-4">
+	<section
+		id="control"
+		class="section-anchor mobile-tab-section min-w-0 accent-control lg:col-span-4"
+		class:mobile-active={section === 'control'}
+		aria-hidden={section !== 'control' ? 'true' : undefined}
+	>
 		<Control />
 	</section>
-	<section id="status" class="section-anchor min-w-0 accent-status lg:col-span-4">
+	<section
+		id="status"
+		class="section-anchor mobile-tab-section min-w-0 accent-status lg:col-span-4"
+		class:mobile-active={section === 'status'}
+		aria-hidden={section !== 'status' ? 'true' : undefined}
+	>
 		<Status />
 	</section>
-	<section id="settings" class="section-anchor min-w-0 accent-settings lg:col-span-4">
+	<section
+		id="settings"
+		class="section-anchor mobile-tab-section min-w-0 accent-settings lg:col-span-4"
+		class:mobile-active={section === 'settings'}
+		aria-hidden={section !== 'settings' ? 'true' : undefined}
+	>
 		<SettingsPanel />
 	</section>
 </div>
@@ -93,5 +110,16 @@
 	   below it. */
 	.section-anchor {
 		scroll-margin-top: 4.5rem;
+	}
+	/* Mobile tabbed layout: at sub-md widths only the active section is
+	   rendered, eliminating the long vertical scroll through all three
+	   cards. The desktop grid is restored at md and above. */
+	@media (max-width: 767px) {
+		.mobile-tab-section {
+			display: none;
+		}
+		.mobile-tab-section.mobile-active {
+			display: block;
+		}
 	}
 </style>
