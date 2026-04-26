@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
+	import { parseSettingsError } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import ScreenSpecificSettings from './sections/ScreenSpecificSettings.svelte';
@@ -7,6 +8,30 @@
 	import DataSourceSettings from './sections/DataSourceSettings.svelte';
 	import ExtraFeaturesSettings from './sections/ExtraFeaturesSettings.svelte';
 	import SystemSettings from './sections/SystemSettings.svelte';
+
+	// Map firmware top-level error scopes / pseudo-fields onto the
+	// CollapseCard the user needs to expand to see the offending input.
+	// Real key names (e.g. `fontName`, `timerSeconds`) live in section
+	// content and resolve via the field's id, not via this map.
+	const sectionForField: Record<string, 'screen' | 'display' | 'dataSource' | 'extra' | 'system'> = {
+		screens: 'screen',
+		currency: 'screen',
+		actCurrencies: 'screen',
+		dnd: 'extra',
+		bitaxe: 'extra',
+		miningPool: 'extra',
+		nostr: 'extra',
+		fontName: 'display',
+		invertedColor: 'display',
+		flMaxBrightness: 'display',
+		dataSource: 'dataSource',
+		hostnamePrefix: 'system',
+		mdnsEnabled: 'system',
+		httpAuthUser: 'system',
+		httpAuthPass: 'system',
+		otaPass: 'system',
+		otaEnabled: 'system'
+	};
 
 	const miningPoolMap = new Map<string, string>([
 		['noderunners', 'Noderunners.network'],
@@ -77,8 +102,30 @@
 
 		try {
 			const res = await settingsStore.save(patch);
-			if (res.ok) toast.success(m['section.settings.settingsSaved']());
-			else toast.error(`${res.status}: ${res.statusText}`);
+			if (res.ok) {
+				toast.success(m['section.settings.settingsSaved']());
+				return;
+			}
+			// Firmware shape: { error: "<field>:<reason>" } or "range:<field>".
+			// Surface the field name + reason and pop open the section that
+			// owns it, so the user lands on the offending input.
+			const parsed = parseSettingsError(res.body?.error ?? res.text);
+			if (parsed.field) {
+				const section = sectionForField[parsed.field];
+				if (section === 'screen') screenOpen = true;
+				else if (section === 'display') displayOpen = true;
+				else if (section === 'dataSource') dataSourceOpen = true;
+				else if (section === 'extra') extraOpen = true;
+				else if (section === 'system') systemOpen = true;
+				// Also try to scroll to the input if its id matches the field name.
+				queueMicrotask(() => {
+					const el = document.getElementById(parsed.field as string);
+					if (el?.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				});
+				toast.error(`${parsed.field}: ${parsed.reason || res.statusText}`);
+			} else {
+				toast.error(parsed.reason || `${res.status}: ${res.statusText}`);
+			}
 		} catch {
 			toast.error(m['section.settings.errorSavingSettings']());
 		}

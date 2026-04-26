@@ -6,6 +6,7 @@
  */
 
 import { getSettings, patchSettings } from '$lib/api/client';
+import type { ApiResult, SettingsErrorBody } from '$lib/api/client';
 import type { Settings, SettingsState } from '$lib/types/settings';
 
 const state = $state<{ value: SettingsState; pristine: string | null }>({
@@ -53,7 +54,7 @@ export const settingsStore = {
 			state.pristine = null;
 		}
 	},
-	async save(patch: Partial<Settings>): Promise<Response> {
+	async save(patch: Partial<Settings>): Promise<ApiResult<SettingsErrorBody>> {
 		const res = await patchSettings(patch);
 		if (state.value.status === 'ready') {
 			const data = deriveTimePerScreen({ ...state.value.data, ...patch });

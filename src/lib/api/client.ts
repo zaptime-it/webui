@@ -22,21 +22,88 @@ const asJson = async <T>(res: Response): Promise<T> => {
 	return (await res.json()) as T;
 };
 
+/**
+ * Result envelope for state-changing endpoints. The firmware returns a JSON
+ * body of `{"error":"<key>:<reason>"}` on validation failures (see
+ * `components/settings/settings_api.cpp` in the firmware repo). The envelope
+ * exposes that body alongside `ok` and `status` so callers can branch on
+ * "device 4xx-rejected the body" vs. "network blip" without re-parsing.
+ *
+ * `body` is the parsed JSON body when `Content-Type: application/json` is
+ * present, otherwise null. `text` carries the raw body in either case (handy
+ * for the firmware's pre-3.4.0 plain-text errors and for log messages).
+ */
+export interface ApiResult<T = unknown> {
+	ok: boolean;
+	status: number;
+	statusText: string;
+	body: T | null;
+	text: string;
+}
+
+const envelope = async <T = unknown>(res: Response): Promise<ApiResult<T>> => {
+	const text = await res.text();
+	let body: T | null = null;
+	const ctype = res.headers.get('content-type') ?? '';
+	if (ctype.includes('application/json') && text.length > 0) {
+		try {
+			body = JSON.parse(text) as T;
+		} catch {
+			// Server claimed JSON but sent garbage — leave body null, keep text.
+		}
+	}
+	return { ok: res.ok, status: res.status, statusText: res.statusText, body, text };
+};
+
+/**
+ * Parse the firmware's `<field>:<reason>` error string into structured parts.
+ * The firmware uses a couple of shapes:
+ *   - `<key>:<reason>`         e.g. `"fontName:unknown"`, `"timerSeconds:bad_type"`
+ *   - `range:<key>`            inverted form for numeric out-of-range
+ *   - `<scope>:<reason>`       e.g. `"screens:dup_id"`, `"dnd:range"`, `"currency:not_string"`
+ *   - bare token               e.g. `"json"`, `"not_object"`, `"bad body"` (no field context)
+ * Returns null when no field can be inferred.
+ */
+export const parseSettingsError = (
+	raw: string | undefined | null
+): { field: string | null; reason: string; raw: string } => {
+	const text = (raw ?? '').trim();
+	if (!text) return { field: null, reason: '', raw: text };
+	const idx = text.indexOf(':');
+	if (idx === -1) return { field: null, reason: text, raw: text };
+	const left = text.slice(0, idx);
+	const right = text.slice(idx + 1);
+	if (left === 'range') return { field: right, reason: 'range', raw: text };
+	// Pseudo-fields ("dnd", "screens", "currency") still get returned as `field`
+	// because callers want to highlight their section, not just toast.
+	return { field: left, reason: right, raw: text };
+};
+
 const post = (path: string): Promise<Response> =>
 	fetch(url(path), { method: 'POST', credentials: 'same-origin' });
+
+const postEnv = async (path: string): Promise<ApiResult> => envelope(await post(path));
 
 /* ----- settings ----- */
 
 export const getSettings = async (): Promise<Settings> =>
 	asJson<Settings>(await fetch(url('/api/settings'), { credentials: 'same-origin' }));
 
-export const patchSettings = async (body: Partial<Settings>): Promise<Response> =>
-	fetch(url('/api/settings'), {
-		method: 'PATCH',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'same-origin',
-		body: JSON.stringify(body)
-	});
+export interface SettingsErrorBody {
+	error?: string;
+}
+
+export const patchSettings = async (
+	body: Partial<Settings>
+): Promise<ApiResult<SettingsErrorBody>> =>
+	envelope<SettingsErrorBody>(
+		await fetch(url('/api/settings'), {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'same-origin',
+			body: JSON.stringify(body)
+		})
+	);
 
 /* ----- status ----- */
 
@@ -48,45 +115,47 @@ export const getStatus = async (): Promise<Status> =>
 // form is the "real" route. Use it directly so there is one URL shape, not
 // two-with-a-server-side-rewrite.
 
-export const showText = (text: string): Promise<Response> =>
-	post(`/api/show/text?t=${encodeURIComponent(text)}`);
+export const showText = (text: string): Promise<ApiResult> =>
+	postEnv(`/api/show/text?t=${encodeURIComponent(text)}`);
 
-export const showScreen = (id: number): Promise<Response> => post(`/api/show/screen?s=${id}`);
+export const showScreen = (id: number): Promise<ApiResult> => postEnv(`/api/show/screen?s=${id}`);
 
-export const showCurrency = (code: string): Promise<Response> =>
-	post(`/api/show/currency?c=${encodeURIComponent(code)}`);
+export const showCurrency = (code: string): Promise<ApiResult> =>
+	postEnv(`/api/show/currency?c=${encodeURIComponent(code)}`);
 
 /* ----- LEDs ----- */
 
-export const lightsSet = (leds: Pick<LedStatus, 'hex'>[]): Promise<Response> =>
-	fetch(url('/api/lights/set'), {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'same-origin',
-		body: JSON.stringify(leds)
-	});
+export const lightsSet = async (leds: Pick<LedStatus, 'hex'>[]): Promise<ApiResult> =>
+	envelope(
+		await fetch(url('/api/lights/set'), {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'same-origin',
+			body: JSON.stringify(leds)
+		})
+	);
 
-export const lightsOff = (): Promise<Response> => post('/api/lights/off');
+export const lightsOff = (): Promise<ApiResult> => postEnv('/api/lights/off');
 
 /* ----- frontlight ----- */
 
-export const frontlightOn = (): Promise<Response> => post('/api/frontlight/on');
-export const frontlightOff = (): Promise<Response> => post('/api/frontlight/off');
-export const frontlightFlash = (): Promise<Response> => post('/api/frontlight/flash');
-export const frontlightBrightness = (value: number): Promise<Response> =>
-	post(`/api/frontlight/brightness?b=${value}`);
+export const frontlightOn = (): Promise<ApiResult> => postEnv('/api/frontlight/on');
+export const frontlightOff = (): Promise<ApiResult> => postEnv('/api/frontlight/off');
+export const frontlightFlash = (): Promise<ApiResult> => postEnv('/api/frontlight/flash');
+export const frontlightBrightness = (value: number): Promise<ApiResult> =>
+	postEnv(`/api/frontlight/brightness?b=${value}`);
 
 /* ----- system ----- */
 
-export const restartClock = (): Promise<Response> => post('/api/restart');
-export const forceFullRefresh = (): Promise<Response> => post('/api/full_refresh');
+export const restartClock = (): Promise<ApiResult> => postEnv('/api/restart');
+export const forceFullRefresh = (): Promise<ApiResult> => postEnv('/api/full_refresh');
 
 /* ----- timer + DnD ----- */
 
-export const pauseTimer = (): Promise<Response> => post('/api/action/pause');
-export const timerRestart = (): Promise<Response> => post('/api/action/timer_restart');
-export const dndEnable = (): Promise<Response> => post('/api/dnd/enable');
-export const dndDisable = (): Promise<Response> => post('/api/dnd/disable');
+export const pauseTimer = (): Promise<ApiResult> => postEnv('/api/action/pause');
+export const timerRestart = (): Promise<ApiResult> => postEnv('/api/action/timer_restart');
+export const dndEnable = (): Promise<ApiResult> => postEnv('/api/dnd/enable');
+export const dndDisable = (): Promise<ApiResult> => postEnv('/api/dnd/disable');
 
 /* ----- firmware ----- */
 

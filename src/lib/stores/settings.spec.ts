@@ -91,7 +91,13 @@ describe('settingsStore.isDirty', () => {
 
 	test('clears dirty after a successful save', async () => {
 		getSettingsMock.mockResolvedValueOnce(sampleSettings());
-		patchSettingsMock.mockResolvedValueOnce(new Response(null, { status: 200 }));
+		patchSettingsMock.mockResolvedValueOnce({
+			ok: true,
+			status: 200,
+			statusText: 'OK',
+			body: null,
+			text: ''
+		});
 		const store = await loadStore();
 		await store.load();
 		store.set('stealFocus', true);
@@ -105,7 +111,13 @@ describe('settingsStore.isDirty', () => {
 		// can retry or reset. Silently pristining the snapshot would strand
 		// the user's edits without any signal that the server refused them.
 		getSettingsMock.mockResolvedValueOnce(sampleSettings());
-		patchSettingsMock.mockResolvedValueOnce(new Response('nope', { status: 400 }));
+		patchSettingsMock.mockResolvedValueOnce({
+			ok: false,
+			status: 400,
+			statusText: 'Bad Request',
+			body: { error: 'fontName:unknown' },
+			text: '{"error":"fontName:unknown"}'
+		});
 		const store = await loadStore();
 		await store.load();
 		store.set('stealFocus', true);
