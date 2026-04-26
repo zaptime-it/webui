@@ -63,6 +63,18 @@
 		await settingsStore.load();
 	};
 
+	// Ctrl+S / Cmd+S triggers a save when the form is dirty. The browser's
+	// default for Cmd+S is "save page as…" — we always preventDefault while
+	// the settings card is mounted so the browser dialog never pops up over
+	// the dashboard, even on a clean form.
+	const handleKeydown = (e: KeyboardEvent) => {
+		const isSaveCombo = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's';
+		if (!isSaveCombo) return;
+		e.preventDefault();
+		if (!settingsStore.isDirty) return;
+		void handleSubmit(e);
+	};
+
 	const handleSubmit = async (e: Event) => {
 		e.preventDefault();
 		const current = settingsStore.data;
@@ -131,6 +143,8 @@
 		}
 	};
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="card bg-base-100 shadow @container" id="settings-card">
 	<div class="card-body space-y-4">
