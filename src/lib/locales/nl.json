@@ -36,6 +36,7 @@
 			"errorSavingSettings": "Fout bij opslaan instellingen",
 			"unsavedChanges": "Niet opgeslagen wijzigingen",
 			"remoteDriftWarning": "Instellingen zijn op het apparaat gewijzigd sinds je deze pagina laadde. Herlaad om de huidige waarden te zien.",
+			"validationSummary": "Sommige velden zijn ongeldig:",
 			"ownDataSource": "BTClock-gegevensbron gebruiken",
 			"flMaxBrightness": "Displaylicht helderheid",
 			"flAlwaysOn": "Displaylicht altijd aan",

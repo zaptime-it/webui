@@ -34,6 +34,7 @@
 			"errorSavingSettings": "Error al guardar la configuración",
 			"unsavedChanges": "Cambios sin guardar",
 			"remoteDriftWarning": "La configuración en el dispositivo ha cambiado desde que se cargó la página. Recarga para ver los valores actuales.",
+			"validationSummary": "Algunos campos no son válidos:",
 			"ownDataSource": "fuente de datos BTClock",
 			"flMaxBrightness": "Brillo de luz de la pantalla",
 			"flAlwaysOn": "Luz de la pantalla siempre encendida",

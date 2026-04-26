@@ -36,6 +36,7 @@
 			"errorSavingSettings": "Fehler beim Speichern der Einstellungen",
 			"unsavedChanges": "Ungespeicherte Änderungen",
 			"remoteDriftWarning": "Einstellungen wurden auf dem Gerät geändert, seit die Seite geladen wurde. Laden Sie neu, um die aktuellen Werte zu sehen.",
+			"validationSummary": "Einige Felder sind ungültig:",
 			"ownDataSource": "BTClock-Datenquelle",
 			"flAlwaysOn": "Displaybeleuchtung immer an",
 			"flEffectDelay": "Displaybeleuchtungeffekt Geschwindigkeit",

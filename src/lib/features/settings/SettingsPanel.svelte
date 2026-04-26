@@ -3,6 +3,7 @@
 	import { parseSettingsError } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
+	import { validateSettings, type FieldValidationError } from '$lib/util/validation';
 	import ScreenSpecificSettings from './sections/ScreenSpecificSettings.svelte';
 	import DisplaySettings from './sections/DisplaySettings.svelte';
 	import DataSourceSettings from './sections/DataSourceSettings.svelte';
@@ -61,6 +62,30 @@
 	const handleReset = async (e: Event) => {
 		e.preventDefault();
 		await settingsStore.load();
+	};
+
+	const validationErrors = $derived(
+		validateSettings(settingsStore.data, {
+			invalidNostrPubkey: m['section.settings.invalidNostrPubkey']()
+		})
+	);
+
+	const focusError = (err: FieldValidationError) => (e: MouseEvent) => {
+		e.preventDefault();
+		// Pop the section that owns the field open before scrolling — anchors
+		// inside a closed CollapseCard scroll to the (now empty) collapsed
+		// header, not the input.
+		if (err.section === 'screen') screenOpen = true;
+		else if (err.section === 'display') displayOpen = true;
+		else if (err.section === 'dataSource') dataSourceOpen = true;
+		else if (err.section === 'extra') extraOpen = true;
+		else if (err.section === 'system') systemOpen = true;
+		queueMicrotask(() => {
+			const el = document.getElementById(err.id);
+			if (!el) return;
+			el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			(el as HTMLInputElement).focus?.();
+		});
 	};
 
 	// Ctrl+S / Cmd+S triggers a save when the form is dirty. The browser's
@@ -178,6 +203,29 @@
 				<strong role="status">Loading…</strong>
 			</div>
 		{:else}
+			{#if validationErrors.length > 0}
+				<div
+					role="alert"
+					class="alert alert-error alert-sm flex flex-col items-start gap-2"
+					data-testid="validation-summary"
+				>
+					<strong>{m['section.settings.validationSummary']()}</strong>
+					<ul class="list-disc pl-5 text-sm">
+						{#each validationErrors as err (err.id)}
+							<li>
+								<a
+									href="#{err.id}"
+									class="link link-hover"
+									onclick={focusError(err)}
+									data-testid="validation-link-{err.id}"
+								>
+									{err.field}: {err.message}
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
 			{#if settingsStore.hasRemoteDrift}
 				<div
 					role="alert"

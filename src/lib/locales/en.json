@@ -35,6 +35,7 @@
 			"errorSavingSettings": "Error saving settings",
 			"unsavedChanges": "Unsaved changes",
 			"remoteDriftWarning": "Settings have changed on the device since you loaded the page. Reload to see the latest values.",
+			"validationSummary": "Some fields are invalid:",
 			"ownDataSource": "BTClock data source",
 			"flMaxBrightness": "Frontlight brightness",
 			"flAlwaysOn": "Frontlight always on",
