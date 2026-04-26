@@ -62,12 +62,14 @@
 			bind:checked={data.mowMode}
 			label={m['section.settings.mowMode']()}
 			disabled={!data.suffixPrice}
+			hint={!data.suffixPrice ? m['section.settings.requiresSuffixPrice']() : undefined}
 		/>
 		<SwitchField
 			id="suffixShareDot"
 			bind:checked={data.suffixShareDot}
 			label={m['section.settings.suffixShareDot']()}
 			disabled={!data.suffixPrice}
+			hint={!data.suffixPrice ? m['section.settings.requiresSuffixPrice']() : undefined}
 		/>
 		<SwitchField
 			id="verticalDesc"

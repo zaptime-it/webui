@@ -27,6 +27,7 @@
 			"hostnamePrefix": "Hostnaam voorvoegsel",
 			"mempoolnstance": "Mempool instantie",
 			"suffixPrice": "Achtervoegsel prijs formaat",
+			"requiresSuffixPrice": "Vereist dat 'Achtervoegsel prijs formaat' aanstaat",
 			"disableLeds": "Alle LEDs effecten uit",
 			"otaUpdates": "OTA updates",
 			"wifiTxPower": "WiFi TX power",

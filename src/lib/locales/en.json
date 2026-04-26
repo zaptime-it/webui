@@ -19,6 +19,7 @@
 			"useSatsSymbol": "Use sats symbol",
 			"useMscwTime": "Use Moscow Time",
 			"suffixPrice": "Suffix price format",
+			"requiresSuffixPrice": "Requires Suffix price format to be enabled",
 			"disableLeds": "Disable all LEDs effects",
 			"otaUpdates": "OTA updates",
 			"enableMdns": "mDNS",
