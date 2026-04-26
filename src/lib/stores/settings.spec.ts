@@ -147,3 +147,70 @@ describe('settingsStore.isDirty', () => {
 		expect(store.isDirty).toBe(false);
 	});
 });
+
+describe('settingsStore.dirtyKeys (per-field)', () => {
+	beforeEach(() => {
+		vi.resetModules();
+		getSettingsMock.mockReset();
+		patchSettingsMock.mockReset();
+	});
+
+	test('reports the exact key that changed', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		store.set('stealFocus', true);
+		expect([...store.dirtyKeys]).toEqual(['stealFocus']);
+		expect(store.isFieldDirty('stealFocus')).toBe(true);
+		expect(store.isFieldDirty('numScreens')).toBe(false);
+	});
+
+	test('handles nested object diffs (dnd.startHour) without false negatives', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		const data = store.data!;
+		data.dnd = { ...data.dnd, startHour: 23 };
+		expect(store.isFieldDirty('dnd')).toBe(true);
+	});
+
+	test('handles array reorders (screens) without false negatives', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		const data = store.data!;
+		data.screens = [data.screens[1], data.screens[0]];
+		expect(store.isFieldDirty('screens')).toBe(true);
+	});
+
+	test('multi-field edits accumulate independently', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		const store = await loadStore();
+		await store.load();
+		store.set('stealFocus', true);
+		store.set('timerSeconds', 600);
+		const keys = [...store.dirtyKeys].sort();
+		// timerSeconds bumps timePerScreen too, but that's a derived field
+		// the store filters out so it doesn't count as a user-edited key.
+		expect(keys).toContain('stealFocus');
+		expect(keys).toContain('timerSeconds');
+		expect(keys).not.toContain('timePerScreen');
+	});
+
+	test('successful save clears dirtyKeys back to empty', async () => {
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		patchSettingsMock.mockResolvedValueOnce({
+			ok: true,
+			status: 200,
+			statusText: 'OK',
+			body: null,
+			text: ''
+		});
+		const store = await loadStore();
+		await store.load();
+		store.set('stealFocus', true);
+		expect(store.dirtyKeys.size).toBe(1);
+		await store.save({ stealFocus: true });
+		expect(store.dirtyKeys.size).toBe(0);
+	});
+});

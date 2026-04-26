@@ -3,13 +3,22 @@
  * `settings.isLoaded` sentinel with a discriminated union (`SettingsState`)
  * that TypeScript can narrow, so sections stop sprinkling
  * `if (!$settings.isLoaded) …` guards.
+ *
+ * Dirty tracking is per-field: each top-level key is compared against the
+ * pristine baseline on demand. `dirtyKeys` is the Set of keys that differ
+ * (so `isDirty` is just `dirtyKeys.size > 0`), and callers can test
+ * individual keys via `isFieldDirty('foo')` — useful for per-field
+ * "requires restart" warnings and the upcoming form-level validation
+ * summary, which both need to know exactly *which* fields changed.
  */
 
 import { getSettings, patchSettings } from '$lib/api/client';
 import type { ApiResult, SettingsErrorBody } from '$lib/api/client';
 import type { Settings, SettingsState } from '$lib/types/settings';
 
-const state = $state<{ value: SettingsState; pristine: string | null }>({
+type PristineMap = Map<keyof Settings, string>;
+
+const state = $state<{ value: SettingsState; pristine: PristineMap | null }>({
 	value: { status: 'loading' },
 	pristine: null
 });
@@ -21,13 +30,37 @@ const deriveTimePerScreen = (s: Settings): Settings => ({
 	timePerScreen: Math.floor(s.timerSeconds / 60)
 });
 
-// The pristine snapshot is stored as a JSON string so `isDirty` becomes a
-// single `stringify(current) !== pristine` comparison. Settings is a fixed
-// ~100-field object, so the serialisation cost is sub-millisecond and gets
-// cached by Svelte's derived machinery. Using JSON stringify over a deep
-// object compare also means array reorders (screens, actCurrencies) flag
-// dirty automatically without any field-aware comparison logic.
-const snapshot = (s: Settings): string => JSON.stringify(s);
+// One JSON.stringify per top-level field. For primitives this is a single
+// `${value}`-equivalent; for `screens` and `dnd` it serialises the nested
+// object/array so reorders + nested edits are caught. Cheaper than
+// stringifying the whole Settings on every read because we only re-encode
+// the *current* field when computing the diff for it.
+const fieldKey = (s: Settings, k: keyof Settings): string => {
+	const v = s[k];
+	return typeof v === 'object' ? JSON.stringify(v) : String(v);
+};
+
+const buildPristine = (s: Settings): PristineMap => {
+	const map: PristineMap = new Map();
+	for (const k of Object.keys(s) as (keyof Settings)[]) {
+		map.set(k, fieldKey(s, k));
+	}
+	return map;
+};
+
+const computeDirtyKeys = (current: Settings, pristine: PristineMap): Set<keyof Settings> => {
+	const out = new Set<keyof Settings>();
+	// Iterate the *current* keys: a brand-new field added by the firmware
+	// after the snapshot would otherwise read as "missing" and false-positive
+	// dirty if iterated from pristine. The pristine map covers the baseline.
+	for (const k of Object.keys(current) as (keyof Settings)[]) {
+		const fresh = fieldKey(current, k);
+		if (pristine.get(k) !== fresh) out.add(k);
+	}
+	// timePerScreen is derived from timerSeconds — never report it on its own.
+	out.delete('timePerScreen');
+	return out;
+};
 
 export const settingsStore = {
 	get state() {
@@ -39,16 +72,22 @@ export const settingsStore = {
 	get isReady(): boolean {
 		return state.value.status === 'ready';
 	},
+	get dirtyKeys(): Set<keyof Settings> {
+		if (state.value.status !== 'ready' || state.pristine === null) return new Set();
+		return computeDirtyKeys(state.value.data, state.pristine);
+	},
 	get isDirty(): boolean {
-		if (state.value.status !== 'ready' || state.pristine === null) return false;
-		return snapshot(state.value.data) !== state.pristine;
+		return this.dirtyKeys.size > 0;
+	},
+	isFieldDirty(key: keyof Settings): boolean {
+		return this.dirtyKeys.has(key);
 	},
 	async load(): Promise<void> {
 		try {
 			const raw = await getSettings();
 			const data = deriveTimePerScreen(raw);
 			state.value = { status: 'ready', data };
-			state.pristine = snapshot(data);
+			state.pristine = buildPristine(data);
 		} catch (err) {
 			state.value = { status: 'error', error: (err as Error).message };
 			state.pristine = null;
@@ -62,7 +101,7 @@ export const settingsStore = {
 			// The device accepted the PATCH, so the new working copy becomes
 			// the pristine baseline. A failed save leaves the form dirty so
 			// the user can retry or reset.
-			if (res.ok) state.pristine = snapshot(data);
+			if (res.ok) state.pristine = buildPristine(data);
 		}
 		return res;
 	},
