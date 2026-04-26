@@ -7,6 +7,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"build:gz": "vite build && python3 gzip_build.py",
 		"build:test": "vite build --config vite.config.test.ts",
 		"serve:test": "vite build --config vite.config.test.ts && vite preview --config vite.config.test.ts --host 127.0.0.1 --port 4173 --strictPort",
 		"preview": "vite preview",

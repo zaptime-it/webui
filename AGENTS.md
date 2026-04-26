@@ -6,9 +6,11 @@ to understand **what's already built**, **how the pieces fit together**,
 and **where to make changes safely**.
 
 For the firmware-side picture (what the device exposes, what each
-endpoint touches), see [../docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md).
-For the field schema reference (every settings key + bounds + boot-only
-flag), see [../docs/SETTINGS.md](../docs/SETTINGS.md).
+endpoint touches), see [`docs/ARCHITECTURE.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/ARCHITECTURE.md)
+in the firmware repo. For the field schema reference (every settings key +
+bounds + boot-only flag), see [`docs/SETTINGS.md`](https://git.btclock.dev/btclock/btclock_v4/src/branch/main/docs/SETTINGS.md).
+The relative `../docs/` paths only resolve when the WebUI is checked out
+as `data/` inside the firmware tree; the absolute links work everywhere.
 
 ---
 
@@ -23,9 +25,11 @@ flag), see [../docs/SETTINGS.md](../docs/SETTINGS.md).
 | Runtime validation | Valibot — `src/lib/api/schemas.ts` |
 | Drag/drop        | `svelte-dnd-action` — used in `ScreenRotationList`, `CurrencyRotationList` |
 | Tests            | Vitest (`*.spec.ts` colocated) + Playwright (`tests/`) |
-| Build output     | `dist/` → `python3 gzip_build.py` → `build_gz/` → LittleFS image |
+| Build output     | `dist/` → `pnpm build:gz` (wraps `python3 gzip_build.py`) → `build_gz/www/` → LittleFS image |
 
-The build serves from `/lfs/www/` on the device. The firmware mounts the
+The build serves from `/lfs/www/` on the device — `gzip_build.py` writes
+under `build_gz/www/` because the firmware's `kWebRootBase = "/lfs/www"`
+(see `components/webserver/control_server.cpp`). The firmware mounts the
 gzipped `bundle.js` inside a wrapper page; that's why the post-build
 rewrap step in `vite.config.ts` exists.
 
@@ -75,7 +79,9 @@ src/lib/
     ├── settings/
     │   ├── SettingsPanel.svelte  ← form root; show/hide all + dirty badge
     │   └── sections/
-    │       ├── ScreenSpecificSettings.svelte (incl. screen-toggles + ScreenRotationList + CurrencyRotationList)
+    │       ├── ScreenSpecificSettings.svelte ← screen-toggles + composes the two rotation lists below
+    │       ├── ScreenRotationList.svelte     ← drag/drop screen reorder + per-screen enable
+    │       ├── CurrencyRotationList.svelte   ← drag/drop currency reorder
     │       ├── DisplaySettings.svelte
     │       ├── DataSourceSettings.svelte
     │       ├── ExtraFeaturesSettings.svelte (DND, Bitaxe, mining-pool, Nostr zap notify)

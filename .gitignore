@@ -16,3 +16,12 @@ yarn-error.log
 test-results/
 playwright-report/
 output/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads.bak-*/
+
+# Local build logs
+build-build-*.log
