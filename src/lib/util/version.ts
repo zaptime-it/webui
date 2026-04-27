@@ -9,17 +9,38 @@ export const compareVersions = (version1: string, version2: string): number => {
 	return 0;
 };
 
+// Asset names below match the v4 release pipeline output (see
+// .forgejo/workflows/release.yaml in the firmware repo). Every variant
+// publishes a flat `btclock_<variant>_ota.bin` and a flash-size-keyed
+// `storage_<size>.bin`. Untested-but-buildable panel combos (e.g.
+// REV_B_EPD_2_9, REV_V8_EPD_7_5) get entries too — they configure
+// cleanly in the firmware and the WebUI shouldn't refuse the lookup.
 const firmwareBinaryMap: Record<string, string> = {
-	REV_V8_EPD_2_13: 'btclock_rev_v8_213epd_firmware.bin',
-	REV_B_EPD_2_13: 'btclock_rev_b_213epd_firmware.bin',
-	REV_A_EPD_2_13: 'lolin_s3_mini_213epd_firmware.bin',
-	REV_A_EPD_2_9: 'lolin_s3_mini_29epd_firmware.bin'
+	REV_A_EPD_2_13: 'btclock_rev_a_ota.bin',
+	REV_A_EPD_2_9: 'btclock_rev_a_29_ota.bin',
+	REV_A_EPD_7_5: 'btclock_rev_a_75_ota.bin',
+	REV_B_EPD_2_13: 'btclock_rev_b_ota.bin',
+	REV_B_EPD_2_9: 'btclock_rev_b_29_ota.bin',
+	REV_B_EPD_7_5: 'btclock_rev_b_75_ota.bin',
+	REV_V8_EPD_2_13: 'btclock_v8_ota.bin',
+	REV_V8_EPD_2_9: 'btclock_v8_29_ota.bin',
+	REV_V8_EPD_7_5: 'btclock_v8_75_ota.bin'
 };
 
+// LittleFS storage image is keyed by flash size, not variant. Rev A is
+// 4 MB, Rev B is 8 MB, V8 is 16 MB. Multiple variants on the same flash
+// size share one image — the release pipeline sha256-dedupes them and
+// uploads each unique blob exactly once under `storage_<size>.bin`.
 const webuiBinaryMap: Record<string, string> = {
-	REV_V8_EPD_2_13: 'littlefs_16MB.bin',
-	REV_B_EPD_2_13: 'littlefs_8MB.bin',
-	REV_A_EPD_2_13: 'littlefs_4MB.bin'
+	REV_A_EPD_2_13: 'storage_4mb.bin',
+	REV_A_EPD_2_9: 'storage_4mb.bin',
+	REV_A_EPD_7_5: 'storage_4mb.bin',
+	REV_B_EPD_2_13: 'storage_8mb.bin',
+	REV_B_EPD_2_9: 'storage_8mb.bin',
+	REV_B_EPD_7_5: 'storage_8mb.bin',
+	REV_V8_EPD_2_13: 'storage_16mb.bin',
+	REV_V8_EPD_2_9: 'storage_16mb.bin',
+	REV_V8_EPD_7_5: 'storage_16mb.bin'
 };
 
 export const getFirmwareBinaryName = (hwRev: string): string =>
