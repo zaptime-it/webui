@@ -167,14 +167,14 @@ describe('mobile tabbed layout: only the active section renders below md', () =>
 	});
 
 	test('inactive sections are aria-hidden so screen readers skip them on mobile', () => {
-		const ariaHidden = pageSrc.match(
-			/aria-hidden=\{section !== '[^']+' \? 'true' : undefined\}/g
-		);
+		const ariaHidden = pageSrc.match(/aria-hidden=\{section !== '[^']+' \? 'true' : undefined\}/g);
 		expect(ariaHidden?.length ?? 0).toBe(3);
 	});
 
 	test('CSS hides non-active sections under 768px and restores grid above', () => {
-		expect(pageSrc).toMatch(/@media \(max-width: 767px\)\s*\{[\s\S]*?\.mobile-tab-section\s*\{[^}]*display:\s*none/);
+		expect(pageSrc).toMatch(
+			/@media \(max-width: 767px\)\s*\{[\s\S]*?\.mobile-tab-section\s*\{[^}]*display:\s*none/
+		);
 		expect(pageSrc).toMatch(/\.mobile-tab-section\.mobile-active\s*\{[^}]*display:\s*block/);
 	});
 });

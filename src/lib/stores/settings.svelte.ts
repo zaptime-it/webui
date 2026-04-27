@@ -50,6 +50,10 @@ const fieldKey = (s: Settings, k: keyof Settings): string => {
 };
 
 const buildPristine = (s: Settings): PristineMap => {
+	// Plain Map is correct here — pristine is replaced wholesale by load() /
+	// save(); we never mutate it in place from a reactive context, so the
+	// SvelteMap reactivity is unnecessary overhead.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const map: PristineMap = new Map();
 	for (const k of Object.keys(s) as (keyof Settings)[]) {
 		map.set(k, fieldKey(s, k));
@@ -58,6 +62,11 @@ const buildPristine = (s: Settings): PristineMap => {
 };
 
 const computeDirtyKeys = (current: Settings, pristine: PristineMap): Set<keyof Settings> => {
+	// Plain Set: this is a fresh result computed on every getter read.
+	// Callers consume it by iteration / `.has()`; nothing observes
+	// per-element changes, so SvelteSet would just add a notification
+	// frame for every `.add` we do here.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	const out = new Set<keyof Settings>();
 	// Iterate the *current* keys: a brand-new field added by the firmware
 	// after the snapshot would otherwise read as "missing" and false-positive
@@ -82,6 +91,7 @@ export const settingsStore = {
 		return state.value.status === 'ready';
 	},
 	get dirtyKeys(): Set<keyof Settings> {
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		if (state.value.status !== 'ready' || state.pristine === null) return new Set();
 		return computeDirtyKeys(state.value.data, state.pristine);
 	},

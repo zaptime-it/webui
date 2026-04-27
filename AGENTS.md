@@ -21,16 +21,16 @@ as `data/` inside the firmware tree; the absolute links work everywhere.
 
 ## 1. Stack at a glance
 
-| Layer            | Choice                                      |
-|------------------|---------------------------------------------|
-| Framework        | SvelteKit + `@sveltejs/adapter-static` (SSR off) |
-| Components       | Svelte **5** with runes (`$state`, `$derived`, `$bindable`) |
-| Styles           | Tailwind v4 (`@tailwindcss/vite`) + DaisyUI v5 |
-| i18n             | Paraglide JS v2 — message catalogs in `src/lib/locales/{en,de,es,nl}.json` |
-| Runtime validation | Valibot — `src/lib/api/schemas.ts` |
-| Drag/drop        | `svelte-dnd-action` — used in `ScreenRotationList`, `CurrencyRotationList` |
-| Tests            | Vitest (`*.spec.ts` colocated) + Playwright (`tests/`) |
-| Build output     | `dist/` → `pnpm build:gz` (wraps `python3 gzip_build.py`) → `build_gz/www/` → LittleFS image |
+| Layer              | Choice                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| Framework          | SvelteKit + `@sveltejs/adapter-static` (SSR off)                                             |
+| Components         | Svelte **5** with runes (`$state`, `$derived`, `$bindable`)                                  |
+| Styles             | Tailwind v4 (`@tailwindcss/vite`) + DaisyUI v5                                               |
+| i18n               | Paraglide JS v2 — message catalogs in `src/lib/locales/{en,de,es,nl}.json`                   |
+| Runtime validation | Valibot — `src/lib/api/schemas.ts`                                                           |
+| Drag/drop          | `svelte-dnd-action` — used in `ScreenRotationList`, `CurrencyRotationList`                   |
+| Tests              | Vitest (`*.spec.ts` colocated) + Playwright (`tests/`)                                       |
+| Build output       | `dist/` → `pnpm build:gz` (wraps `python3 gzip_build.py`) → `build_gz/www/` → LittleFS image |
 
 The build serves from `/lfs/www/` on the device — `gzip_build.py` writes
 under `build_gz/www/` because the firmware's `kWebRootBase = "/lfs/www"`
@@ -104,6 +104,7 @@ The current main page lays out three cards horizontally (control / status /
 settings) with the Convert + API pages routed under `/convert` and `/api`.
 
 ### Control card (left)
+
 - **Text overlay** — POST `/api/show/text?t=<text>`, char limit = `numScreens`.
 - **LEDs** — colour pickers per panel + "keep same colour" toggle, Set / Off
   via POST `/api/lights/set` and `/api/lights/off`. Hidden when
@@ -119,12 +120,13 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
   device's `gitRev`; `UploadForm` streams the binary via XHR with progress.
 
 ### Status card (centre)
+
 - Quick screen jump (Block Height, Time, Halving, Block Fee Rate, Sats per
   dollar, Ticker, Market Cap, Bitcoin Supply, Mining Pool Hashrate) — POST
   `/api/show/screen?s=<id>`.
 - Per-currency jump (USD / EUR active here) — POST `/api/show/currency?c=USD`.
 - Live 7-panel preview rendered by `ClockDisplay` from the SSE `data[]` array
-  + glyph hints in `status`.
+  - glyph hints in `status`.
 - Screen cycle pause/resume — POST `/api/action/pause` / `/api/action/timer_restart`.
 - Do Not Disturb — POST `/api/dnd/enable` / `/api/dnd/disable`. Schedule
   shown when `dnd.dndTimeEnabled` is set.
@@ -137,6 +139,7 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
   the SSE store on disconnect.
 
 ### Settings card (right)
+
 - Collapsible sections with global Show all / Hide all and a "Unsaved
   changes" badge driven by `settingsStore.isDirty`.
 - **Screen specific** — switches for `stealFocus`, `mcapBigChar`,
@@ -170,9 +173,8 @@ should follow them; corrections from a reviewer will likely point here.
    already narrows for you.
 
 3. **Single API client.** All endpoint calls go through
-   `src/lib/api/client.ts`. Don't `fetch(\`${PUBLIC_BASE_URL}/api/...\`)`
-   in components. The 3.4.0 firmware moved several endpoints from GET → POST
-   and from `POST /api/json/settings` → `PATCH /api/settings`; the client
+   `src/lib/api/client.ts`. Don't `fetch(\`${PUBLIC_BASE_URL}/api/...\`)`in components. The 3.4.0 firmware moved several endpoints from GET → POST
+and from`POST /api/json/settings`→`PATCH /api/settings`; the client
    captures every quirk in one place.
 
 4. **Don't PATCH back computed fields.** `httpAuthPassSet`, `otaPassSet`,
@@ -211,7 +213,7 @@ should follow them; corrections from a reviewer will likely point here.
     `/events`. Never poll `/api/status`.
 
 12. **Disconnect is rendered, not toasted.** `statusStore.connected ===
-    false` (or `data.isFake === true`) draws the "Lost connection"
+false` (or `data.isFake === true`) draws the "Lost connection"
     overlay over the clock preview. Don't fire toasts on every drop.
 
 13. **Test specs live next to components.** `Foo.svelte` →
@@ -238,6 +240,7 @@ User toggles SwitchField
 ```
 
 Status flow:
+
 ```
 on mount → statusStore.load() (snapshot) + statusStore.connect() (SSE)
   → /events streams `status` JSON every push
@@ -274,6 +277,7 @@ Constructive suggestions, ordered by yield-vs-effort. None are blocking;
 file a `bd` issue before starting one of the bigger items.
 
 ### Low-hanging
+
 - **Toast on save failure shows raw HTTP status only** — `${res.status}: ${res.statusText}`
   isn't actionable. The firmware returns a JSON body with `{ error, field }`
   on validation failures; surface `field` so the user knows which field was
@@ -286,7 +290,7 @@ file a `bd` issue before starting one of the bigger items.
   and `closing` (5 s) but doesn't back off. On a flaky AP this hammers the
   device with reconnects. Exponential backoff capped at, say, 30 s.
 - **`statusStore.rssiPercent` clamps below 2 %.** The `Math.min(Math.max(2 *
-  (rssi + 100), 0), 100)` floor at 0 then clamps at 100; the `2 *` factor
+(rssi + 100), 0), 100)` floor at 0 then clamps at 100; the `2 *` factor
   is a magic number — pull it into a named constant or move to a
   documented mapping (`-100 dBm → 0 %`, `-50 dBm → 100 %`).
 - **Schema validation isn't called.** `parseSettings`/`parseStatus` exist
@@ -299,6 +303,7 @@ file a `bd` issue before starting one of the bigger items.
   "Updating firmware — device will restart shortly" instead.
 
 ### Medium
+
 - **Settings dirty diff is JSON-stringify based.** Cheap on a ~100-field
   object today, but if `availableFonts` or `availableCurrencies` start
   growing this becomes a hotspot. Switch to a per-field diff that tracks
@@ -323,9 +328,10 @@ file a `bd` issue before starting one of the bigger items.
   custom `disabled:opacity-60` rule.
 - **`SwitchField` gating is implicit.** "Mow Suffix Mode" and "Suffix
   share dot" both `disabled={!data.suffixPrice}`, but the disabled state
-  doesn't explain *why*. Add a tooltip or helper text.
+  doesn't explain _why_. Add a tooltip or helper text.
 
 ### Larger / requires alignment
+
 - **Form-level validation summary.** Today each `Field` shows its own
   invalid state (e.g. `nostrZapPubkey`). For a long form, an
   inline summary at the top of `SettingsPanel` listing every invalid
@@ -344,7 +350,7 @@ file a `bd` issue before starting one of the bigger items.
   would tighten the feedback loop.
 - **WebUI/firmware version mismatch warning is binary.** The yellow
   warning fires whenever the commits differ — even by one tiny WebUI
-  patch. Compare *semver* (the firmware tag) instead of the commit, or
+  patch. Compare _semver_ (the firmware tag) instead of the commit, or
   at least let users dismiss the warning per-session.
 - **API typings drift from firmware.** `Settings` is hand-maintained.
   Generating it from the firmware's `kFields` table (or vice versa)

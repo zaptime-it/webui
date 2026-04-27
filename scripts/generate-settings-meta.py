@@ -179,7 +179,14 @@ def main() -> int:
         sys.exit("Parsed zero fields — regex drift, schema.hpp format changed.")
 
     args.out.write_text(emit(fields))
-    print(f"wrote {len(fields)} fields → {args.out.relative_to(here)}", file=sys.stderr)
+    out_label = args.out
+    try:
+        out_label = args.out.resolve().relative_to(here)
+    except ValueError:
+        # --out points outside the repo (CI's check:settings-meta writes to
+        # /tmp). Fall back to the absolute path so the message stays useful.
+        pass
+    print(f"wrote {len(fields)} fields → {out_label}", file=sys.stderr)
     return 0
 
 

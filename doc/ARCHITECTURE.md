@@ -31,8 +31,8 @@ Key points:
 
 - `bundleStrategy: 'single'` (svelte.config.js) is required — the
   firmware's `control_server.cpp` only serves a single `bundle.js`
-  + `index.html` from `/lfs/www/`. Code-splitting per route does not
-  work today; see [webui-4wa] notes in `routes/convert/lazy.spec.ts`.
+  - `index.html` from `/lfs/www/`. Code-splitting per route does not
+    work today; see [webui-4wa] notes in `routes/convert/lazy.spec.ts`.
 - The post-build rewrap step removes SvelteKit's hydration markers
   and rewrites the script entrypoint to anchor on `.overlay`.
 - Compression has to land at `build_gz/www/` (the `www/` segment
@@ -80,7 +80,7 @@ Rules of the road:
    status store does both: `load()` fetches a snapshot once,
    `connect()` opens `/events`. Never poll `/api/status`.
 3. **Discriminated-union state** (`{ status: 'loading' | 'error' |
-   'ready', ... }`) keeps stores narrowing-friendly. Don't reintroduce
+'ready', ... }`) keeps stores narrowing-friendly. Don't reintroduce
    nullable `data` + `isLoaded` flags.
 
 ---
@@ -121,7 +121,7 @@ sequenceDiagram
 
 Drift-detection bonus path (see [webui-prk]): on `window.focus`,
 `settingsStore.checkRemoteDrift()` re-fetches `/api/settings` and
-diffs against the pristine baseline. Any field that differs *and*
+diffs against the pristine baseline. Any field that differs _and_
 the user hasn't locally edited counts as drift; the UI surfaces a
 dismissible "settings changed on the device" banner.
 
@@ -146,7 +146,7 @@ stateDiagram-v2
 ```
 
 The crucial invariant: the "lost connection" overlay reads
-`statusStore.otaInProgress` *before* falling back to the generic
+`statusStore.otaInProgress` _before_ falling back to the generic
 "trying to reconnect" copy. Without that, every OTA upload looks
 like a crash to the user.
 
@@ -203,17 +203,17 @@ unless it's a primitive.
 
 ## 6. Files worth knowing
 
-| File                                              | Why it matters                                                  |
-| ------------------------------------------------- | --------------------------------------------------------------- |
-| `src/lib/api/client.ts`                           | Single source of truth for endpoint shapes + ApiResult envelope |
-| `src/lib/api/sse.ts`                              | EventSource lifecycle + exponential backoff                     |
-| `src/lib/api/schemas.ts`                          | Valibot schemas; called on cold-start GETs only                 |
-| `src/lib/stores/settings.svelte.ts`               | Per-field dirty diff, drift detection, save/load                |
-| `src/lib/stores/status.svelte.ts`                 | SSE connection lifecycle, optimistic overlay, OTA flag          |
-| `src/lib/types/settings.generated.ts`             | Auto-generated firmware metadata (see scripts/)                 |
-| `src/lib/util/validation.ts`                      | Form-level validation registry                                  |
-| `src/lib/features/settings/SettingsPanel.svelte`  | Save flow, error highlighting, Cmd+S, drift banner              |
-| `src/lib/features/firmware/UploadForm.svelte`     | OTA upload + statusStore.beginOtaUpload                         |
-| `static/swagger.yml` / `static/swagger.json`      | OpenAPI spec; YAML is the source                                |
-| `scripts/generate-settings-meta.py`               | Codegen for `settings.generated.ts`                             |
-| `gzip_build.py`                                   | Post-build LittleFS staging                                     |
+| File                                             | Why it matters                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------- |
+| `src/lib/api/client.ts`                          | Single source of truth for endpoint shapes + ApiResult envelope |
+| `src/lib/api/sse.ts`                             | EventSource lifecycle + exponential backoff                     |
+| `src/lib/api/schemas.ts`                         | Valibot schemas; called on cold-start GETs only                 |
+| `src/lib/stores/settings.svelte.ts`              | Per-field dirty diff, drift detection, save/load                |
+| `src/lib/stores/status.svelte.ts`                | SSE connection lifecycle, optimistic overlay, OTA flag          |
+| `src/lib/types/settings.generated.ts`            | Auto-generated firmware metadata (see scripts/)                 |
+| `src/lib/util/validation.ts`                     | Form-level validation registry                                  |
+| `src/lib/features/settings/SettingsPanel.svelte` | Save flow, error highlighting, Cmd+S, drift banner              |
+| `src/lib/features/firmware/UploadForm.svelte`    | OTA upload + statusStore.beginOtaUpload                         |
+| `static/swagger.yml` / `static/swagger.json`     | OpenAPI spec; YAML is the source                                |
+| `scripts/generate-settings-meta.py`              | Codegen for `settings.generated.ts`                             |
+| `gzip_build.py`                                  | Post-build LittleFS staging                                     |

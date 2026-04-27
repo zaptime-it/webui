@@ -9,17 +9,17 @@ jobs:
       all_changed_and_modified_files_count: ${{ steps.changed-files.outputs.all_changed_and_modified_files_count }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get changed files count
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files_ignore: 'doc/**,README.md,Dockerfile,.*'
           files_ignore_separator: ','
       - name: Print changed files count
         run: >
-          echo "Changed files count: ${{ 
+          echo "Changed files count: ${{
             steps.changed-files.outputs.all_changed_and_modified_files_count }}"
 
   build:
@@ -30,13 +30,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - uses: pnpm/action-setup@v5
         with:
           package_json_file: package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: pnpm
@@ -46,7 +46,7 @@ jobs:
             ~/.cache/pip
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-pio-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
       - name: Get current date
@@ -107,14 +107,14 @@ jobs:
           set -e
           /tmp/mklittlefs/mklittlefs -c build_gz -s 409600 output/littlefs.bin
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: |
             webui.tgz
             output/littlefs.bin
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           tag: ${{ steps.getBlockHeight.outputs.blockHeight }}
           commit: main

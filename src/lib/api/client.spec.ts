@@ -162,9 +162,7 @@ describe('cold-start schema validation', () => {
 	});
 
 	test('getStatus throws on schema violations', async () => {
-		fetchMock.mockResolvedValueOnce(
-			jsonResponse(JSON.stringify({ data: 'oops', leds: [] }))
-		);
+		fetchMock.mockResolvedValueOnce(jsonResponse(JSON.stringify({ data: 'oops', leds: [] })));
 		await expect(getStatus()).rejects.toThrow();
 	});
 });

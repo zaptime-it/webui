@@ -39,7 +39,9 @@ for (let i = 0; i < lines.length; i++) {
 	const window = lines.slice(i, i + 8).join('\n');
 	// Stop the window at the next element opening so we don't bleed
 	// into a neighbouring component's label.
-	const cutoff = window.search(/<(?:SwitchField|NumberField|SelectField|RangeField|ColorField|Field)\b(?!.*?id="[A-Za-z]+")/);
+	const cutoff = window.search(
+		/<(?:SwitchField|NumberField|SelectField|RangeField|ColorField|Field)\b(?!.*?id="[A-Za-z]+")/
+	);
 	const scoped = cutoff > 0 ? window.slice(0, cutoff) : window;
 	if (/restartRequired/.test(scoped)) labelledKeys.add(idMatch[1]);
 }

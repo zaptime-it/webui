@@ -13,9 +13,7 @@
 	"paths": {
 		"/api/status": {
 			"get": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Get current runtime status",
 				"security": [
 					{
@@ -41,9 +39,7 @@
 		},
 		"/api/system_status": {
 			"get": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Get memory, filesystem, and WiFi metrics",
 				"security": [
 					{
@@ -69,9 +65,7 @@
 		},
 		"/api/settings": {
 			"get": {
-				"tags": [
-					"settings"
-				],
+				"tags": ["settings"],
 				"summary": "Get current settings",
 				"description": "Returns the full settings document. Password fields are NEVER included in the response;\ninstead, `httpAuthPassSet` and `otaPassSet` booleans indicate whether one is currently stored.\n",
 				"security": [
@@ -96,9 +90,7 @@
 				}
 			},
 			"patch": {
-				"tags": [
-					"settings"
-				],
+				"tags": ["settings"],
 				"summary": "Apply partial settings update",
 				"description": "Send a JSON object with only the keys to change. Updatable keys include all `Settings`\npreference fields, the `screens` array, `actCurrencies`, the nested `dnd` block,\n`timePerScreen` (minutes, stored as `timerSeconds`), `tzOffset` (minutes, stored as\n`gmtOffset` seconds), `txPower`, `dataSource`, etc.\n\nTo set a password, include `httpAuthPass` / `otaPass` as a non-empty string.\nTo clear a stored password, send an empty string. Omit the key entirely to leave\nthe stored value unchanged \u2014 this is what clients should do when they are\nround-tripping a full settings form.\n",
 				"security": [
@@ -139,9 +131,7 @@
 							"application/json": {
 								"schema": {
 									"type": "object",
-									"required": [
-										"error"
-									],
+									"required": ["error"],
 									"properties": {
 										"error": {
 											"type": "string",
@@ -160,9 +150,7 @@
 		},
 		"/api/wifi_set_tx_power": {
 			"post": {
-				"tags": [
-					"network"
-				],
+				"tags": ["network"],
 				"summary": "Set WiFi TX power (dBm enum value)",
 				"security": [
 					{
@@ -205,9 +193,7 @@
 		},
 		"/api/stop_datasources": {
 			"post": {
-				"tags": [
-					"datasources"
-				],
+				"tags": ["datasources"],
 				"summary": "Stop price and block data connections",
 				"security": [
 					{
@@ -223,9 +209,7 @@
 		},
 		"/api/restart_datasources": {
 			"post": {
-				"tags": [
-					"datasources"
-				],
+				"tags": ["datasources"],
 				"summary": "Restart data connections according to current data source mode",
 				"security": [
 					{
@@ -241,9 +225,7 @@
 		},
 		"/api/action/pause": {
 			"post": {
-				"tags": [
-					"timer"
-				],
+				"tags": ["timer"],
 				"summary": "Pause screen rotation timer",
 				"security": [
 					{
@@ -259,9 +241,7 @@
 		},
 		"/api/action/timer_restart": {
 			"post": {
-				"tags": [
-					"timer"
-				],
+				"tags": ["timer"],
 				"summary": "Resume screen rotation timer",
 				"security": [
 					{
@@ -277,9 +257,7 @@
 		},
 		"/api/show/screen": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Switch to a screen by index",
 				"description": "The firmware also registers the rewrite `/api/show/screen/{s}` \u2192 this URL. Prefer the\nquery-parameter form.\n",
 				"security": [
@@ -307,9 +285,7 @@
 		},
 		"/api/show/text": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Show one character per display (legacy text mode)",
 				"description": "The firmware also registers rewrites `/api/show/text/{text}` and\n`/api/show/number/{number}` \u2192 this URL. Text is uppercased on the device.\n",
 				"security": [
@@ -336,9 +312,7 @@
 		},
 		"/api/show/currency": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Switch to an active fiat/crypto currency code",
 				"description": "The firmware also registers `/api/show/currency/{c}` \u2192 this URL.\nReturns 404 if the currency is not in `actCurrencies`.\n",
 				"security": [
@@ -368,9 +342,7 @@
 		},
 		"/api/screen/next": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Advance to next screen in rotation order",
 				"security": [
 					{
@@ -386,9 +358,7 @@
 		},
 		"/api/screen/previous": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Go to previous screen in rotation order",
 				"security": [
 					{
@@ -404,9 +374,7 @@
 		},
 		"/api/show/custom": {
 			"post": {
-				"tags": [
-					"screens"
-				],
+				"tags": ["screens"],
 				"summary": "Set custom multi-line EPD content (JSON array)",
 				"security": [
 					{
@@ -432,9 +400,7 @@
 		},
 		"/api/full_refresh": {
 			"post": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Force full refresh of all EPD panels",
 				"security": [
 					{
@@ -450,9 +416,7 @@
 		},
 		"/api/lights": {
 			"get": {
-				"tags": [
-					"lights"
-				],
+				"tags": ["lights"],
 				"summary": "Get LED strip colors",
 				"security": [
 					{
@@ -475,9 +439,7 @@
 		},
 		"/api/lights/set": {
 			"post": {
-				"tags": [
-					"lights"
-				],
+				"tags": ["lights"],
 				"summary": "Set each LED from a JSON array",
 				"description": "Empty array turns all LEDs off. Array length must equal the device's LED count.",
 				"security": [
@@ -509,9 +471,7 @@
 		},
 		"/api/lights/color": {
 			"post": {
-				"tags": [
-					"lights"
-				],
+				"tags": ["lights"],
 				"summary": "Set all LEDs to one RGB hex color",
 				"description": "The firmware also registers the rewrite `/api/lights/color/{color}` \u2192 this URL.\nUse six hex digits without `#`, or `off`.\n",
 				"security": [
@@ -549,9 +509,7 @@
 		},
 		"/api/lights/off": {
 			"post": {
-				"tags": [
-					"lights"
-				],
+				"tags": ["lights"],
 				"summary": "Turn all LEDs off",
 				"security": [
 					{
@@ -567,9 +525,7 @@
 		},
 		"/api/identify": {
 			"post": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Flash LEDs with identify pattern",
 				"security": [
 					{
@@ -585,9 +541,7 @@
 		},
 		"/api/restart": {
 			"post": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Restart the device",
 				"description": "Response is flushed before the reboot; the connection will then close.",
 				"security": [
@@ -604,9 +558,7 @@
 		},
 		"/api/dnd/status": {
 			"get": {
-				"tags": [
-					"dnd"
-				],
+				"tags": ["dnd"],
 				"summary": "Get Do-Not-Disturb status",
 				"security": [
 					{
@@ -629,9 +581,7 @@
 		},
 		"/api/dnd/enable": {
 			"post": {
-				"tags": [
-					"dnd"
-				],
+				"tags": ["dnd"],
 				"summary": "Enable manual DND override",
 				"security": [
 					{
@@ -647,9 +597,7 @@
 		},
 		"/api/dnd/disable": {
 			"post": {
-				"tags": [
-					"dnd"
-				],
+				"tags": ["dnd"],
 				"summary": "Disable manual DND override",
 				"security": [
 					{
@@ -665,9 +613,7 @@
 		},
 		"/api/firmware/auto_update": {
 			"post": {
-				"tags": [
-					"firmware"
-				],
+				"tags": ["firmware"],
 				"summary": "Trigger OTA firmware check / update (only when OTA is enabled)",
 				"security": [
 					{
@@ -698,9 +644,7 @@
 		},
 		"/upload/firmware": {
 			"post": {
-				"tags": [
-					"firmware"
-				],
+				"tags": ["firmware"],
 				"summary": "Upload a firmware binary (multipart)",
 				"description": "Streams the multipart body directly to `Update.write()` with on-the-fly SHA-256.\nAvailable when OTA is enabled.\n",
 				"security": [
@@ -717,9 +661,7 @@
 		},
 		"/upload/webui": {
 			"post": {
-				"tags": [
-					"firmware"
-				],
+				"tags": ["firmware"],
 				"summary": "Upload WebUI / LittleFS image (multipart)",
 				"description": "Available when OTA is enabled.",
 				"security": [
@@ -736,9 +678,7 @@
 		},
 		"/api/frontlight/on": {
 			"post": {
-				"tags": [
-					"frontlight"
-				],
+				"tags": ["frontlight"],
 				"summary": "Fade frontlight on (Rev B + frontlight hardware only)",
 				"security": [
 					{
@@ -754,9 +694,7 @@
 		},
 		"/api/frontlight/off": {
 			"post": {
-				"tags": [
-					"frontlight"
-				],
+				"tags": ["frontlight"],
 				"summary": "Fade frontlight off",
 				"security": [
 					{
@@ -772,9 +710,7 @@
 		},
 		"/api/frontlight/flash": {
 			"post": {
-				"tags": [
-					"frontlight"
-				],
+				"tags": ["frontlight"],
 				"summary": "Run frontlight flash effect",
 				"security": [
 					{
@@ -790,9 +726,7 @@
 		},
 		"/api/frontlight/status": {
 			"get": {
-				"tags": [
-					"frontlight"
-				],
+				"tags": ["frontlight"],
 				"summary": "Frontlight levels per screen",
 				"security": [
 					{
@@ -823,9 +757,7 @@
 		},
 		"/api/frontlight/brightness": {
 			"post": {
-				"tags": [
-					"frontlight"
-				],
+				"tags": ["frontlight"],
 				"summary": "Set frontlight brightness",
 				"security": [
 					{
@@ -856,9 +788,7 @@
 		},
 		"/events": {
 			"get": {
-				"tags": [
-					"system"
-				],
+				"tags": ["system"],
 				"summary": "Server-Sent Events stream of status updates",
 				"description": "Event stream for live status updates. The firmware emits three\nkinds of frames over the wire:\n\n- `event: welcome` \u2014 sent once on connect; payload is the\n  stringified IP address of the client.\n- `event: status` \u2014 payload JSON matches `GET /api/status`\n  (shares `buildStatusJson()`). One frame is pushed on every\n  state change (block height update, screen rotation, LED\n  colour change, DND transition, etc.).\n- `data: closing` (no `event:` prefix, default `message`\n  listener) \u2014 sent immediately before the firmware closes the\n  connection cleanly (e.g. when the LFS image is being swapped\n  during an OTA finalisation). Clients should reconnect after\n  a short delay; this is a graceful handoff, not a failure.\n\nReconnect strategy: 1 s on first `error`, doubling to a 30 s\ncap (see `src/lib/api/sse.ts::computeBackoffMs` in the WebUI),\nand 5 s after a `closing` message. The \"lost connection\"\noverlay reads its label from `statusStore.otaInProgress` so\nusers see \"Updating firmware\u2026\" during an OTA reconnect.\n",
 				"security": [
@@ -1112,12 +1042,7 @@
 					"dataSource": {
 						"type": "integer",
 						"description": "0 BTCLOCK_SOURCE, 1 THIRD_PARTY_SOURCE, 2 NOSTR_SOURCE, 3 CUSTOM_SOURCE\n",
-						"enum": [
-							0,
-							1,
-							2,
-							3
-						]
+						"enum": [0, 1, 2, 3]
 					},
 					"mempoolInstance": {
 						"type": "string"

@@ -14,25 +14,26 @@
 	// CollapseCard the user needs to expand to see the offending input.
 	// Real key names (e.g. `fontName`, `timerSeconds`) live in section
 	// content and resolve via the field's id, not via this map.
-	const sectionForField: Record<string, 'screen' | 'display' | 'dataSource' | 'extra' | 'system'> = {
-		screens: 'screen',
-		currency: 'screen',
-		actCurrencies: 'screen',
-		dnd: 'extra',
-		bitaxe: 'extra',
-		miningPool: 'extra',
-		nostr: 'extra',
-		fontName: 'display',
-		invertedColor: 'display',
-		flMaxBrightness: 'display',
-		dataSource: 'dataSource',
-		hostnamePrefix: 'system',
-		mdnsEnabled: 'system',
-		httpAuthUser: 'system',
-		httpAuthPass: 'system',
-		otaPass: 'system',
-		otaEnabled: 'system'
-	};
+	const sectionForField: Record<string, 'screen' | 'display' | 'dataSource' | 'extra' | 'system'> =
+		{
+			screens: 'screen',
+			currency: 'screen',
+			actCurrencies: 'screen',
+			dnd: 'extra',
+			bitaxe: 'extra',
+			miningPool: 'extra',
+			nostr: 'extra',
+			fontName: 'display',
+			invertedColor: 'display',
+			flMaxBrightness: 'display',
+			dataSource: 'dataSource',
+			hostnamePrefix: 'system',
+			mdnsEnabled: 'system',
+			httpAuthUser: 'system',
+			httpAuthPass: 'system',
+			otaPass: 'system',
+			otaEnabled: 'system'
+		};
 
 	const miningPoolMap = new Map<string, string>([
 		['noderunners', 'Noderunners.network'],
