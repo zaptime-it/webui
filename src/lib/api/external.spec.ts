@@ -214,15 +214,23 @@ describe('fetchLatestRelease', () => {
 		(globalThis as unknown as { fetch: typeof originalFetch }).fetch = originalFetch;
 	});
 
-	test('hits the known forgejo release endpoint', async () => {
+	test('hits the URL passed in (sourced from /api/settings.gitReleaseUrl)', async () => {
 		fetchMock.mockResolvedValueOnce(
-			jsonResponse({ tag_name: 'v3.3.16', created_at: '2026-03-29', html_url: 'x' })
+			jsonResponse({ tag_name: 'v4.0.0', created_at: '2026-03-29', html_url: 'x' })
 		);
-		const r = await fetchLatestRelease();
-		expect(r.tag_name).toBe('v3.3.16');
-		expect(fetchMock).toHaveBeenCalledWith(
-			'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest',
-			expect.anything()
-		);
+		const url = 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v4/releases/latest';
+		const r = await fetchLatestRelease(url);
+		expect(r.tag_name).toBe('v4.0.0');
+		expect(fetchMock).toHaveBeenCalledWith(url, expect.anything());
+	});
+
+	test('rejects an empty URL without hitting the network', async () => {
+		try {
+			await fetchLatestRelease('   ');
+			throw new Error('should have thrown');
+		} catch (err) {
+			expectFetchError(err, 'unreachable');
+		}
+		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });

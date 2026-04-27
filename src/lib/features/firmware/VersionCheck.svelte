@@ -37,12 +37,18 @@
 		}
 	};
 
+	// The firmware exposes its own release feed URL via /api/settings
+	// (`gitReleaseUrl`), so v3 / v4 / forks all hit the right Forgejo or
+	// GitHub endpoint without the WebUI hardcoding a repo. Wait for settings
+	// to load before firing the request.
 	$effect(() => {
 		if (fetched) return;
+		const url = settings?.gitReleaseUrl?.trim();
+		if (!url) return;
 		fetched = true;
 		(async () => {
 			try {
-				const data = await fetchLatestRelease();
+				const data = await fetchLatestRelease(url);
 				latestVersion = data.tag_name;
 				releaseDate = new Date(data.created_at).toLocaleString();
 				releaseUrl = data.html_url;

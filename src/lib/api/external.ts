@@ -155,8 +155,11 @@ export interface LatestReleaseInfo {
 	html_url: string;
 }
 
-export const fetchLatestRelease = async (timeoutMs = 5000): Promise<LatestReleaseInfo> =>
-	fetchJson<LatestReleaseInfo>(
-		'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest',
-		timeoutMs
-	);
+export const fetchLatestRelease = async (
+	url: string,
+	timeoutMs = 5000
+): Promise<LatestReleaseInfo> => {
+	const u = url.trim();
+	if (!u) throw new FetchError('unreachable', 'Release URL is empty');
+	return fetchJson<LatestReleaseInfo>(u, timeoutMs);
+};
