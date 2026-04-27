@@ -38,8 +38,9 @@
 					<input
 						id="customText"
 						type="text"
-						class="input input-bordered input-sm w-full @sm:col-span-2"
+						class="input input-bordered input-sm w-full @sm:col-span-2 uppercase"
 						bind:value={customText}
+						oninput={(e) => (customText = (e.currentTarget as HTMLInputElement).value.toUpperCase())}
 						maxlength={data?.numScreens}
 					/>
 				</div>
