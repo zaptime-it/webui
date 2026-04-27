@@ -61,7 +61,10 @@
 			<code
 				class="text-xs px-1.5 py-0.5 rounded bg-base-200 text-base-content/70 whitespace-nowrap"
 				data-testid="useSatsSymbol-preview"
-				aria-hidden="true">{satsSymbolPreview}</code
+				aria-hidden="true"
+				>{#if satsSymbolPreview.symbol}<span class="sats-glyph"
+						>{satsSymbolPreview.symbol}</span
+					>{' '}{/if}{satsSymbolPreview.price}</code
 			>
 		</div>
 		<SwitchField
@@ -141,3 +144,12 @@
 		</div>
 	{/if}
 </CollapseCard>
+
+<style>
+	/* Same font remap the clock face uses for its STS cell — the Satoshi
+	   Symbol woff2 substitutes the ASCII "S" with the sats sigil, so the
+	   preview chip renders the exact glyph the firmware will draw. */
+	.sats-glyph {
+		font-family: 'Satoshi Symbol', sans-serif;
+	}
+</style>

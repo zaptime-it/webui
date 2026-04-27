@@ -1,13 +1,23 @@
 import { describe, test, expect } from 'vitest';
-import { previewSatsSymbol, previewSuffixPrice } from './screenPreview';
+import { previewSatsSymbol, previewSuffixPrice, SATS_SYMBOL_GLYPH } from './screenPreview';
 
 describe('previewSatsSymbol', () => {
-	test('without the symbol just emits the formatted price', () => {
-		expect(previewSatsSymbol({ useSatsSymbol: false })).toMatch(/^\d/);
+	test('without the symbol the symbol slot is empty and price is plain digits', () => {
+		const out = previewSatsSymbol({ useSatsSymbol: false });
+		expect(out.symbol).toBe('');
+		expect(out.price).toMatch(/^\d/);
 	});
 
-	test('with the symbol prefixes the bitcoin glyph', () => {
-		expect(previewSatsSymbol({ useSatsSymbol: true })).toMatch(/^₿/);
+	test('with the symbol the slot is the Satoshi-font letter S, not the bitcoin glyph', () => {
+		// Why "S": the Satoshi Symbol webfont (src/app.css) substitutes the
+		// ASCII "S" with the sats sigil, the same trick ClockDisplay uses
+		// for the STS cell. Returning "₿" would render the bitcoin symbol,
+		// which is what the previous version did and what we're fixing.
+		const out = previewSatsSymbol({ useSatsSymbol: true });
+		expect(out.symbol).toBe(SATS_SYMBOL_GLYPH);
+		expect(SATS_SYMBOL_GLYPH).toBe('S');
+		expect(out.symbol).not.toBe('₿');
+		expect(out.price).toMatch(/^\d/);
 	});
 });
 
