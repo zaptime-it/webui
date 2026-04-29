@@ -6,7 +6,13 @@
 	import SelectField from '$lib/ui/SelectField.svelte';
 	import SwitchField from '$lib/ui/SwitchField.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
-	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
+	import {
+		isValidHexPubKey,
+		getPubKey,
+		isValidNpub,
+		isValidNostrRelayUrl,
+		isValidNostrRelay
+	} from '$lib/util/nostr';
 	import { fetchBitaxeInfo, fetchLocalPoolInfo, FetchError } from '$lib/api/external';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { DataSourceType } from '$lib/types/settings';
@@ -33,6 +39,12 @@
 
 	let validBitaxe = $state(false);
 	let validLocalPool = $state(false);
+	let validNostrRelay = $state(false);
+	let testingNostrRelay = $state(false);
+
+	const relayInvalid = $derived(
+		'nostrZapNotify' in data && !isValidNostrRelayUrl(data.nostrRelay ?? '')
+	);
 
 	const normalizeNostrKey = (key: 'nostrPubKey' | 'nostrZapPubkey') => {
 		const raw = (data[key] as string).trim();
@@ -54,6 +66,30 @@
 			validBitaxe = false;
 			const [title, message] = describeError(err, { thing: 'Bitaxe' });
 			toast.error(title, message);
+		}
+	};
+
+	const testNostrRelay = async () => {
+		if (relayInvalid) {
+			toast.error(m['section.settings.invalidNostrRelay']());
+			return;
+		}
+		testingNostrRelay = true;
+		try {
+			const ok = await isValidNostrRelay(data.nostrRelay);
+			if (ok) {
+				toast.success('Connected to Nostr relay', data.nostrRelay);
+				validNostrRelay = true;
+			} else {
+				validNostrRelay = false;
+				toast.error('Could not connect to Nostr relay', data.nostrRelay);
+			}
+		} catch (err) {
+			validNostrRelay = false;
+			const [title, message] = describeError(err, { thing: 'Nostr relay' });
+			toast.error(title, message);
+		} finally {
+			testingNostrRelay = false;
 		}
 	};
 
@@ -257,7 +293,22 @@
 				label={m['section.settings.nostrRelay']()}
 				bind:value={data.nostrRelay}
 				required
-			/>
+				invalid={relayInvalid}
+				valid={validNostrRelay}
+				helpText={relayInvalid ? m['section.settings.invalidNostrRelay']() : undefined}
+			>
+				{#snippet action()}
+					<button
+						type="button"
+						class="join-item btn btn-sm btn-success"
+						onclick={testNostrRelay}
+						disabled={relayInvalid || testingNostrRelay}
+						data-testid="nostrrelay-test-btn"
+					>
+						{testingNostrRelay ? '...' : 'Test'}
+					</button>
+				{/snippet}
+			</Field>
 			<SwitchField
 				id="nostrZapNotify"
 				bind:checked={data.nostrZapNotify}

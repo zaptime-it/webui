@@ -78,6 +78,7 @@
 			"miningPoolStats": "Habilitar la integración de estadísticas del grupo minero",
 			"poolGlobalStats": "Mostrar hashrate global del pool",
 			"nostrZapNotify": "Habilitar notificaciones de Nostr Zap",
+			"invalidNostrRelay": "Relay de Nostr no válido, la URL debe empezar por wss://",
 			"thirdPartySource": "Utilice mempool.space/coincap.io",
 			"dataSource": {
 				"nostr": "editorial nostr",

@@ -62,6 +62,7 @@
 			"poolGlobalStats": "Show pool-wide hashrate",
 			"nostrZapPubkey": "Nostr Zap pubkey",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
+			"invalidNostrRelay": "Invalid Nostr relay, URL must start with wss://",
 			"convertingValidNpub": "Converting valid npub to pubkey",
 			"flDisable": "Disable frontlight",
 			"httpAuthEnabled": "Require authentication for WebUI",

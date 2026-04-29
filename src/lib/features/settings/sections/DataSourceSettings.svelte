@@ -5,7 +5,13 @@
 	import SwitchField from '$lib/ui/SwitchField.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
-	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
+	import {
+		isValidHexPubKey,
+		getPubKey,
+		isValidNpub,
+		isValidNostrRelayUrl,
+		isValidNostrRelay
+	} from '$lib/util/nostr';
 	import { toast } from '$lib/stores/toast.svelte';
 
 	interface Props {
@@ -24,6 +30,33 @@
 	};
 
 	const pubkeyInvalid = $derived(!isValidHexPubKey(data.nostrPubKey ?? ''));
+	const relayInvalid = $derived(!isValidNostrRelayUrl(data.nostrRelay ?? ''));
+
+	let validNostrRelay = $state(false);
+	let testingNostrRelay = $state(false);
+
+	const testNostrRelay = async () => {
+		if (relayInvalid) {
+			toast.error(m['section.settings.invalidNostrRelay']());
+			return;
+		}
+		testingNostrRelay = true;
+		try {
+			const ok = await isValidNostrRelay(data.nostrRelay);
+			if (ok) {
+				toast.success('Connected to Nostr relay', data.nostrRelay);
+				validNostrRelay = true;
+			} else {
+				validNostrRelay = false;
+				toast.error('Could not connect to Nostr relay', data.nostrRelay);
+			}
+		} catch {
+			validNostrRelay = false;
+			toast.error('Could not connect to Nostr relay', data.nostrRelay);
+		} finally {
+			testingNostrRelay = false;
+		}
+	};
 </script>
 
 <CollapseCard header={m['section.settings.section.dataSource']()} bind:isOpen>
@@ -102,7 +135,22 @@
 				label={m['section.settings.nostrRelay']()}
 				bind:value={data.nostrRelay}
 				required
-			/>
+				invalid={relayInvalid}
+				valid={validNostrRelay}
+				helpText={relayInvalid ? m['section.settings.invalidNostrRelay']() : undefined}
+			>
+				{#snippet action()}
+					<button
+						type="button"
+						class="join-item btn btn-sm btn-success"
+						onclick={testNostrRelay}
+						disabled={relayInvalid || testingNostrRelay}
+						data-testid="nostrrelay-test-btn"
+					>
+						{testingNostrRelay ? '...' : 'Test'}
+					</button>
+				{/snippet}
+			</Field>
 			<Field
 				id="nostrPubKey"
 				label={m['section.settings.nostrPubKey']()}

@@ -31,7 +31,7 @@
 			{/each}
 		</select>
 		{#if helpText}
-			<p class="label-text-alt mt-1">{helpText}</p>
+			<p class="text-xs mt-1 text-base-content/70">{helpText}</p>
 		{/if}
 	</div>
 </div>

@@ -79,6 +79,7 @@
 			"miningPoolStats": "Mining-Pool-Statistiken Integration Aktivieren",
 			"poolGlobalStats": "Pool-weite Hashrate anzeigen",
 			"nostrZapNotify": "Nostr Zap-Benachrichtigungen aktivieren",
+			"invalidNostrRelay": "Ungültiger Nostr-Relay, URL muss mit wss:// beginnen",
 			"thirdPartySource": "mempool.space/coincap.io Verwenden",
 			"dataSource": {
 				"nostr": "Nostr-Verlag",

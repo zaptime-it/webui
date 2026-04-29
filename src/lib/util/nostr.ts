@@ -23,6 +23,17 @@ export const getPubKey = (input: string): string | null => {
 	}
 };
 
+export const isValidNostrRelayUrl = (url: string): boolean => {
+	const trimmed = url.trim();
+	if (!trimmed.startsWith('wss://')) return false;
+	try {
+		const parsed = new URL(trimmed);
+		return parsed.protocol === 'wss:' && parsed.hostname.length > 0;
+	} catch {
+		return false;
+	}
+};
+
 export const isValidNostrRelay = async (url: string): Promise<boolean> => {
 	try {
 		const relay: Relay = await Relay.connect(url);
