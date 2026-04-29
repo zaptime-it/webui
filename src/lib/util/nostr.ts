@@ -1,4 +1,5 @@
 import * as nip19 from 'nostr-tools/nip19';
+import { fetchRelayInformation, type RelayInformation } from 'nostr-tools/nip11';
 import { Relay } from 'nostr-tools';
 
 export const isValidHexPubKey = (pubkey: string): boolean => /^[0-9a-f]{64}$/i.test(pubkey);
@@ -31,6 +32,14 @@ export const isValidNostrRelayUrl = (url: string): boolean => {
 		return parsed.protocol === 'wss:' && parsed.hostname.length > 0;
 	} catch {
 		return false;
+	}
+};
+
+export const fetchNostrRelayInfo = async (url: string): Promise<RelayInformation | null> => {
+	try {
+		return await fetchRelayInformation(url);
+	} catch {
+		return null;
 	}
 };
 

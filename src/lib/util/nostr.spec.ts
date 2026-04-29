@@ -1,5 +1,16 @@
-import { describe, test, expect } from 'vitest';
-import { isValidHexPubKey, isValidNpub, getPubKey, isValidNostrRelayUrl } from './nostr';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import {
+	isValidHexPubKey,
+	isValidNpub,
+	getPubKey,
+	isValidNostrRelayUrl,
+	fetchNostrRelayInfo
+} from './nostr';
+import { fetchRelayInformation } from 'nostr-tools/nip11';
+
+vi.mock('nostr-tools/nip11', () => ({
+	fetchRelayInformation: vi.fn()
+}));
 
 describe('nostr utils', () => {
 	test('validates 64-char hex pubkey', () => {
@@ -18,6 +29,32 @@ describe('nostr utils', () => {
 	test('converts npub to hex pubkey', () => {
 		const hex = getPubKey('npub1k5f85zx0xdskyayqpfpc0zq6n7vwqjuuxugkayk72fgynp34cs3qfcvqg2');
 		expect(hex).toBe('b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422');
+	});
+
+	describe('fetchNostrRelayInfo', () => {
+		const mockedFetch = vi.mocked(fetchRelayInformation);
+		beforeEach(() => {
+			mockedFetch.mockReset();
+		});
+
+		test('returns relay information on success', async () => {
+			const info = {
+				name: 'Test Relay',
+				description: '',
+				pubkey: '',
+				contact: '',
+				supported_nips: [1, 11],
+				software: 'strfry',
+				version: '1.0.0'
+			};
+			mockedFetch.mockResolvedValue(info);
+			expect(await fetchNostrRelayInfo('wss://relay.example.com')).toEqual(info);
+		});
+
+		test('returns null when the relay does not implement NIP-11', async () => {
+			mockedFetch.mockRejectedValue(new Error('404 Not Found'));
+			expect(await fetchNostrRelayInfo('wss://relay.example.com')).toBeNull();
+		});
 	});
 
 	describe('isValidNostrRelayUrl', () => {

@@ -10,7 +10,8 @@
 		getPubKey,
 		isValidNpub,
 		isValidNostrRelayUrl,
-		isValidNostrRelay
+		isValidNostrRelay,
+		fetchNostrRelayInfo
 	} from '$lib/util/nostr';
 	import { toast } from '$lib/stores/toast.svelte';
 
@@ -35,6 +36,20 @@
 	let validNostrRelay = $state(false);
 	let testingNostrRelay = $state(false);
 
+	const describeRelayInfo = (info: Awaited<ReturnType<typeof fetchNostrRelayInfo>>): string => {
+		if (!info) return '';
+		const parts: string[] = [];
+		if (info.software) {
+			parts.push(info.version ? `${info.software} ${info.version}` : info.software);
+		} else if (info.version) {
+			parts.push(info.version);
+		}
+		if (Array.isArray(info.supported_nips) && info.supported_nips.length > 0) {
+			parts.push(`${info.supported_nips.length} NIPs`);
+		}
+		return parts.join(' · ');
+	};
+
 	const testNostrRelay = async () => {
 		if (relayInvalid) {
 			toast.error(m['section.settings.invalidNostrRelay']());
@@ -42,9 +57,16 @@
 		}
 		testingNostrRelay = true;
 		try {
-			const ok = await isValidNostrRelay(data.nostrRelay);
+			const [ok, info] = await Promise.all([
+				isValidNostrRelay(data.nostrRelay),
+				fetchNostrRelayInfo(data.nostrRelay)
+			]);
 			if (ok) {
-				toast.success('Connected to Nostr relay', data.nostrRelay);
+				const title = info?.name
+					? `Connected to ${info.name}`
+					: 'Connected to Nostr relay';
+				const detail = describeRelayInfo(info) || data.nostrRelay;
+				toast.success(title, detail);
 				validNostrRelay = true;
 			} else {
 				validNostrRelay = false;
