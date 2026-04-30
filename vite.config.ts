@@ -3,7 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -13,55 +13,59 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Rewrites SvelteKit's single-page fallback `bundle.html` into a standalone
 // `bundle.js` + `index.html` pair anchored on the `.overlay` class. The BTClock
 // firmware serves these two files from LittleFS.
-const doRewrap = ({ cssClass }: { cssClass: string }) => {
-	try {
-		if (fs.existsSync(path.resolve(__dirname, 'dist/bundle.js'))) {
-			return;
-		}
-	} catch {
-		// ignore
-	}
+const rewrapBundle = async ({ cssClass }: { cssClass: string }): Promise<void> => {
+	const distDir = path.resolve(__dirname, 'dist');
+	const bundleHtml = path.join(distDir, 'bundle.html');
+	const bundleJs = path.join(distDir, 'bundle.js');
+	const indexPage = path.join(distDir, 'index.page');
+	const indexHtml = path.join(distDir, 'index.html');
+
+	// Idempotent: a previous build already produced bundle.js. (The
+	// adapter-static fallback regenerates bundle.html each build, so this
+	// only short-circuits within a single watcher tick.)
+	if (await exists(bundleJs)) return;
+
 	console.log('\nStart re-wrapping...');
-	fs.readFile(
-		path.resolve(__dirname, 'dist/bundle.html'),
-		'utf8',
-		function (_err: unknown, data: string) {
-			if (!data) {
-				console.log(
-					`[Error]: No bundle.html generated, check svelte.config.js -> config.kit.adapter -> fallback: "bundle.html"`
-				);
-				return;
-			}
-			const matchData = data.match(/(?<=<script\b[^>]*>)([\s\S]*?)(?=<\/script>)/gm);
-			if (matchData) {
-				const cleanData = matchData[0]
-					.trim()
-					.replace(
-						/document\.querySelector\('\[data-sveltekit-hydrate="[^"]+"\]'\)\.parentNode/,
-						`document.querySelector(".${cssClass}")`
-					);
-				fs.writeFile(path.resolve(__dirname, 'dist/bundle.js'), cleanData, (err: unknown) => {
-					if (err) console.log(err);
-					else {
-						try {
-							fs.renameSync(
-								path.resolve(__dirname, 'dist/index.page'),
-								path.resolve(__dirname, 'dist/index.html')
-							);
-						} catch {
-							// ignore
-						}
-						try {
-							fs.unlinkSync(path.resolve(__dirname, 'dist/bundle.html'));
-						} catch {
-							// ignore
-						}
-						console.log('Finished: bundle.js + index.html have been regenerated.\n');
-					}
-				});
-			} else console.log(`[Error]: No proper <script> tag found in bundle.html`);
-		}
-	);
+	let html: string;
+	try {
+		html = await fs.readFile(bundleHtml, 'utf8');
+	} catch {
+		console.log(
+			`[Error]: No bundle.html generated, check svelte.config.js -> config.kit.adapter -> fallback: "bundle.html"`
+		);
+		return;
+	}
+
+	const matchData = html.match(/(?<=<script\b[^>]*>)([\s\S]*?)(?=<\/script>)/gm);
+	if (!matchData?.[0]) {
+		console.log('[Error]: No proper <script> tag found in bundle.html');
+		return;
+	}
+
+	const cleanData = matchData[0]
+		.trim()
+		.replace(
+			/document\.querySelector\('\[data-sveltekit-hydrate="[^"]+"\]'\)\.parentNode/,
+			`document.querySelector(".${cssClass}")`
+		);
+
+	await fs.writeFile(bundleJs, cleanData);
+	// `dist/index.page` is the static-adapter prerender output; rename to
+	// the .html the firmware serves. Both renames + the bundle.html
+	// removal are best-effort — already-renamed / already-deleted is
+	// fine on subsequent builds.
+	await fs.rename(indexPage, indexHtml).catch(() => {});
+	await fs.rm(bundleHtml, { force: true }).catch(() => {});
+	console.log('Finished: bundle.js + index.html have been regenerated.\n');
+};
+
+const exists = async (p: string): Promise<boolean> => {
+	try {
+		await fs.access(p);
+		return true;
+	} catch {
+		return false;
+	}
 };
 
 export default defineConfig({
@@ -76,8 +80,8 @@ export default defineConfig({
 			name: 'postbuild-command',
 			closeBundle: {
 				order: 'post',
-				handler() {
-					setTimeout(() => doRewrap({ cssClass: 'overlay' }), Math.random() * 500 + 500);
+				async handler() {
+					await rewrapBundle({ cssClass: 'overlay' });
 				}
 			}
 		}
