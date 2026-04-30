@@ -288,7 +288,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		maxValue: 0,
 		defaultBool: false,
 		defaultInt: 0,
-		defaultStr: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest'
+		defaultStr: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v4/releases/latest'
 	},
 	{
 		key: 'hideLeadZero',
@@ -303,7 +303,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'hostnamePrefix',
 		kind: 'string',
-		bootOnly: true,
+		bootOnly: false,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -433,7 +433,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'mdnsEnabled',
 		kind: 'boolean',
-		bootOnly: true,
+		bootOnly: false,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: true,

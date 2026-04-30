@@ -78,8 +78,12 @@ describe('settings.generated.ts ↔ UI cross-check', () => {
 		expect(isBootOnly('zzNotARealKey')).toBe(false);
 	});
 
-	test('a known boot-only key (mdnsEnabled) reports true', () => {
-		expect(isBootOnly('mdnsEnabled')).toBe(true);
+	test('a known boot-only key (otaEnabled) reports true', () => {
+		// mdnsEnabled used to live in this set; bd btclock_v4-9ut wired
+		// on_mdns_changed so the advertisement re-publishes live and the
+		// firmware dropped boot_only on it. otaEnabled stays boot_only —
+		// ArduinoOTA.begin() is only called from the boot path.
+		expect(isBootOnly('otaEnabled')).toBe(true);
 	});
 
 	test('a known runtime key (mowMode) reports false', () => {

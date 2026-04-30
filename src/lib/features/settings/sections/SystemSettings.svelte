@@ -57,12 +57,16 @@
 				type={showHttpAuthPassword ? 'text' : 'password'}
 				placeholder={data.httpAuthPassSet ? '••••••••' : ''}
 				required={!data.httpAuthPassSet}
-				helpText={data.httpAuthPassSet ? m['section.settings.passwordSetLeaveBlank']() : undefined}
+				helpText={data.httpAuthPassSet
+					? m['section.settings.passwordSetLeaveBlank']()
+					: undefined}
 			>
 				{#snippet action()}
 					<button
 						type="button"
-						class="join-item btn btn-sm {showHttpAuthPassword ? 'btn-success' : 'btn-error'}"
+						class="join-item btn btn-sm {showHttpAuthPassword
+							? 'btn-success'
+							: 'btn-error'}"
 						onclick={() => (showHttpAuthPassword = !showHttpAuthPassword)}
 						aria-label={showHttpAuthPassword ? 'Hide password' : 'Show password'}
 					>
@@ -108,7 +112,9 @@
 		{/if}
 	</div>
 
-	<div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1">
+	<div
+		class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1"
+	>
 		<SwitchField
 			id="otaEnabled"
 			bind:checked={data.otaEnabled}
@@ -129,7 +135,9 @@
 					{#snippet action()}
 						<button
 							type="button"
-							class="join-item btn btn-sm {showOtaPassword ? 'btn-success' : 'btn-error'}"
+							class="join-item btn btn-sm {showOtaPassword
+								? 'btn-success'
+								: 'btn-error'}"
 							onclick={() => (showOtaPassword = !showOtaPassword)}
 							aria-label={showOtaPassword ? 'Hide password' : 'Show password'}
 						>
@@ -142,7 +150,7 @@
 		<SwitchField
 			id="mdnsEnabled"
 			bind:checked={data.mdnsEnabled}
-			label="{m['section.settings.enableMdns']()} ({m['restartRequired']()})"
+			label={m['section.settings.enableMdns']()}
 		/>
 		<SwitchField
 			id="httpAuthEnabled"
