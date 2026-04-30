@@ -167,7 +167,13 @@ describe('mobile tabbed layout: only the active section renders below md', () =>
 	});
 
 	test('inactive sections are aria-hidden so screen readers skip them on mobile', () => {
-		const ariaHidden = pageSrc.match(/aria-hidden=\{section !== '[^']+' \? 'true' : undefined\}/g);
+		// Gated on `isMobile` so the desktop side-by-side layout still exposes
+		// all three cards to assistive tech; otherwise Playwright's
+		// accessibility-driven locators (and screen readers) only ever see the
+		// default-active section.
+		const ariaHidden = pageSrc.match(
+			/aria-hidden=\{isMobile && section !== '[^']+' \? 'true' : undefined\}/g
+		);
 		expect(ariaHidden?.length ?? 0).toBe(3);
 	});
 

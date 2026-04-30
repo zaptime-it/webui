@@ -13,6 +13,12 @@
 
 	const section = $derived(activeSection.id);
 
+	// On sub-md widths only the active section is visible (CSS hides the
+	// other two), so we mirror that in the a11y tree. On md+ all three
+	// cards are side-by-side and must remain exposed to assistive tech and
+	// to Playwright's accessibility-driven locators.
+	let isMobile = $state(false);
+
 	let observer: IntersectionObserver | undefined;
 
 	const setupObserver = () => {
@@ -61,9 +67,12 @@
 			}
 		})();
 
-		setupObserver();
-		const onResize = () => setupObserver();
-		window.addEventListener('resize', onResize);
+		const updateLayout = () => {
+			isMobile = window.innerWidth < MD_BREAKPOINT;
+			setupObserver();
+		};
+		updateLayout();
+		window.addEventListener('resize', updateLayout);
 
 		// Revalidate settings on window focus / tab visibility — catches the
 		// "another tab saved" case without needing a firmware version field.
@@ -77,7 +86,7 @@
 		});
 
 		return () => {
-			window.removeEventListener('resize', onResize);
+			window.removeEventListener('resize', updateLayout);
 			window.removeEventListener('focus', onFocus);
 			observer?.disconnect();
 			statusStore.disconnect();
@@ -94,7 +103,7 @@
 		id="control"
 		class="section-anchor mobile-tab-section min-w-0 accent-control lg:col-span-4"
 		class:mobile-active={section === 'control'}
-		aria-hidden={section !== 'control' ? 'true' : undefined}
+		aria-hidden={isMobile && section !== 'control' ? 'true' : undefined}
 	>
 		<Control />
 	</section>
@@ -102,7 +111,7 @@
 		id="status"
 		class="section-anchor mobile-tab-section min-w-0 accent-status lg:col-span-4"
 		class:mobile-active={section === 'status'}
-		aria-hidden={section !== 'status' ? 'true' : undefined}
+		aria-hidden={isMobile && section !== 'status' ? 'true' : undefined}
 	>
 		<Status />
 	</section>
@@ -110,7 +119,7 @@
 		id="settings"
 		class="section-anchor mobile-tab-section min-w-0 accent-settings lg:col-span-4"
 		class:mobile-active={section === 'settings'}
-		aria-hidden={section !== 'settings' ? 'true' : undefined}
+		aria-hidden={isMobile && section !== 'settings' ? 'true' : undefined}
 	>
 		<SettingsPanel />
 	</section>

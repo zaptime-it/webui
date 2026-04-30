@@ -144,42 +144,50 @@ export const settingsJson = {
 		{
 			id: 0,
 			name: 'Block Height',
-			enabled: true
+			enabled: true,
+			order: 0
 		},
 		{
 			id: 3,
 			name: 'Time',
-			enabled: false
+			enabled: false,
+			order: 1
 		},
 		{
 			id: 4,
 			name: 'Halving countdown',
-			enabled: false
+			enabled: false,
+			order: 2
 		},
 		{
 			id: 6,
 			name: 'Block Fee Rate',
-			enabled: false
+			enabled: false,
+			order: 3
 		},
 		{
 			id: 10,
 			name: 'Sats per dollar',
-			enabled: false
+			enabled: false,
+			order: 4
 		},
 		{
 			id: 20,
 			name: 'Ticker',
-			enabled: true
+			enabled: true,
+			order: 5
 		},
 		{
 			id: 30,
 			name: 'Market Cap',
-			enabled: false
+			enabled: false,
+			order: 6
 		},
 		{
 			id: 40,
 			name: 'Bitcoin Supply',
-			enabled: false
+			enabled: false,
+			order: 7
 		}
 	],
 	stealFocus: true,

@@ -61,18 +61,18 @@ test('hamburger drawer hosts LanguageMenu and ThemeToggle', async ({ page }) => 
 
 test('hamburger drawer is still visible after scrolling past the top', async ({ page }) => {
 	await page.goto('/');
-	// Wait for content to render so the document has a scrollable height
-	// (mobile viewports without content would refuse to scroll).
-	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
-	// Scroll deep into the page so the `#status` / `#settings` sections
-	// are in view. Before the sticky-wrapper fix the drawer was a
+	// Wait for the default-active section's heading so we know the page
+	// has rendered enough content to be scrollable. On mobile only the
+	// active section is `display: block`, so we can't use Status/Settings
+	// as a sentinel here.
+	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
+	// Scroll deep into the active section so the navbar pins to the top
+	// of the viewport. Before the sticky-wrapper fix the drawer was a
 	// *sibling* of the navbar in normal flow; once the user scrolled past
-	// the top the drawer was rendered entirely above the viewport.
-	await page
-		.locator('#settings')
-		.scrollIntoViewIfNeeded()
-		.catch(() => {});
-	await page.waitForFunction(() => window.scrollY > 50, undefined, { timeout: 5000 });
+	// the top the drawer was rendered entirely above the viewport. If the
+	// active section happens to fit on the viewport (no scroll possible),
+	// the assertions below still verify navbar+drawer pinning at scrollY=0.
+	await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
 
 	await page.getByTestId('mobile-nav-toggle').click();
 
@@ -94,11 +94,9 @@ test('hamburger drawer is still visible after scrolling past the top', async ({ 
 	expect(drawerBox!.y).toBeLessThan(viewport!.height);
 });
 
-test('section tabs follow the scrolled-into-view section', async ({ page }) => {
+test('section tabs switch active state on tap', async ({ page }) => {
 	await page.goto('/');
 
-	// Smooth scrolling + IntersectionObserver timing means we have to give
-	// the observer a beat to settle between tap / scroll and the assert.
 	const control = page.getByTestId('section-tabs').locator('a[href="#control"]');
 	const status = page.getByTestId('section-tabs').locator('a[href="#status"]');
 	const settings = page.getByTestId('section-tabs').locator('a[href="#settings"]');
@@ -108,19 +106,16 @@ test('section tabs follow the scrolled-into-view section', async ({ page }) => {
 	await expect(status).not.toHaveAttribute('aria-current', 'true');
 	await expect(settings).not.toHaveAttribute('aria-current', 'true');
 
-	// Tap "Status" → the URL hash moves to #status, which also scrolls the
-	// section into view. The observer then marks status as current.
+	// Tap "Status" → the active tab follows. Critically: the previously
+	// tapped "Control" tab must *lose* its active state. Sticky `:hover`
+	// used to keep it highlighted on touch.
 	await status.click();
-	// Wait for the scroll/observer cycle to complete.
 	await expect(status).toHaveAttribute('aria-current', 'true', { timeout: 4000 });
-	// Critically: the previously tapped "Control" tab must *lose* its
-	// active state. Sticky `:hover` used to keep it highlighted.
 	await expect(control).not.toHaveAttribute('aria-current', 'true');
+	await expect(settings).not.toHaveAttribute('aria-current', 'true');
 
-	// Now scroll manually to the very bottom of the document so only the
-	// settings section is in the observer's rootMargin zone. The tab
-	// bar must re-sync without any further clicks.
-	await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+	// Tapping a third tab must again hand off the active state cleanly.
+	await settings.click();
 	await expect(settings).toHaveAttribute('aria-current', 'true', { timeout: 4000 });
 	await expect(status).not.toHaveAttribute('aria-current', 'true');
 	await expect(control).not.toHaveAttribute('aria-current', 'true');

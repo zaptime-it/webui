@@ -143,6 +143,7 @@ export const settingsStore = {
 			state.pristine = buildPristine(data);
 			state.hasRemoteDrift = false;
 		} catch (err) {
+			console.error('[settingsStore] failed to load /api/settings:', err);
 			state.value = { status: 'error', error: (err as Error).message };
 			state.pristine = null;
 			state.hasRemoteDrift = false;
