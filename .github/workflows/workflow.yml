@@ -123,6 +123,18 @@ jobs:
           allowUpdates: true
           removeArtifacts: true
           makeLatest: true
+      - name: Create v4 beta release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
+        uses: ncipollo/release-action@v1.21.0
+        with:
+          tag: v4-beta-${{ steps.getBlockHeight.outputs.blockHeight }}
+          commit: feature/v4-firmware
+          name: v4-beta-${{ steps.getBlockHeight.outputs.blockHeight }}
+          artifacts: 'output/littlefs.bin,webui.tgz'
+          allowUpdates: true
+          removeArtifacts: true
+          prerelease: true
+          makeLatest: false
       - name: Pushes littlefs.bin to web flasher
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: push_directory
@@ -132,6 +144,20 @@ jobs:
         with:
           source-directory: output/
           target-directory: webui/
+          destination-github-username: 'btclock'
+          destination-repository-name: 'web-flasher'
+          target-branch: main
+          user-name: ${{github.actor}}
+          user-email: ${{github.actor}}@users.noreply.github.com
+      - name: Pushes v4 beta littlefs.bin to web flasher
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
+        id: push_directory_v4
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: output/
+          target-directory: webui-v4-beta/
           destination-github-username: 'btclock'
           destination-repository-name: 'web-flasher'
           target-branch: main
