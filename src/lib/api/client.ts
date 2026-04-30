@@ -109,7 +109,12 @@ export const patchSettings = async (
 	envelope<SettingsErrorBody>(
 		await fetch(url('/api/settings'), {
 			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
+			// `Accept: application/json` keeps the firmware's `{error,...}`
+			// envelope reaching us as application/json even when an
+			// intermediate proxy rewrites the response Content-Type — without
+			// it the envelope falls into the text/plain branch and `body`
+			// comes back null.
+			headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 			credentials: 'same-origin',
 			body: JSON.stringify(body)
 		})
