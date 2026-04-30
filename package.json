@@ -21,11 +21,12 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"postinstall": "patch-package",
-		"test": "prettier --write . && eslint . && pnpm test:integration && pnpm test:unit",
+		"test": "vitest",
+		"test:unit": "vitest",
 		"test:integration": "playwright test",
 		"test:screenshots": "playwright test -c playwright.screenshot.config.ts",
-		"doc:update-screenshots": "playwright test -c playwright.doc-screenshot.config.ts",
-		"test:unit": "vitest"
+		"test:all": "prettier --write . && eslint . && pnpm test:integration && pnpm test:unit run",
+		"doc:update-screenshots": "playwright test -c playwright.doc-screenshot.config.ts"
 	},
 	"dependencies": {
 		"@fontsource/antonio": "^5.2.8",
