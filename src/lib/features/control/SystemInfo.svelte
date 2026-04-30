@@ -61,7 +61,11 @@
 			class="alert alert-warning text-sm flex items-start justify-between gap-2"
 			data-testid="fw-mismatch-banner"
 		>
-			<span>⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwCommitMismatch']()}</span>
+			<span
+				>⚠️ <strong>{m['warning']()}</strong>: {m[
+					'section.control.fwCommitMismatch'
+				]()}</span
+			>
 			<button
 				type="button"
 				class="btn btn-ghost btn-xs shrink-0"

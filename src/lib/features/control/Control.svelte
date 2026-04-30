@@ -41,7 +41,9 @@
 						class="input input-bordered input-sm w-full @sm:col-span-2 uppercase"
 						bind:value={customText}
 						oninput={(e) =>
-							(customText = (e.currentTarget as HTMLInputElement).value.toUpperCase())}
+							(customText = (
+								e.currentTarget as HTMLInputElement
+							).value.toUpperCase())}
 						maxlength={data?.numScreens}
 					/>
 				</div>
@@ -69,7 +71,12 @@
 			<div class="space-y-3">
 				<SystemInfo />
 				<div class="flex justify-end gap-2">
-					<button type="button" class="btn btn-sm btn-error" id="restartBtn" onclick={restart}>
+					<button
+						type="button"
+						class="btn btn-sm btn-error"
+						id="restartBtn"
+						onclick={restart}
+					>
 						{m['button.restart']()}
 					</button>
 					<button

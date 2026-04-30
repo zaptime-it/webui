@@ -25,7 +25,12 @@
 <div class="grid grid-cols-1 @md:grid-cols-2 items-center gap-2">
 	<label class="label" for={id}>{label}</label>
 	<div>
-		<select {id} class="select select-bordered select-{size} w-full" bind:value onchange={onChange}>
+		<select
+			{id}
+			class="select select-bordered select-{size} w-full"
+			bind:value
+			onchange={onChange}
+		>
 			{#each options as [key, val] (val)}
 				<option value={val}>{key}</option>
 			{/each}

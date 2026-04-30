@@ -18,7 +18,9 @@ describe('ExtraFeaturesSettings test buttons', () => {
 		// join-item class so it lands in the same flex row as the input.
 		expect(src).toMatch(/id="bitaxeHostname"[\s\S]*?\{#snippet action\(\)\}/);
 		expect(src).toMatch(/data-testid="bitaxe-test-btn"[^>]*/);
-		expect(src).toMatch(/class="join-item btn btn-sm btn-success"[\s\S]*?onclick=\{testBitaxe\}/);
+		expect(src).toMatch(
+			/class="join-item btn btn-sm btn-success"[\s\S]*?onclick=\{testBitaxe\}/
+		);
 	});
 
 	test('Local pool host Test button is an inline Field action', () => {

@@ -9,7 +9,12 @@
 		children?: import('svelte').Snippet;
 	}
 
-	let { header, defaultOpen = false, isOpen = $bindable(defaultOpen), children }: Props = $props();
+	let {
+		header,
+		defaultOpen = false,
+		isOpen = $bindable(defaultOpen),
+		children
+	}: Props = $props();
 
 	const toggle = () => (isOpen = !isOpen);
 </script>

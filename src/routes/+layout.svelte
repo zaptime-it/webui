@@ -43,7 +43,9 @@
 		<div class="sticky top-0 z-50 bg-base-100 shadow-sm">
 			<div class="navbar">
 				<div class="navbar-start">
-					<a class="btn btn-ghost text-xl navbar-brand hidden md:inline-flex" href="/">₿TClock</a>
+					<a class="btn btn-ghost text-xl navbar-brand hidden md:inline-flex" href="/"
+						>₿TClock</a
+					>
 					{#if isHome}
 						<nav
 							class="section-tabs tabs tabs-boxed tabs-xs md:hidden"
@@ -87,7 +89,9 @@
 							<a href="/" class:menu-active={page.url.pathname === '/'}>Home</a>
 						</li>
 						<li>
-							<a href="/convert" class:menu-active={page.url.pathname === '/convert'}>Convert</a>
+							<a href="/convert" class:menu-active={page.url.pathname === '/convert'}
+								>Convert</a
+							>
 						</li>
 						<li>
 							<a href="/api" class:menu-active={page.url.pathname === '/api'}>API</a>
@@ -117,10 +121,18 @@
 			</div>
 
 			{#if open}
-				<div id="mobile-drawer" class="bg-base-100 border-b md:hidden" data-testid="mobile-drawer">
+				<div
+					id="mobile-drawer"
+					class="bg-base-100 border-b md:hidden"
+					data-testid="mobile-drawer"
+				>
 					<ul class="menu w-full">
 						<li>
-							<a href="/" onclick={closeDrawer} class:menu-active={page.url.pathname === '/'}>
+							<a
+								href="/"
+								onclick={closeDrawer}
+								class:menu-active={page.url.pathname === '/'}
+							>
 								Home
 							</a>
 						</li>
@@ -134,7 +146,11 @@
 							</a>
 						</li>
 						<li>
-							<a href="/api" onclick={closeDrawer} class:menu-active={page.url.pathname === '/api'}>
+							<a
+								href="/api"
+								onclick={closeDrawer}
+								class:menu-active={page.url.pathname === '/api'}
+							>
 								API
 							</a>
 						</li>

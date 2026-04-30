@@ -55,7 +55,9 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain('data-testid="currencies-grid"');
 		expect(src).toContain('CurrencyRotationList');
 		// Only the top switches grid still uses the responsive layout.
-		const matches = src.match(new RegExp(RESPONSIVE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'));
+		const matches = src.match(
+			new RegExp(RESPONSIVE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
+		);
 		expect(matches?.length ?? 0).toBeGreaterThanOrEqual(1);
 	});
 

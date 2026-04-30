@@ -28,7 +28,10 @@ describe('validateSettings', () => {
 	});
 
 	test('flags an invalid nostrPubKey', () => {
-		const errs = validateSettings(fakeSettings({ nostrPubKey: 'npub-something-bad' }), messages);
+		const errs = validateSettings(
+			fakeSettings({ nostrPubKey: 'npub-something-bad' }),
+			messages
+		);
 		expect(errs).toHaveLength(1);
 		expect(errs[0]).toMatchObject({
 			id: 'nostrPubKey',

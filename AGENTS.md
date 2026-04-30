@@ -126,7 +126,7 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
   `/api/show/screen?s=<id>`.
 - Per-currency jump (USD / EUR active here) — POST `/api/show/currency?c=USD`.
 - Live 7-panel preview rendered by `ClockDisplay` from the SSE `data[]` array
-  - glyph hints in `status`.
+    - glyph hints in `status`.
 - Screen cycle pause/resume — POST `/api/action/pause` / `/api/action/timer_restart`.
 - Do Not Disturb — POST `/api/dnd/enable` / `/api/dnd/disable`. Schedule
   shown when `dnd.dndTimeEnabled` is set.

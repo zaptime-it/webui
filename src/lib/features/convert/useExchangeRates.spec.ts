@@ -51,7 +51,8 @@ describe('createExchangeRates', () => {
 	});
 
 	afterEach(() => {
-		if (originalWebSocket === undefined) delete (globalThis as Record<string, unknown>).WebSocket;
+		if (originalWebSocket === undefined)
+			delete (globalThis as Record<string, unknown>).WebSocket;
 		else (globalThis as unknown as { WebSocket: unknown }).WebSocket = originalWebSocket;
 	});
 

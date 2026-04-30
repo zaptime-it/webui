@@ -173,7 +173,9 @@ describe('fetchLocalPoolInfo', () => {
 	});
 
 	test('empty host or user fails fast with an unreachable FetchError', async () => {
-		await expect(fetchLocalPoolInfo('', 'alice')).rejects.toMatchObject({ kind: 'unreachable' });
+		await expect(fetchLocalPoolInfo('', 'alice')).rejects.toMatchObject({
+			kind: 'unreachable'
+		});
 		await expect(fetchLocalPoolInfo('host', '')).rejects.toMatchObject({ kind: 'unreachable' });
 		expect(fetchMock).not.toHaveBeenCalled();
 	});

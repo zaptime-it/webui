@@ -8,7 +8,14 @@
 		onChange?: () => void;
 	}
 
-	let { id, label, value = $bindable(), disabled = false, size = 'sm', onChange }: Props = $props();
+	let {
+		id,
+		label,
+		value = $bindable(),
+		disabled = false,
+		size = 'sm',
+		onChange
+	}: Props = $props();
 
 	const intToColor = (int: number): string => `#${(int >>> 0).toString(16).padStart(6, '0')}`;
 	const colorToInt = (color: string): number => parseInt(color.replace('#', ''), 16);

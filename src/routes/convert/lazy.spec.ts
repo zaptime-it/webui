@@ -25,7 +25,10 @@ const repoRoot = join(here, '..', '..', '..');
 
 describe('/convert runtime laziness', () => {
 	test('Converter.connect() is wrapped in $effect, not invoked at module scope', () => {
-		const src = readFileSync(join(repoRoot, 'src/lib/features/convert/Converter.svelte'), 'utf8');
+		const src = readFileSync(
+			join(repoRoot, 'src/lib/features/convert/Converter.svelte'),
+			'utf8'
+		);
 		// Match the script block, not the template — `$effect(...)` only runs
 		// when the component mounts. Calling `feed.connect()` outside the
 		// $effect/onMount wrapper would open a WebSocket on every page load,

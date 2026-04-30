@@ -11,7 +11,11 @@
 {#if withAction}
 	<Field id="demo" label="Demo" bind:value>
 		{#snippet action()}
-			<button type="button" class="join-item btn btn-sm btn-success" data-testid="demo-action">
+			<button
+				type="button"
+				class="join-item btn btn-sm btn-success"
+				data-testid="demo-action"
+			>
 				Test
 			</button>
 		{/snippet}

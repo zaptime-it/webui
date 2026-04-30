@@ -31,8 +31,8 @@ Key points:
 
 - `bundleStrategy: 'single'` (svelte.config.js) is required — the
   firmware's `control_server.cpp` only serves a single `bundle.js`
-  - `index.html` from `/lfs/www/`. Code-splitting per route does not
-    work today; see [webui-4wa] notes in `routes/convert/lazy.spec.ts`.
+    - `index.html` from `/lfs/www/`. Code-splitting per route does not
+      work today; see [webui-4wa] notes in `routes/convert/lazy.spec.ts`.
 - The post-build rewrap step removes SvelteKit's hydration markers
   and rewrites the script entrypoint to anchor on `.overlay`.
 - Compression has to land at `build_gz/www/` (the `www/` segment

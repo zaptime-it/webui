@@ -35,7 +35,11 @@
 
 	<div class="space-y-1">
 		<div class="tooltip w-full" data-tip={m['rssiBar.tooltip']()}>
-			<progress id="rssiBar" class="progress progress-{rssiColor} w-full" value={rssiPct} max="100"
+			<progress
+				id="rssiBar"
+				class="progress progress-{rssiColor} w-full"
+				value={rssiPct}
+				max="100"
 			></progress>
 		</div>
 		<div class="bar-row">

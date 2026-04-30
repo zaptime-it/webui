@@ -84,11 +84,14 @@
 
 				<div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
 					<div class="flex min-w-0 flex-col gap-1">
-						<span class="text-base-content/70">{m['section.status.screenCycle']()}</span>
+						<span class="text-base-content/70">{m['section.status.screenCycle']()}</span
+						>
 						<button
 							id="timerStatusText"
 							type="button"
-							class="btn btn-xs gap-1 self-start {timerRunning ? 'btn-success' : 'btn-ghost'}"
+							class="btn btn-xs gap-1 self-start {timerRunning
+								? 'btn-success'
+								: 'btn-ghost'}"
 							onclick={toggleTimer(timerRunning)}
 							aria-pressed={timerRunning}
 						>
@@ -103,11 +106,15 @@
 					</div>
 
 					<div class="flex min-w-0 flex-col gap-1">
-						<span class="text-base-content/70">{m['section.status.doNotDisturb']()}</span>
+						<span class="text-base-content/70"
+							>{m['section.status.doNotDisturb']()}</span
+						>
 						<button
 							id="dndStatusText"
 							type="button"
-							class="btn btn-xs gap-1 self-start {dndActive ? 'btn-warning' : 'btn-ghost'}"
+							class="btn btn-xs gap-1 self-start {dndActive
+								? 'btn-warning'
+								: 'btn-ghost'}"
 							onclick={toggleDnd(dndEnabled)}
 							aria-pressed={dndActive}
 						>
@@ -119,11 +126,12 @@
 						</button>
 						{#if status?.dnd?.dndTimeEnabled && settings?.dnd}
 							<small class="text-base-content/70 leading-snug">
-								{m['section.status.timeBasedDnd']()} ({settings.dnd.startHour}:{String(
-									settings.dnd.startMinute
-								).padStart(2, '0')} - {settings.dnd.endHour}:{String(
-									settings.dnd.endMinute
-								).padStart(2, '0')})
+								{m['section.status.timeBasedDnd']()} ({settings.dnd
+									.startHour}:{String(settings.dnd.startMinute).padStart(2, '0')} -
+								{settings.dnd.endHour}:{String(settings.dnd.endMinute).padStart(
+									2,
+									'0'
+								)})
 							</small>
 						{/if}
 					</div>

@@ -75,7 +75,9 @@ describe('section tabs: driven by activeSection store', () => {
 	});
 
 	test('active tab also exposes aria-current for accessibility', () => {
-		const matches = layoutSrc.match(/aria-current=\{section === '[^']+' \? 'true' : undefined\}/g);
+		const matches = layoutSrc.match(
+			/aria-current=\{section === '[^']+' \? 'true' : undefined\}/g
+		);
 		expect(matches?.length ?? 0).toBe(3);
 	});
 
@@ -134,7 +136,9 @@ describe('section tabs: mobile styling overrides', () => {
 		expect(layoutSrc).toMatch(
 			/\.section-tabs\s+:global\(\.tab:not\(\[aria-current=['"]true['"]\]\):not\(\.tab-active\)\)/
 		);
-		expect(layoutSrc).toMatch(/color:\s*color-mix\(in oklab,\s*var\(--color-base-content\)\s*50%/);
+		expect(layoutSrc).toMatch(
+			/color:\s*color-mix\(in oklab,\s*var\(--color-base-content\)\s*50%/
+		);
 	});
 
 	test('navbar-start grows past the default 50% so three labels fit', () => {

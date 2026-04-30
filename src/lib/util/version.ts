@@ -46,7 +46,8 @@ const webuiBinaryMap: Record<string, string> = {
 };
 
 export const getFirmwareBinaryName = (hwRev: string): string =>
-	firmwareBinaryMap[hwRev] ?? 'Unsupported hardware, unable to determine firmware binary filename';
+	firmwareBinaryMap[hwRev] ??
+	'Unsupported hardware, unable to determine firmware binary filename';
 
 export const getWebUiBinaryName = (hwRev: string): string =>
 	webuiBinaryMap[hwRev] ?? 'Unsupported hardware, unable to determine WebUI binary filename';
