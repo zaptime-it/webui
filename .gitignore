@@ -26,3 +26,4 @@ output/
 # Local build logs
 build-build-*.log
 __pycache__/
+stats.html

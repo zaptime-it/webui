@@ -7,6 +7,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"build:report": "ANALYZE=1 vite build",
 		"build:gz": "vite build && python3 gzip_build.py",
 		"build:test": "vite build --config vite.config.test.ts",
 		"serve:test": "vite build --config vite.config.test.ts && vite preview --config vite.config.test.ts --host 127.0.0.1 --port 4173 --strictPort",
@@ -58,6 +59,7 @@
 		"jsdom": "^29.0.2",
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^3.5.1",
+		"rollup-plugin-visualizer": "^7.0.1",
 		"sharp": "^0.34.5",
 		"svelte": "^5.55.5",
 		"svelte-check": "^4.4.6",

@@ -2,6 +2,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vitest/config';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -76,6 +77,23 @@ export default defineConfig({
 			outdir: './src/lib/paraglide'
 		}),
 		sveltekit(),
+		// Opt-in bundle analyzer. `pnpm build:report` (or any other build
+		// invoked with ANALYZE=1) drops a treemap at <repo>/stats.html so
+		// we can spot what's pulling weight on the LittleFS partition.
+		// Absolute path because SvelteKit hands rollup an emit dir that
+		// gets relocated mid-build, so a relative `dist/stats.html` ends
+		// up somewhere unhelpful.
+		...(process.env.ANALYZE
+			? [
+					visualizer({
+						filename: path.resolve(__dirname, 'stats.html'),
+						gzipSize: true,
+						brotliSize: true,
+						template: 'treemap',
+						emitFile: false
+					})
+				]
+			: []),
 		{
 			name: 'postbuild-command',
 			closeBundle: {
