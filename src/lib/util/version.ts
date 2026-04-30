@@ -3,8 +3,10 @@ export const compareVersions = (version1: string, version2: string): number => {
 	const parts1 = version1.split('.').map((p) => parseInt(p, 10));
 	const parts2 = version2.split('.').map((p) => parseInt(p, 10));
 	for (let i = 0; i < 3; i++) {
-		if (parts1[i] > parts2[i]) return 1;
-		if (parts1[i] < parts2[i]) return -1;
+		const a = parts1[i] ?? 0;
+		const b = parts2[i] ?? 0;
+		if (a > b) return 1;
+		if (a < b) return -1;
 	}
 	return 0;
 };

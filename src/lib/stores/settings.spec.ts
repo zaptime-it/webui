@@ -85,7 +85,7 @@ describe('settingsStore.isDirty', () => {
 		const store = await loadStore();
 		await store.load();
 		const data = store.data!;
-		data.screens = [data.screens[1], data.screens[0]];
+		data.screens = [data.screens[1]!, data.screens[0]!];
 		expect(store.isDirty).toBe(true);
 	});
 
@@ -179,7 +179,7 @@ describe('settingsStore.dirtyKeys (per-field)', () => {
 		const store = await loadStore();
 		await store.load();
 		const data = store.data!;
-		data.screens = [data.screens[1], data.screens[0]];
+		data.screens = [data.screens[1]!, data.screens[0]!];
 		expect(store.isFieldDirty('screens')).toBe(true);
 	});
 

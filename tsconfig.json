@@ -10,17 +10,18 @@
 		"sourceMap": true,
 		"strict": true,
 		"verbatimModuleSyntax": true,
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitOverride": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true
 	},
 	"exclude": [
 		"node_modules/**",
-		"tests/**",
 		"src/lib/paraglide/**",
-		"src/service-worker.js",
-		"src/service-worker/**/*.js",
-		"src/service-worker.ts",
-		"src/service-worker/**/*.ts",
-		"src/service-worker.d.ts",
-		"src/service-worker/**/*.d.ts"
+		"tests/**",
+		"playwright.*.config.ts",
+		"playwright.config.ts"
 	]
 }

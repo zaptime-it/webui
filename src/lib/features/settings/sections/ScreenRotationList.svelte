@@ -25,15 +25,21 @@
 	}
 
 	function moveUp(idx: number) {
-		if (idx <= 0) return;
+		if (idx <= 0 || idx >= screens.length) return;
 		const next = [...screens];
-		[next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+		const a = next[idx - 1] as Screen;
+		const b = next[idx] as Screen;
+		next[idx - 1] = b;
+		next[idx] = a;
 		screens = next;
 	}
 	function moveDown(idx: number) {
-		if (idx >= screens.length - 1) return;
+		if (idx < 0 || idx >= screens.length - 1) return;
 		const next = [...screens];
-		[next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+		const a = next[idx] as Screen;
+		const b = next[idx + 1] as Screen;
+		next[idx] = b;
+		next[idx + 1] = a;
 		screens = next;
 	}
 </script>

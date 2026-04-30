@@ -71,21 +71,29 @@
 	}
 
 	function moveUp(idx: number) {
-		if (idx <= 0) return;
+		if (idx <= 0 || idx >= rows.length) return;
 		const next = [...rows];
-		[next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+		const a = next[idx - 1] as CurrencyRow;
+		const b = next[idx] as CurrencyRow;
+		next[idx - 1] = b;
+		next[idx] = a;
 		rows = next;
 		commit();
 	}
 	function moveDown(idx: number) {
-		if (idx >= rows.length - 1) return;
+		if (idx < 0 || idx >= rows.length - 1) return;
 		const next = [...rows];
-		[next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+		const a = next[idx] as CurrencyRow;
+		const b = next[idx + 1] as CurrencyRow;
+		next[idx] = b;
+		next[idx + 1] = a;
 		rows = next;
 		commit();
 	}
 	function toggle(idx: number) {
-		rows[idx].enabled = !rows[idx].enabled;
+		const row = rows[idx];
+		if (!row) return;
+		row.enabled = !row.enabled;
 		commit();
 	}
 </script>

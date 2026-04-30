@@ -36,7 +36,7 @@ export const initLocale = () => {
 		localeState.value = stored as SupportedLocale;
 		return;
 	}
-	const fromBrowser = window.navigator.language.split('-')[0].toLowerCase();
+	const fromBrowser = (window.navigator.language.split('-')[0] ?? '').toLowerCase();
 	const locale = supportedLocales.includes(fromBrowser as SupportedLocale)
 		? (fromBrowser as SupportedLocale)
 		: 'en';
@@ -53,4 +53,5 @@ export const setLocale = (locale: SupportedLocale) => {
 export const getLocale = (): SupportedLocale => localeState.value;
 
 const flagMap: Record<string, string> = { en: '🇬🇧', nl: '🇳🇱', es: '🇪🇸', de: '🇩🇪' };
-export const getFlagEmoji = (code: string): string => flagMap[code.toLowerCase()] ?? flagMap.en;
+export const getFlagEmoji = (code: string): string =>
+	flagMap[code.toLowerCase()] ?? flagMap.en ?? '';

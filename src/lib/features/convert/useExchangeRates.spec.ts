@@ -75,7 +75,7 @@ describe('createExchangeRates', () => {
 		const { createExchangeRates } = await import('./useExchangeRates.svelte');
 		const feed = createExchangeRates();
 		feed.connect();
-		const ws = FakeWebSocket.instances[0];
+		const ws = FakeWebSocket.instances[0]!;
 
 		ws.dispatch('open');
 		expect(feed.status).toBe('open');
@@ -92,7 +92,7 @@ describe('createExchangeRates', () => {
 		const { createExchangeRates } = await import('./useExchangeRates.svelte');
 		const feed = createExchangeRates();
 		feed.connect();
-		const ws = FakeWebSocket.instances[0];
+		const ws = FakeWebSocket.instances[0]!;
 		feed.close();
 		expect(ws.close).toHaveBeenCalledOnce();
 		feed.connect();

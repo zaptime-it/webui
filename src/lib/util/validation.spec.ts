@@ -41,8 +41,8 @@ describe('validateSettings', () => {
 	test('flags an invalid nostrZapPubkey under the extra section', () => {
 		const errs = validateSettings(fakeSettings({ nostrZapPubkey: 'not-hex' }), messages);
 		expect(errs).toHaveLength(1);
-		expect(errs[0].section).toBe('extra');
-		expect(errs[0].id).toBe('nostrZapPubkey');
+		expect(errs[0]?.section).toBe('extra');
+		expect(errs[0]?.id).toBe('nostrZapPubkey');
 	});
 
 	test('reports both errors with stable order when both are invalid', () => {

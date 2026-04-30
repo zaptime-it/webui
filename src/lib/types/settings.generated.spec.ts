@@ -34,8 +34,12 @@ const sectionSrc = readdirSync(sectionsDir)
 const labelledKeys = new Set<string>();
 const lines = sectionSrc.split(/\r?\n/);
 for (let i = 0; i < lines.length; i++) {
-	const idMatch = lines[i].match(/\bid="([A-Za-z][A-Za-z0-9]*)"/);
+	const line = lines[i];
+	if (!line) continue;
+	const idMatch = line.match(/\bid="([A-Za-z][A-Za-z0-9]*)"/);
 	if (!idMatch) continue;
+	const key = idMatch[1];
+	if (!key) continue;
 	const window = lines.slice(i, i + 8).join('\n');
 	// Stop the window at the next element opening so we don't bleed
 	// into a neighbouring component's label.
@@ -43,7 +47,7 @@ for (let i = 0; i < lines.length; i++) {
 		/<(?:SwitchField|NumberField|SelectField|RangeField|ColorField|Field)\b(?!.*?id="[A-Za-z]+")/
 	);
 	const scoped = cutoff > 0 ? window.slice(0, cutoff) : window;
-	if (/restartRequired/.test(scoped)) labelledKeys.add(idMatch[1]);
+	if (/restartRequired/.test(scoped)) labelledKeys.add(key);
 }
 
 describe('settings.generated.ts ↔ UI cross-check', () => {
