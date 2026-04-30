@@ -200,7 +200,41 @@ export const settingsJson = {
 	txPower: 78,
 	tzString: 'Europe/Amsterdam',
 	verticalDesc: true,
-	wpTimeout: 600
+	wpTimeout: 600,
+	// Below: fields the strict schema added after this fixture was first
+	// authored. Real devices always emit these; the fixture would loop
+	// on "Loading…" without them.
+	useSatsSymbol: false,
+	useMscwTime: false,
+	useBlkCountdown: false,
+	inverseButtons: false,
+	mempoolSecure: true,
+	localPoolHost: '',
+	nostrPubKey: '',
+	// Non-empty by default so the "empty nostr relay field is not
+	// accepted" Playwright test can dirty the form by clearing it.
+	nostrRelay: 'wss://relay.primal.net',
+	ledFlashOnZap: false,
+	scrnRestoreZap: false,
+	hasFrontlight: false,
+	flDisable: false,
+	flMaxBrightness: 255,
+	flAlwaysOn: false,
+	flEffectDelay: 0,
+	flFlashOnUpd: false,
+	flFlashOnZap: false,
+	hasLightLevel: false,
+	luxLightToggle: 0,
+	flOffWhenDark: false,
+	httpAuthEnabled: false,
+	httpAuthUser: '',
+	httpAuthPass: '',
+	httpAuthPassSet: false,
+	otaPass: '',
+	otaPassSet: false,
+	poolGlobalStats: false,
+	poolLogosUrl: 'https://git.btclock.dev/btclock/mining-pool-logos/raw/branch/main',
+	gitReleaseUrl: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v4/releases/latest'
 };
 
 export const latestReleaseFake = {
@@ -310,7 +344,8 @@ export const initMock = async ({ page }: { page: Page }) => {
 				relay.readyState = 1;
 				const openEv = new Event('open');
 				relay.dispatchEvent(openEv);
-				if (typeof relay.onopen === 'function') relay.onopen.call(relay as EventSource, openEv);
+				if (typeof relay.onopen === 'function')
+					relay.onopen.call(relay as EventSource, openEv);
 				const statusEv = new MessageEvent('status', {
 					data: JSON.stringify({ isUpdating: true, isFake: false })
 				});
@@ -348,7 +383,15 @@ export const initMock = async ({ page }: { page: Page }) => {
 
 	await page.route(/\/api\/show\/screen\?s=4$/, async (route) => {
 		statusJson.currentScreen = 4;
-		statusJson.data = ['BIT/COIN', 'HALV/ING', '0/YRS', '149/DAYS', '8/HRS', '30/MINS', 'TO/GO'];
+		statusJson.data = [
+			'BIT/COIN',
+			'HALV/ING',
+			'0/YRS',
+			'149/DAYS',
+			'8/HRS',
+			'30/MINS',
+			'TO/GO'
+		];
 
 		await route.fulfill({ json: statusJson });
 	});

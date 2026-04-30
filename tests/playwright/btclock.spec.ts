@@ -25,7 +25,9 @@ const waitForReady = async (page: Page) => {
 	// because the reactive graph in SettingsPanel has sometimes been
 	// observed to lag behind Status by ~1-2 seconds after the mocked
 	// settings response resolves.
-	await expect(page.getByRole('button', { name: 'Save' })).toBeVisible({ timeout: 15_000 });
+	await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeVisible({
+		timeout: 15_000
+	});
 };
 
 test('index page has expected columns control, status, settings', async ({ page }) => {
@@ -137,7 +139,7 @@ test('time values can not be zero or negative', async ({ page }) => {
 			await page.fill(field, val);
 			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
 			expect(resultValue).toBe(val);
-			await page.getByRole('button', { name: 'Save' }).click();
+			await page.getByRole('button', { name: 'Save', exact: true }).click();
 			const validationMessage = await page.$eval(
 				field,
 				(input: HTMLInputElement) => input.validationMessage
@@ -149,7 +151,7 @@ test('time values can not be zero or negative', async ({ page }) => {
 			await page.fill(field, val);
 			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
 			expect(resultValue).toBe(val);
-			await page.getByRole('button', { name: 'Save' }).click();
+			await page.getByRole('button', { name: 'Save', exact: true }).click();
 			const validationMessage = await page.$eval(
 				field,
 				(input: HTMLInputElement) => input.validationMessage
@@ -172,7 +174,9 @@ test('npub values will be converted to hex pubkeys', async ({ page }) => {
 			await page.getByLabel('Nostr Relay').click();
 			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
 
-			expect(resultValue).toBe('b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422');
+			expect(resultValue).toBe(
+				'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422'
+			);
 		}
 	}
 });
@@ -187,7 +191,7 @@ test('empty nostr relay field is not accepted', async ({ page }) => {
 
 	await nostrRelayField.fill('');
 
-	await page.getByRole('button', { name: 'Save' }).click();
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
 	const validationMessage = await nostrRelayField.evaluate(
 		(el) => (el as HTMLInputElement).validationMessage
 	);
@@ -231,11 +235,15 @@ test('parse all types of EPD content correctly', async ({ page }) => {
 
 	expect(statusJson.data[0]).toContain('/');
 	await expect(page.locator('.btclock-wrapper > div > div:nth-child(1)')).toBeTruthy();
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(1)')).toHaveClass(/splitText/);
+	await expect(page.locator('.btclock-wrapper > div > div:nth-child(1)')).toHaveClass(
+		/splitText/
+	);
 	expect(statusJson.data[1]).toHaveLength(1);
 	await expect(page.locator('.btclock-wrapper > div > div:nth-child(2)')).toHaveClass(/digit/);
 	expect(statusJson.data[2]).toHaveLength(3);
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(3)')).toHaveClass(/mediumText/);
+	await expect(page.locator('.btclock-wrapper > div > div:nth-child(3)')).toHaveClass(
+		/mediumText/
+	);
 });
 
 test('should work with more than 7 screens', async ({ page }) => {
