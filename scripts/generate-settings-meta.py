@@ -103,6 +103,8 @@ HEADER = """\
 // Source: components/settings/include/settings/schema.hpp::kFields in
 // the btclock firmware repo.
 
+import * as v from 'valibot';
+
 export type SettingsFieldKind = 'string' | 'number' | 'boolean';
 
 export interface SettingsFieldMeta {
@@ -117,6 +119,34 @@ export interface SettingsFieldMeta {
 }
 
 """
+
+SCHEMA_PREAMBLE = """\
+/**
+ * Per-field Valibot schemas mirroring kFields. Numeric fields carry their
+ * min/max bounds; strings/booleans are primitive validators. Compose into
+ * the API settings schema (see $lib/api/schemas).
+ *
+ * kField keys are flat NVS prefs keys. The HTTP /api/settings JSON
+ * reshapes a few of them — `actCurrencies` ships as string[], the
+ * `dnd*` keys are nested under `dnd` — so callers must drop or override
+ * those before using this record verbatim.
+ */
+"""
+
+
+def field_schema_expr(f: dict) -> str:
+    kind = f["kind"]
+    if kind == "boolean":
+        return "v.boolean()"
+    if kind == "string":
+        return "v.string()"
+    if kind == "number":
+        if f["minValue"] == 0 and f["maxValue"] == 0:
+            return "v.number()"
+        return (
+            f"v.pipe(v.number(), v.minValue({f['minValue']}), v.maxValue({f['maxValue']}))"
+        )
+    return "v.unknown()"
 
 
 def emit(fields: list[dict]) -> str:
@@ -144,6 +174,10 @@ def emit(fields: list[dict]) -> str:
         "export const isBootOnly = (key: string): boolean =>\n"
         "\tsettingsFieldsByKey[key]?.bootOnly === true;\n"
     )
+    out.append(SCHEMA_PREAMBLE + "export const settingsFieldSchemas = {")
+    for f in fields:
+        out.append(f"\t{f['key']}: {field_schema_expr(f)},")
+    out.append("} as const;\n")
     return "\n".join(out)
 
 

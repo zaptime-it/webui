@@ -4,6 +4,8 @@
 // Source: components/settings/include/settings/schema.hpp::kFields in
 // the btclock firmware repo.
 
+import * as v from 'valibot';
+
 export type SettingsFieldKind = 'string' | 'number' | 'boolean';
 
 export interface SettingsFieldMeta {
@@ -745,3 +747,88 @@ export const settingsFieldsByKey: Readonly<Record<string, SettingsFieldMeta>> = 
 );
 
 export const isBootOnly = (key: string): boolean => settingsFieldsByKey[key]?.bootOnly === true;
+
+/**
+ * Per-field Valibot schemas mirroring kFields. Numeric fields carry their
+ * min/max bounds; strings/booleans are primitive validators. Compose into
+ * the API settings schema (see $lib/api/schemas).
+ *
+ * kField keys are flat NVS prefs keys. The HTTP /api/settings JSON
+ * reshapes a few of them — `actCurrencies` ships as string[], the
+ * `dnd*` keys are nested under `dnd` — so callers must drop or override
+ * those before using this record verbatim.
+ */
+export const settingsFieldSchemas = {
+	actCurrencies: v.string(),
+	bitaxeEnabled: v.boolean(),
+	bitaxeHostname: v.string(),
+	bitaxePollSec: v.pipe(v.number(), v.minValue(5), v.maxValue(300)),
+	blockFeeDec: v.boolean(),
+	blockFlashColor: v.pipe(v.number(), v.minValue(0), v.maxValue(16777215)),
+	ceDisableSSL: v.boolean(),
+	ceEndpoint: v.string(),
+	dataSource: v.pipe(v.number(), v.minValue(0), v.maxValue(3)),
+	disableLeds: v.boolean(),
+	dndEnabled: v.boolean(),
+	dndEndHour: v.pipe(v.number(), v.minValue(0), v.maxValue(23)),
+	dndEndMin: v.pipe(v.number(), v.minValue(0), v.maxValue(59)),
+	dndStartHour: v.pipe(v.number(), v.minValue(0), v.maxValue(23)),
+	dndStartMin: v.pipe(v.number(), v.minValue(0), v.maxValue(59)),
+	dndTimeEnabled: v.boolean(),
+	enableDebugLog: v.boolean(),
+	flAlwaysOn: v.boolean(),
+	flDisable: v.boolean(),
+	flEffectDelay: v.pipe(v.number(), v.minValue(0), v.maxValue(1000)),
+	flFlashOnUpd: v.boolean(),
+	flFlashOnZap: v.boolean(),
+	flMaxBrightness: v.pipe(v.number(), v.minValue(0), v.maxValue(65535)),
+	flOffWhenDark: v.boolean(),
+	fontName: v.string(),
+	fullRefreshMin: v.pipe(v.number(), v.minValue(0), v.maxValue(1440)),
+	gitReleaseUrl: v.string(),
+	hideLeadZero: v.boolean(),
+	hostnamePrefix: v.string(),
+	httpAuthEnabled: v.boolean(),
+	httpAuthPass: v.string(),
+	httpAuthUser: v.string(),
+	inverseButtons: v.boolean(),
+	invertedColor: v.boolean(),
+	ledBrightness: v.pipe(v.number(), v.minValue(0), v.maxValue(255)),
+	ledFlashOnUpd: v.boolean(),
+	ledFlashOnZap: v.boolean(),
+	ledTestOnPower: v.boolean(),
+	localPoolHost: v.string(),
+	luxLightToggle: v.pipe(v.number(), v.minValue(0), v.maxValue(65535)),
+	mcapBigChar: v.boolean(),
+	mdnsEnabled: v.boolean(),
+	mempoolInstance: v.string(),
+	mempoolSecure: v.boolean(),
+	minSecPriceUpd: v.pipe(v.number(), v.minValue(1), v.maxValue(3600)),
+	miningPoolName: v.string(),
+	miningPoolStats: v.boolean(),
+	miningPoolUser: v.string(),
+	mowMode: v.boolean(),
+	nostrPubKey: v.string(),
+	nostrRelay: v.string(),
+	nostrZapNotify: v.boolean(),
+	nostrZapPubkey: v.string(),
+	otaEnabled: v.boolean(),
+	otaPass: v.string(),
+	poolGlobalStats: v.boolean(),
+	poolLogosUrl: v.string(),
+	poolPollSec: v.pipe(v.number(), v.minValue(10), v.maxValue(3600)),
+	poolWorker: v.string(),
+	refrScrnChange: v.boolean(),
+	scrnRestoreZap: v.boolean(),
+	stealFocus: v.boolean(),
+	suffixPrice: v.boolean(),
+	suffixShareDot: v.boolean(),
+	supplyPercent: v.boolean(),
+	tzString: v.string(),
+	useBlkCountdown: v.boolean(),
+	useMscwTime: v.boolean(),
+	useSatsSymbol: v.boolean(),
+	verticalDesc: v.boolean(),
+	wifiRebootMin: v.pipe(v.number(), v.minValue(0), v.maxValue(120)),
+	wpTimeout: v.pipe(v.number(), v.minValue(0), v.maxValue(3600))
+} as const;

@@ -5,12 +5,23 @@
  * schemas (see `$lib/types/settings`, `$lib/types/status`); adding a new
  * firmware field is one edit here, not two.
  *
+ * The per-field schemas for keys covered by the firmware's `kFields`
+ * table come from `$lib/types/settings.generated` (regenerated from
+ * `components/settings/include/settings/schema.hpp` via
+ * `pnpm generate:settings-meta`). Numeric fields carry their min/max
+ * bounds, so a bug that pushes a value out of range fails the cold-start
+ * parse instead of being silently accepted. Keys whose HTTP shape
+ * diverges from NVS (`actCurrencies` is string[] over the wire; `dnd*`
+ * is nested) are excluded from the generated record and re-declared
+ * here. Read-only / write-only / computed fields not in kFields are
+ * declared here too.
+ *
  * `looseObject` keeps unknown keys passing through at runtime so the
- * firmware can grow the contract without breaking the UI; only the
- * critical invariants are enforced.
+ * firmware can grow the contract without breaking the UI.
  */
 
 import * as v from 'valibot';
+import { settingsFieldSchemas } from '$lib/types/settings.generated';
 
 /* ---------- shared shapes ---------- */
 
@@ -38,131 +49,87 @@ export const screenSchema = v.object({
 
 /* ---------- settings ---------- */
 
-// `looseObject` so the firmware can add fields without breaking the UI.
-// The declared shape doubles as the canonical TS type via `v.InferOutput`.
+// Drop kField keys whose HTTP JSON shape differs from the flat NVS
+// shape (`actCurrencies` ships as string[]; `dnd*` flatten into a
+// nested `dnd` object). Also unwrap a few keys we need to re-declare:
+//   - v4-only kFields (hideLeadZero/wifiRebootMin/bitaxePollSec/
+//     poolWorker/poolPollSec) become `v.optional(...)` for v3 compat
+//   - `miningPoolUser` is stripped from the GET response when the
+//     active pool keeps a secret in the user slot (ViaBTC, Foundry);
+//     in that case the device emits `miningPoolUserSet` instead.
+const {
+	actCurrencies: _act,
+	dndEnabled: _dndEnabled,
+	dndEndHour: _dndEndHour,
+	dndEndMin: _dndEndMin,
+	dndStartHour: _dndStartHour,
+	dndStartMin: _dndStartMin,
+	dndTimeEnabled: _dndTimeEnabled,
+	hideLeadZero: hideLeadZeroSchema,
+	wifiRebootMin: wifiRebootMinSchema,
+	bitaxePollSec: bitaxePollSecSchema,
+	poolWorker: poolWorkerSchema,
+	poolPollSec: poolPollSecSchema,
+	miningPoolUser: miningPoolUserSchema,
+	...kFieldsHttp
+} = settingsFieldSchemas;
+void _act;
+void _dndEnabled;
+void _dndEndHour;
+void _dndEndMin;
+void _dndStartHour;
+void _dndStartMin;
+void _dndTimeEnabled;
+
 export const settingsSchema = v.looseObject({
-	// Display
+	...kFieldsHttp,
+
+	// kField keys with a divergent HTTP shape:
+	actCurrencies: v.array(v.string()),
+
+	// v4-only fields. Optional so v3 devices (which don't emit them) parse.
+	hideLeadZero: v.optional(hideLeadZeroSchema),
+	wifiRebootMin: v.optional(wifiRebootMinSchema),
+	bitaxePollSec: v.optional(bitaxePollSecSchema),
+	poolWorker: v.optional(poolWorkerSchema),
+	poolPollSec: v.optional(poolPollSecSchema),
+
+	// miningPoolUser: the device strips this for pools whose user slot
+	// holds a secret API key (ViaBTC, Foundry) and emits the companion
+	// `miningPoolUserSet` boolean instead — same protocol as the auth
+	// passwords. Both are therefore optional on GET.
+	miningPoolUser: v.optional(miningPoolUserSchema),
+	miningPoolUserSet: v.optional(v.boolean()),
+
+	// Fields the firmware emits but doesn't store via kFields (read-only
+	// metadata, runtime flags, write-only buffers, derived):
 	numScreens: v.number(),
-	invertedColor: v.boolean(),
 	timerSeconds: v.number(),
 	timerRunning: v.boolean(),
-	fullRefreshMin: v.number(),
-	fontName: v.string(),
+	txPower: v.number(),
 	availableFonts: v.array(v.string()),
-	stealFocus: v.boolean(),
-	mcapBigChar: v.boolean(),
-	useSatsSymbol: v.boolean(),
-	useMscwTime: v.boolean(),
-	useBlkCountdown: v.boolean(),
-	suffixPrice: v.boolean(),
-	mowMode: v.boolean(),
-	verticalDesc: v.boolean(),
-	blockFeeDec: v.boolean(),
-	supplyPercent: v.boolean(),
-	refrScrnChange: v.boolean(),
-	inverseButtons: v.boolean(),
-	suffixShareDot: v.boolean(),
-	/**
-	 * v4-only — drops the leading zero on single-digit hours (`07:00` →
-	 * `7:00`). Optional because a v3 device never emits this key.
-	 */
-	hideLeadZero: v.optional(v.boolean()),
-
-	// Data source
-	minSecPriceUpd: v.number(),
-	dataSource: v.number(),
-	mempoolInstance: v.string(),
-	mempoolSecure: v.boolean(),
-	localPoolHost: v.string(),
-	ceEndpoint: v.string(),
-	ceDisableSSL: v.boolean(),
-
-	// Nostr
-	nostrPubKey: v.string(),
-	nostrRelay: v.string(),
-	nostrZapNotify: v.boolean(),
-	nostrZapPubkey: v.string(),
-
-	// LED
-	disableLeds: v.boolean(),
-	ledTestOnPower: v.boolean(),
-	ledFlashOnUpd: v.boolean(),
-	ledFlashOnZap: v.boolean(),
-	ledBrightness: v.number(),
-	blockFlashColor: v.number(),
-	scrnRestoreZap: v.boolean(),
-
-	// Frontlight
-	hasFrontlight: v.boolean(),
-	flDisable: v.boolean(),
-	flMaxBrightness: v.number(),
-	flAlwaysOn: v.boolean(),
-	flEffectDelay: v.number(),
-	flFlashOnUpd: v.boolean(),
-	flFlashOnZap: v.boolean(),
-	hasLightLevel: v.boolean(),
-	luxLightToggle: v.number(),
-	flOffWhenDark: v.boolean(),
-
-	// Network
-	wpTimeout: v.number(),
-	tzString: v.string(),
-	mdnsEnabled: v.boolean(),
-	otaEnabled: v.boolean(),
-	hostnamePrefix: v.string(),
+	availablePools: v.array(v.string()),
+	availableCurrencies: v.array(v.string()),
 	hostname: v.string(),
 	ip: v.string(),
-	txPower: v.number(),
-	/**
-	 * v4-only — soft-watchdog. If WiFi stays down for this many minutes
-	 * the device reboots itself. 0 disables.
-	 */
-	wifiRebootMin: v.optional(v.number()),
-
-	// HTTP auth. `httpAuthPass` is PATCH-only (form input buffer); the
-	// device only reports whether one is stored via `httpAuthPassSet`.
-	httpAuthEnabled: v.boolean(),
-	httpAuthUser: v.string(),
-	httpAuthPass: v.string(),
 	httpAuthPassSet: v.boolean(),
-
-	// ArduinoOTA. Same PATCH-only / *Set-flag pattern as HTTP auth above.
-	otaPass: v.string(),
 	otaPassSet: v.boolean(),
-
-	// Bitaxe
-	bitaxeEnabled: v.boolean(),
-	bitaxeHostname: v.string(),
-	/** v4-only — Bitaxe LAN poll cadence in seconds. Bounds: 5..300. */
-	bitaxePollSec: v.optional(v.number()),
-
-	// Mining pool
-	miningPoolStats: v.boolean(),
-	miningPoolName: v.string(),
-	miningPoolUser: v.string(),
-	/** v4-only — secondary identifier scoped under miningPoolUser. */
-	poolWorker: v.optional(v.string()),
-	poolGlobalStats: v.boolean(),
-	availablePools: v.array(v.string()),
-	poolLogosUrl: v.string(),
-	/** v4-only — mining-pool HTTPS poll cadence in seconds. Bounds: 10..3600. */
-	poolPollSec: v.optional(v.number()),
-
-	// Currency
-	actCurrencies: v.array(v.string()),
-	availableCurrencies: v.array(v.string()),
-
-	// Firmware / version info
-	gitReleaseUrl: v.string(),
 	hwRev: v.string(),
 	fsRev: v.string(),
-	gitRev: v.string(),
-	gitTag: v.string(),
-	lastBuildTime: v.union([v.number(), v.string()]),
+	// gitRev / gitTag / lastBuildTime are only emitted when populated:
+	// dev builds without a tagged commit, with empty git rev, or with a
+	// missing build-time stamp omit the relevant key entirely (no empty
+	// string / zero placeholder).
+	gitRev: v.optional(v.string()),
+	gitTag: v.optional(v.string()),
+	lastBuildTime: v.optional(v.union([v.number(), v.string()])),
 
-	// Debug
-	enableDebugLog: v.boolean(),
+	// lightLevel is only emitted on boards with an ambient light sensor
+	// (`hasLightLevel === true`); Rev A and other sensor-less boards
+	// omit it entirely.
+	lightLevel: v.optional(v.number()),
 
+	// Nested / structured shapes:
 	screens: v.array(screenSchema),
 	dnd: dndSettingsSchema,
 

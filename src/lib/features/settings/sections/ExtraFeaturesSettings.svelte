@@ -115,7 +115,7 @@
 
 	const testLocalPool = async () => {
 		try {
-			const info = await fetchLocalPoolInfo(data.localPoolHost, data.miningPoolUser);
+			const info = await fetchLocalPoolInfo(data.localPoolHost, data.miningPoolUser ?? '');
 			toast.success(`Connected to local pool`, `${info.workersCount} workers`);
 			validLocalPool = true;
 		} catch (err) {
