@@ -54,3 +54,154 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+	/* Scope a container so the clock's digit sizing tracks the Status
+	   column width rather than the full viewport — otherwise the digits
+	   keep their viewport-based size and the last cell gets clipped when
+	   the column is narrower than `7 * (12vw + 12vh)`. */
+	.btclock-wrapper {
+		container-type: inline-size;
+	}
+
+	.btclock-wrapper :global(.btclock) {
+		background: #000;
+		display: flex;
+		/* `cqi` = 1% of the container's inline size, so font-size now scales
+		   with the Status column instead of the viewport. */
+		font-size: clamp(1rem, 10cqi, 2.5rem);
+		font-family: 'Antonio', sans-serif;
+		font-weight: 400;
+		padding: 8px;
+		gap: 6px;
+		/* Defensive: never overflow the card even on very narrow columns. */
+		overflow: hidden;
+	}
+
+	.btclock-wrapper :global(.btclock .digit),
+	.btclock-wrapper :global(.btclock .splitText),
+	.btclock-wrapper :global(.btclock .mediumText) {
+		border: 2px solid gold;
+		border-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 6px 4px 10px;
+		/* Share the available row width evenly and let each cell shrink
+		   below its intrinsic content width so nothing overflows. */
+		flex: 1 1 0;
+		min-width: 0;
+		aspect-ratio: 1 / 1.5;
+	}
+
+	.btclock-wrapper :global(.btclock .digit hr),
+	.btclock-wrapper :global(.btclock .splitText hr),
+	.btclock-wrapper :global(.btclock .mediumText hr) {
+		width: 75%;
+		border: 0;
+		border-top: 2px solid #fff;
+		margin: 0;
+		padding: 0;
+		opacity: 1;
+	}
+
+	.btclock-wrapper :global(.btclock .digit.sats) {
+		padding-top: 35px;
+		font-family: 'Satoshi Symbol', sans-serif;
+	}
+
+	.btclock-wrapper :global(.btclock .mediumText) {
+		font-size: calc(1.25vw + 1.25vh);
+	}
+
+	.btclock-wrapper :global(.btclock .splitText) {
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		padding: 5px;
+		font-size: calc(0.3vw + 1vh);
+	}
+
+	.btclock-wrapper :global(.btclock.verticalDesc > .splitText:first-child .textcontainer) {
+		transform: rotate(-90deg);
+	}
+
+	.btclock-wrapper :global(.btclock .splitText .textcontainer :first-child::after) {
+		display: block;
+		content: '';
+		margin-top: 0px;
+		border-bottom: 2px solid;
+	}
+
+	.btclock-wrapper :global(.btclock .splitText .top-text),
+	.btclock-wrapper :global(.btclock .splitText .bottom-text) {
+		margin: 0;
+		line-height: 1;
+	}
+
+	.btclock-wrapper :global(.btclock .splitText .top-text) {
+		margin-bottom: -45px;
+	}
+
+	.btclock-wrapper :global(.btclock .splitText .bottom-text) {
+		margin-top: -45px;
+	}
+
+	.btclock-wrapper :global(.btclock .digit.icon svg) {
+		width: 100%;
+		fill: currentColor;
+	}
+
+	.btclock-wrapper :global(.btclock .digit.icon.icon-img) {
+		aspect-ratio: 1;
+		width: calc(100 / 7);
+	}
+
+	.btclock-wrapper :global(.btclock .digit.icon.icon-img img) {
+		max-width: 95%;
+	}
+
+	.btclock-wrapper :global(.bitaxelogo) {
+		transform: rotate(-90deg);
+	}
+
+	.btclock-wrapper :global(.pool-logo) {
+		font-size: 0.75rem;
+	}
+
+	@media (max-width: 576px) {
+		.btclock-wrapper :global(.btclock .digit),
+		.btclock-wrapper :global(.btclock .splitText),
+		.btclock-wrapper :global(.btclock .mediumText) {
+			padding: 4px 3px 8px;
+		}
+		.btclock-wrapper :global(.btclock .splitText .top-text) {
+			margin-bottom: -10px;
+		}
+		.btclock-wrapper :global(.btclock .splitText .bottom-text) {
+			margin-top: -10px;
+		}
+	}
+
+	/* Theme variants. The `darkMode` / `lightMode` class is toggled by
+	   the parent panel (Status) on the wrapper containing the clock. */
+	:global(.darkMode .btclock > div) {
+		background: #000;
+		color: #fff;
+		border-color: #fff;
+	}
+
+	:global(.lightMode .btclock > div) {
+		background: #fff;
+		color: #000;
+	}
+
+	:global(.lightMode .btclock .splitText hr) {
+		border-top: 2px solid #000;
+	}
+
+	:global(.lightMode .bitaxelogo) {
+		filter: brightness(0) saturate(100%);
+	}
+</style>

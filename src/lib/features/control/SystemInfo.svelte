@@ -73,3 +73,30 @@
 		</div>
 	{/if}
 </section>
+
+<style>
+	.system-info {
+		display: grid;
+		grid-template-columns: minmax(6.5rem, auto) 1fr;
+		column-gap: 0.75rem;
+		row-gap: 0.25rem;
+		margin: 0;
+	}
+	.system-info dt {
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		align-self: center;
+	}
+	.system-info dd {
+		margin: 0;
+		font-size: 0.875rem;
+		word-break: break-all;
+	}
+	.system-info dd.mono {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+	}
+</style>

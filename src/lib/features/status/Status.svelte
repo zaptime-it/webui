@@ -147,3 +147,36 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.connection-lost-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.75);
+		z-index: 1050;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.connection-lost-overlay :global(.overlay-content) {
+		background-color: rgba(255, 255, 255, 0.85);
+		color: #000;
+		padding: 0.75rem 1rem;
+		border-radius: 0.5rem;
+		text-align: center;
+	}
+
+	.connection-lost-overlay :global(.overlay-content h4) {
+		margin: 0 0 0.25rem 0;
+		font-weight: 600;
+	}
+
+	.connection-lost-overlay :global(.overlay-content p) {
+		margin: 0;
+		font-size: 0.875rem;
+	}
+</style>

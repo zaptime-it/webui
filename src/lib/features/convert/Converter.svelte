@@ -219,4 +219,13 @@
 			animation: none;
 		}
 	}
+
+	/* Compact currency-code label used by both BTC/sats and the fiat
+	   inputs above. DaisyUI 5's `.join-item.btn` layout already handles
+	   sizing, so this only sets the typographic presentation. */
+	.currencyCode {
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.02em;
+	}
 </style>

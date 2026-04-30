@@ -143,4 +143,52 @@
 			display: block;
 		}
 	}
+
+	/* Shared dashboard card treatment: rounded, subtle border, clearer
+	   elevation than DaisyUI's default card shadow. Each `.section-anchor`
+	   gets a thin colored strip along the top edge of its inner `.card`
+	   so the three panels are visually distinguishable. The accent color
+	   travels via the `.accent-*` modifier on the section. */
+	.section-anchor :global(> .card) {
+		border: 1px solid var(--color-base-300, oklch(87% 0.01 250));
+		border-radius: 1rem;
+		overflow: hidden;
+		box-shadow:
+			0 1px 2px -1px rgba(0, 0, 0, 0.06),
+			0 2px 8px -4px rgba(0, 0, 0, 0.08);
+	}
+	.section-anchor :global(> .card::before) {
+		content: '';
+		display: block;
+		height: 3px;
+		width: 100%;
+		background: currentColor;
+		opacity: 0.9;
+	}
+	.accent-control :global(> .card) {
+		color: var(--color-primary, oklch(60% 0.18 245));
+	}
+	.accent-status :global(> .card) {
+		color: var(--color-info, oklch(70% 0.14 215));
+	}
+	.accent-settings :global(> .card) {
+		color: var(--color-accent, oklch(72% 0.15 165));
+	}
+	/* Reset text color inside the card body so the accent color only
+	   shows through the ::before strip (which uses currentColor). */
+	.section-anchor :global(> .card > .card-body) {
+		color: var(--color-base-content);
+	}
+	.section-anchor :global(> .card .card-title) {
+		font-size: 1.15rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+	/* Cleaner horizontal rules inside cards. */
+	.section-anchor :global(.card hr) {
+		border: 0;
+		border-top: 1px solid var(--color-base-300, oklch(87% 0.01 250));
+		opacity: 0.6;
+		margin: 0.25rem 0;
+	}
 </style>

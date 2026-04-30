@@ -1,0 +1,157 @@
+/**
+ * Dark-theme overrides for the CDN-loaded Swagger UI.
+ *
+ * Swagger UI ships a stylesheet that hard-codes near-black text on white
+ * surfaces. When DaisyUI is in dark mode (`<html data-theme="dark">`),
+ * the scheme container, operation titles, and description text become
+ * unreadable. These rules recolour the affected surfaces and text using
+ * our theme tokens. Scoped to `html[data-theme='dark']` so the default
+ * light theme keeps Swagger's original appearance.
+ *
+ * Imported only by the `/api` route — the dashboard pages don't pull
+ * Swagger UI in, so they don't need to ship these rules either.
+ */
+
+html[data-theme='dark'] .swagger-ui {
+	color: var(--color-base-content);
+}
+
+/* Default text color for everything inside Swagger, but leave the
+   method pills (GET/POST/PATCH) alone — they already have their own
+   coloured chips. */
+html[data-theme='dark'] .swagger-ui,
+html[data-theme='dark'] .swagger-ui .info .title,
+html[data-theme='dark'] .swagger-ui .info p,
+html[data-theme='dark'] .swagger-ui .info li,
+html[data-theme='dark'] .swagger-ui .info table,
+html[data-theme='dark'] .swagger-ui .info code,
+html[data-theme='dark'] .swagger-ui .opblock-tag,
+html[data-theme='dark'] .swagger-ui .opblock-tag small,
+html[data-theme='dark'] .swagger-ui .opblock-summary-path,
+html[data-theme='dark'] .swagger-ui .opblock-summary-path__deprecated,
+html[data-theme='dark'] .swagger-ui .opblock-summary-description,
+html[data-theme='dark'] .swagger-ui .opblock-description-wrapper p,
+html[data-theme='dark'] .swagger-ui .opblock-external-docs-wrapper p,
+html[data-theme='dark'] .swagger-ui .opblock-title_normal p,
+html[data-theme='dark'] .swagger-ui .renderedMarkdown p,
+html[data-theme='dark'] .swagger-ui label,
+html[data-theme='dark'] .swagger-ui .parameter__name,
+html[data-theme='dark'] .swagger-ui .parameter__type,
+html[data-theme='dark'] .swagger-ui .parameter__in,
+html[data-theme='dark'] .swagger-ui .parameter__deprecated,
+html[data-theme='dark'] .swagger-ui .response-col_status,
+html[data-theme='dark'] .swagger-ui .response-col_description,
+html[data-theme='dark'] .swagger-ui .responses-header,
+html[data-theme='dark'] .swagger-ui .parameters-col_description,
+html[data-theme='dark'] .swagger-ui .tab li,
+html[data-theme='dark'] .swagger-ui .models h4,
+html[data-theme='dark'] .swagger-ui .model,
+html[data-theme='dark'] .swagger-ui .model-title,
+html[data-theme='dark'] .swagger-ui .model .property,
+html[data-theme='dark'] .swagger-ui .model .property.primitive,
+html[data-theme='dark'] .swagger-ui table thead tr td,
+html[data-theme='dark'] .swagger-ui table thead tr th,
+html[data-theme='dark'] .swagger-ui table tbody tr td,
+html[data-theme='dark'] .swagger-ui .btn {
+	color: var(--color-base-content);
+}
+
+/* Links stay brand-ish but readable. */
+html[data-theme='dark'] .swagger-ui .info a,
+html[data-theme='dark'] .swagger-ui a.nostyle,
+html[data-theme='dark'] .swagger-ui a {
+	color: var(--color-info);
+}
+
+/* Surfaces that Swagger paints white: flip to our base-100. */
+html[data-theme='dark'] .swagger-ui .scheme-container,
+html[data-theme='dark'] .swagger-ui section.models,
+html[data-theme='dark'] .swagger-ui section.models.is-open,
+html[data-theme='dark'] .swagger-ui .dialog-ux .modal-ux,
+html[data-theme='dark'] .swagger-ui .dialog-ux .modal-ux-header,
+html[data-theme='dark'] .swagger-ui .dialog-ux .modal-ux-content,
+html[data-theme='dark'] .swagger-ui .opblock .opblock-section-header,
+html[data-theme='dark'] .swagger-ui .response .response-col_description__inner div.renderedMarkdown,
+html[data-theme='dark'] .swagger-ui .parameters-container .parameters,
+html[data-theme='dark'] .swagger-ui .responses-wrapper {
+	background: var(--color-base-100);
+	box-shadow: none;
+	color: var(--color-base-content);
+}
+
+/* Tables used for parameters / responses get zebra striping that
+   reads correctly on dark. */
+html[data-theme='dark'] .swagger-ui table thead tr {
+	background: var(--color-base-200);
+	border-bottom: 1px solid var(--color-base-300);
+}
+html[data-theme='dark'] .swagger-ui table tbody tr {
+	background: transparent;
+}
+html[data-theme='dark'] .swagger-ui table,
+html[data-theme='dark'] .swagger-ui .parameters-col_description,
+html[data-theme='dark'] .swagger-ui .opblock {
+	border-color: color-mix(in oklab, var(--color-base-content) 18%, transparent);
+}
+
+/* Form controls inside Swagger — inputs/selects/textareas default to
+   near-white and get invisible on dark. */
+html[data-theme='dark'] .swagger-ui select,
+html[data-theme='dark'] .swagger-ui input[type='text'],
+html[data-theme='dark'] .swagger-ui input[type='password'],
+html[data-theme='dark'] .swagger-ui input[type='search'],
+html[data-theme='dark'] .swagger-ui input[type='email'],
+html[data-theme='dark'] .swagger-ui input[type='file'],
+html[data-theme='dark'] .swagger-ui textarea {
+	background: var(--color-base-200);
+	color: var(--color-base-content);
+	border: 1px solid var(--color-base-300);
+}
+
+/* Code / request / response body blocks. */
+html[data-theme='dark'] .swagger-ui .highlight-code,
+html[data-theme='dark'] .swagger-ui .highlight-code > .microlight,
+html[data-theme='dark'] .swagger-ui .microlight,
+html[data-theme='dark'] .swagger-ui pre,
+html[data-theme='dark'] .swagger-ui code {
+	background: color-mix(in oklab, var(--color-base-300) 70%, var(--color-base-200));
+	color: var(--color-base-content);
+}
+
+/* Inline-code swatches used in the markdown description. */
+html[data-theme='dark'] .swagger-ui .markdown code,
+html[data-theme='dark'] .swagger-ui .renderedMarkdown code {
+	background: var(--color-base-300);
+	color: var(--color-base-content);
+	border-radius: 0.25rem;
+	padding: 0.05rem 0.3rem;
+}
+
+/* Caret / chevron icons were black-on-dark. Use currentColor so they
+   inherit the readable base-content tone above. */
+html[data-theme='dark'] .swagger-ui svg:not(:root) {
+	fill: currentColor;
+}
+html[data-theme='dark'] .swagger-ui .expand-operation svg,
+html[data-theme='dark'] .swagger-ui .model-toggle::after,
+html[data-theme='dark'] .swagger-ui .arrow {
+	fill: currentColor;
+	color: currentColor;
+}
+
+/* The top opblock-tag rule (section like "system") carries its own
+   bottom border; make it blend with the surrounding cards. */
+html[data-theme='dark'] .swagger-ui .opblock-tag {
+	border-bottom-color: color-mix(in oklab, var(--color-base-content) 18%, transparent);
+}
+
+/* Slightly lift opblock surfaces off the dark page so method rows are
+   still grouped visually. */
+html[data-theme='dark'] .swagger-ui .opblock {
+	background: color-mix(in oklab, var(--color-base-200) 75%, transparent);
+}
+
+/* Auth dialog / modal close button and labels. */
+html[data-theme='dark'] .swagger-ui .close-modal {
+	color: var(--color-base-content);
+}

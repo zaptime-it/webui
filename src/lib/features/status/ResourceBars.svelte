@@ -58,3 +58,18 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.bar-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		font-size: 0.8125rem;
+	}
+	.bar-row .bar-label {
+		color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+	}
+	.bar-row .bar-value {
+		font-variant-numeric: tabular-nums;
+	}
+</style>

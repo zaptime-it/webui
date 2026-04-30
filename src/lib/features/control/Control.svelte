@@ -94,3 +94,34 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	/* Each sub-section gets a thin left bar in a distinct DaisyUI semantic
+	   color so rows are visually separated without heavy horizontal rules.
+	   Color is picked via `data-accent` so the HTML stays declarative. */
+	.control-row {
+		position: relative;
+		padding-left: 0.75rem;
+		border-left: 3px solid
+			color-mix(in oklab, var(--control-row-color, var(--color-primary)) 45%, transparent);
+		border-radius: 0 0.25rem 0.25rem 0;
+	}
+	.control-row + .control-row {
+		margin-top: 1rem;
+	}
+	.control-row[data-accent='primary'] {
+		--control-row-color: var(--color-primary);
+	}
+	.control-row[data-accent='secondary'] {
+		--control-row-color: var(--color-secondary);
+	}
+	.control-row[data-accent='accent'] {
+		--control-row-color: var(--color-accent);
+	}
+	.control-row[data-accent='info'] {
+		--control-row-color: var(--color-info);
+	}
+	.control-row[data-accent='warning'] {
+		--control-row-color: var(--color-warning);
+	}
+</style>

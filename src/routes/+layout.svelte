@@ -156,6 +156,11 @@
 {/key}
 
 <style>
+	.navbar-brand {
+		font-style: italic;
+		font-weight: 600;
+	}
+
 	/* Mobile section-tab overrides.
 	 *
 	 * DaisyUI 5's base `.tabs` and `.tab` both set `flex-wrap: wrap`, which

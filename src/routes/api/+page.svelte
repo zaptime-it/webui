@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import './swagger-dark.css';
 
 	let swaggerLoaded = $state(false);
 
