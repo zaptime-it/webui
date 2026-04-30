@@ -96,7 +96,7 @@ export const getSettings = async (): Promise<Settings> => {
 	const raw = await asJson<unknown>(
 		await fetch(url('/api/settings'), { credentials: 'same-origin' })
 	);
-	return parseSettings(raw) as Settings;
+	return parseSettings(raw);
 };
 
 export interface SettingsErrorBody {
