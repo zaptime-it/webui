@@ -127,9 +127,9 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
         uses: ncipollo/release-action@v1.21.0
         with:
-          tag: v4-beta-${{ steps.getBlockHeight.outputs.blockHeight }}
+          tag: v4-${{ steps.getBlockHeight.outputs.blockHeight }}
           commit: feature/v4-firmware
-          name: v4-beta-${{ steps.getBlockHeight.outputs.blockHeight }}
+          name: v4-${{ steps.getBlockHeight.outputs.blockHeight }}
           artifacts: 'output/littlefs.bin,webui.tgz'
           allowUpdates: true
           removeArtifacts: true

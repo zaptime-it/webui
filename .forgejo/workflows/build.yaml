@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - feature/v4-firmware
   pull_request:
 
 jobs:
@@ -78,9 +79,9 @@ jobs:
           PUBLIC_BASE_URL: ''
         run: pnpm build
 
-      # The following steps only run on push to main
+      # The following steps only run on push to main or feature/v4-firmware
       - name: Get current block
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/v4-firmware')
         id: getBlockHeight
         run: echo "blockHeight=$(curl -s https://mempool.space/api/blocks/tip/height)" >> $GITHUB_OUTPUT
 
@@ -108,14 +109,14 @@ jobs:
             echo "Directory size is within the threshold $DIRECTORY_SIZE"
           fi
       - name: Create tarball
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/v4-firmware')
         run: tar czf webui.tgz --strip-components=1 dist
       - name: Build LittleFS
         run: |
           set -e
           /tmp/mklittlefs/mklittlefs -c build_gz -s 410000 output/littlefs.bin
       - name: Upload artifacts
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/v4-firmware')
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
           path: |
@@ -133,5 +134,20 @@ jobs:
           release-dir: output
           token: ${{ secrets.TOKEN }}
           override: false
+          verbose: false
+          release-notes-assistant: false
+      - name: Create v4 beta release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.11.3
+        with:
+          url: 'https://git.btclock.dev/'
+          repo: '${{ github.repository }}'
+          direction: upload
+          tag: v4-${{ steps.getBlockHeight.outputs.blockHeight }}
+          sha: '${{ github.sha }}'
+          release-dir: output
+          token: ${{ secrets.TOKEN }}
+          override: false
+          prerelease: true
           verbose: false
           release-notes-assistant: false
