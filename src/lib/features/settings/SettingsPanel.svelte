@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
+	import { browser } from '$app/environment';
 	import { parseSettingsError } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
@@ -47,17 +48,48 @@
 		['local_public_pool', 'Public Pool (local)']
 	]);
 
-	let screenOpen = $state(true);
-	let displayOpen = $state(false);
-	let dataSourceOpen = $state(false);
-	let extraOpen = $state(false);
-	let systemOpen = $state(false);
+	type SectionKey = 'screen' | 'display' | 'dataSource' | 'extra' | 'system';
+	const SECTIONS_OPEN_KEY = 'settings.sectionsOpen';
+	const sectionDefaults: Record<SectionKey, boolean> = {
+		screen: true,
+		display: false,
+		dataSource: false,
+		extra: false,
+		system: false
+	};
+
+	const loadSectionsOpen = (): Record<SectionKey, boolean> => {
+		if (!browser) return { ...sectionDefaults };
+		try {
+			const raw = localStorage.getItem(SECTIONS_OPEN_KEY);
+			if (!raw) return { ...sectionDefaults };
+			const parsed = JSON.parse(raw) as Partial<Record<SectionKey, boolean>>;
+			const merged = { ...sectionDefaults };
+			for (const k of Object.keys(sectionDefaults) as SectionKey[]) {
+				if (typeof parsed[k] === 'boolean') merged[k] = parsed[k] as boolean;
+			}
+			return merged;
+		} catch {
+			return { ...sectionDefaults };
+		}
+	};
+
+	const sectionsOpen = $state(loadSectionsOpen());
+
+	$effect(() => {
+		if (!browser) return;
+		try {
+			localStorage.setItem(SECTIONS_OPEN_KEY, JSON.stringify(sectionsOpen));
+		} catch {
+			// quota / disabled storage — non-fatal, just lose persistence
+		}
+	});
 
 	const showAll = () => {
-		screenOpen = displayOpen = dataSourceOpen = extraOpen = systemOpen = true;
+		for (const k of Object.keys(sectionsOpen) as SectionKey[]) sectionsOpen[k] = true;
 	};
 	const hideAll = () => {
-		screenOpen = displayOpen = dataSourceOpen = extraOpen = systemOpen = false;
+		for (const k of Object.keys(sectionsOpen) as SectionKey[]) sectionsOpen[k] = false;
 	};
 
 	const handleReset = async (e: Event) => {
@@ -76,11 +108,7 @@
 		// Pop the section that owns the field open before scrolling — anchors
 		// inside a closed CollapseCard scroll to the (now empty) collapsed
 		// header, not the input.
-		if (err.section === 'screen') screenOpen = true;
-		else if (err.section === 'display') displayOpen = true;
-		else if (err.section === 'dataSource') dataSourceOpen = true;
-		else if (err.section === 'extra') extraOpen = true;
-		else if (err.section === 'system') systemOpen = true;
+		if (err.section in sectionsOpen) sectionsOpen[err.section as SectionKey] = true;
 		queueMicrotask(() => {
 			const el = document.getElementById(err.id);
 			if (!el) return;
@@ -150,11 +178,7 @@
 			const parsed = parseSettingsError(res.body?.error ?? res.text);
 			if (parsed.field) {
 				const section = sectionForField[parsed.field];
-				if (section === 'screen') screenOpen = true;
-				else if (section === 'display') displayOpen = true;
-				else if (section === 'dataSource') dataSourceOpen = true;
-				else if (section === 'extra') extraOpen = true;
-				else if (section === 'system') systemOpen = true;
+				if (section) sectionsOpen[section] = true;
 				// Also try to scroll to the input if its id matches the field name.
 				queueMicrotask(() => {
 					const el = document.getElementById(parsed.field as string);
@@ -255,11 +279,11 @@
 				</div>
 			{/if}
 			<form onsubmit={handleSubmit} class="space-y-4">
-				<ScreenSpecificSettings bind:isOpen={screenOpen} />
-				<DisplaySettings bind:isOpen={displayOpen} />
-				<DataSourceSettings bind:isOpen={dataSourceOpen} />
-				<ExtraFeaturesSettings bind:isOpen={extraOpen} {miningPoolMap} />
-				<SystemSettings bind:isOpen={systemOpen} />
+				<ScreenSpecificSettings bind:isOpen={sectionsOpen.screen} />
+				<DisplaySettings bind:isOpen={sectionsOpen.display} />
+				<DataSourceSettings bind:isOpen={sectionsOpen.dataSource} />
+				<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
+				<SystemSettings bind:isOpen={sectionsOpen.system} />
 
 				<div class="flex items-center gap-2 mt-4">
 					<button type="submit" class="btn btn-sm btn-primary" disabled={!settingsStore.isDirty}>

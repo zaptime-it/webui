@@ -62,9 +62,7 @@
 				fetchNostrRelayInfo(data.nostrRelay)
 			]);
 			if (ok) {
-				const title = info?.name
-					? `Connected to ${info.name}`
-					: 'Connected to Nostr relay';
+				const title = info?.name ? `Connected to ${info.name}` : 'Connected to Nostr relay';
 				const detail = describeRelayInfo(info) || data.nostrRelay;
 				toast.success(title, detail);
 				validNostrRelay = true;

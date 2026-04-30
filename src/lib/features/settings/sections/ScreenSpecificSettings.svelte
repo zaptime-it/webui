@@ -62,9 +62,8 @@
 				class="text-xs px-1.5 py-0.5 rounded bg-base-200 text-base-content/70 whitespace-nowrap"
 				data-testid="useSatsSymbol-preview"
 				aria-hidden="true"
-				>{#if satsSymbolPreview.symbol}<span class="sats-glyph"
-						>{satsSymbolPreview.symbol}</span
-					>{' '}{/if}{satsSymbolPreview.price}</code
+				>{#if satsSymbolPreview.symbol}<span class="sats-glyph">{satsSymbolPreview.symbol}</span>
+				{/if}{satsSymbolPreview.price}</code
 			>
 		</div>
 		<SwitchField
