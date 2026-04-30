@@ -75,8 +75,6 @@ const computeDirtyKeys = (current: Settings, pristine: PristineMap): Set<keyof S
 		const fresh = fieldKey(current, k);
 		if (pristine.get(k) !== fresh) out.add(k);
 	}
-	// timePerScreen is derived from timerSeconds — never report it on its own.
-	out.delete('timePerScreen');
 	return out;
 };
 
@@ -150,17 +148,16 @@ export const settingsStore = {
 		}
 	},
 	async save(patch: Partial<Settings>): Promise<ApiResult<SettingsErrorBody>> {
+		// Snapshot the working copy as it was at submit time so the new
+		// pristine reflects what the device actually accepted, not edits
+		// the user made while the PATCH was in flight. We do NOT replace
+		// state.value.data — that would clobber those mid-flight edits.
+		const submitSnapshot =
+			state.value.status === 'ready' ? deriveTimePerScreen({ ...state.value.data }) : null;
 		const res = await patchSettings(patch);
-		if (state.value.status === 'ready') {
-			const data = deriveTimePerScreen({ ...state.value.data, ...patch });
-			state.value = { status: 'ready', data };
-			// The device accepted the PATCH, so the new working copy becomes
-			// the pristine baseline. A failed save leaves the form dirty so
-			// the user can retry or reset.
-			if (res.ok) {
-				state.pristine = buildPristine(data);
-				state.hasRemoteDrift = false;
-			}
+		if (res.ok && submitSnapshot) {
+			state.pristine = buildPristine(submitSnapshot);
+			state.hasRemoteDrift = false;
 		}
 		return res;
 	},

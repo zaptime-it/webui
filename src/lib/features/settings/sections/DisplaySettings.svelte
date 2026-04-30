@@ -139,7 +139,9 @@
 		{/if}
 	</div>
 
-	<div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1">
+	<div
+		class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2 gap-x-4 gap-y-1"
+	>
 		<SwitchField
 			id="ledTestOnPower"
 			bind:checked={data.ledTestOnPower}

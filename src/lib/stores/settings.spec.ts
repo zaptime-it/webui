@@ -128,7 +128,9 @@ describe('settingsStore.isDirty', () => {
 	test('reloading from the API resets pristine to the fresh snapshot', async () => {
 		// Called by the Reset button. After reload the working copy is the
 		// API truth again, so nothing's dirty.
-		getSettingsMock.mockResolvedValueOnce(sampleSettings()).mockResolvedValueOnce(sampleSettings());
+		getSettingsMock
+			.mockResolvedValueOnce(sampleSettings())
+			.mockResolvedValueOnce(sampleSettings());
 		const store = await loadStore();
 		await store.load();
 		store.set('stealFocus', true);
@@ -190,11 +192,15 @@ describe('settingsStore.dirtyKeys (per-field)', () => {
 		store.set('stealFocus', true);
 		store.set('timerSeconds', 600);
 		const keys = [...store.dirtyKeys].sort();
-		// timerSeconds bumps timePerScreen too, but that's a derived field
-		// the store filters out so it doesn't count as a user-edited key.
+		// `set('timerSeconds', 600)` recomputes timePerScreen via
+		// deriveTimePerScreen, so both keys diff against pristine. Both
+		// are included in dirtyKeys — the form treats timePerScreen as a
+		// first-class edit so a keystroke in the minutes input flips
+		// `isDirty` immediately, before the change/blur event syncs
+		// timerSeconds.
 		expect(keys).toContain('stealFocus');
 		expect(keys).toContain('timerSeconds');
-		expect(keys).not.toContain('timePerScreen');
+		expect(keys).toContain('timePerScreen');
 	});
 
 	test('checkRemoteDrift detects another tab having saved a different value', async () => {
