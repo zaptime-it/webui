@@ -621,6 +621,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'satsVariant',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 15,
+		defaultBool: false,
+		defaultInt: 7,
+		defaultStr: ''
+	},
+	{
 		key: 'scrnRestoreZap',
 		kind: 'boolean',
 		bootOnly: false,
@@ -819,6 +829,7 @@ export const settingsFieldSchemas = {
 	poolPollSec: v.pipe(v.number(), v.minValue(10), v.maxValue(3600)),
 	poolWorker: v.string(),
 	refrScrnChange: v.boolean(),
+	satsVariant: v.pipe(v.number(), v.minValue(0), v.maxValue(15)),
 	scrnRestoreZap: v.boolean(),
 	stealFocus: v.boolean(),
 	suffixPrice: v.boolean(),
