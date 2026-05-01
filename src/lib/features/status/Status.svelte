@@ -79,7 +79,11 @@
 							</div>
 						</div>
 					{/if}
-					<ClockDisplay status={status ?? {}} verticalDesc={settings?.verticalDesc} />
+					<ClockDisplay
+						status={status ?? {}}
+						verticalDesc={settings?.verticalDesc}
+						satsVariant={settings?.useSatsSymbol ? settings?.satsVariant : undefined}
+					/>
 				</section>
 
 				<div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">

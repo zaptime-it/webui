@@ -9,13 +9,38 @@
 		status?: Partial<Status>;
 		className?: string;
 		verticalDesc?: boolean;
+		/**
+		 * Index 0..15 into the SatoshiSymbol font's PUA glyphs at
+		 * U+E000..U+E00F. When undefined, fall back to the ASCII 'S'
+		 * remap shipped in `Satoshi_Symbol.woff2` — same glyph older
+		 * firmware and the WebUI's slim webfont have always drawn.
+		 */
+		satsVariant?: number;
 	}
 
-	let { status = {}, className = 'btclock-wrapper', verticalDesc = false }: Props = $props();
+	let {
+		status = {},
+		className = 'btclock-wrapper',
+		verticalDesc = false,
+		satsVariant
+	}: Props = $props();
 
 	const isSplitText = (s: string) => s.includes('/');
 
 	const data = $derived(status.data ?? []);
+
+	// Render the variant glyph from the 'Satoshi Symbol Variants' font
+	// (U+E000..U+E00F) when the device picked one; otherwise keep the
+	// legacy ASCII 'S' remap so this component still works without the
+	// pref (and on firmware that doesn't expose it).
+	const satsGlyph = $derived(
+		typeof satsVariant === 'number' && satsVariant >= 0 && satsVariant <= 15
+			? String.fromCodePoint(0xe000 + satsVariant)
+			: 'S'
+	);
+	const satsVariantActive = $derived(
+		typeof satsVariant === 'number' && satsVariant >= 0 && satsVariant <= 15
+	);
 </script>
 
 <div class={className} id={className}>
@@ -43,7 +68,7 @@
 					{/if}
 				</div>
 			{:else if char === 'STS'}
-				<div class="digit sats">S</div>
+				<div class="digit sats" class:sats-variant={satsVariantActive}>{satsGlyph}</div>
 			{:else if char.length >= 3}
 				<div class="mediumText">{char}</div>
 			{:else if char.length === 0 || char === ' '}
@@ -106,9 +131,26 @@
 		opacity: 1;
 	}
 
+	/* The sats cell inherits flex centering from `.digit`, so the glyph
+	   should sit dead-centre. Keep its own padding aligned with the
+	   surrounding cells (top:6 / right:4 / bottom:10 / left:4 from the
+	   shared rule) and override only what's specific to the sats glyph:
+	   line-height:1 strips the font's intrinsic leading, font-size:1.6em
+	   bumps the glyph closer to the cell height without pushing it past
+	   the border radius. The legacy `padding-top: 35px` predates the
+	   flex layout — it manually shoved the glyph down into a cell that
+	   was already centred, which is why it looked off in both axes. */
 	.btclock-wrapper :global(.btclock .digit.sats) {
-		padding-top: 35px;
 		font-family: 'Satoshi Symbol', sans-serif;
+		font-size: 1.6em;
+		line-height: 1;
+	}
+
+	/* When a satsVariant is selected, the cell holds a real PUA codepoint
+	   (U+E000..U+E00F) rather than the ASCII 'S' remap, so it needs the
+	   variants font that actually carries those glyphs. */
+	.btclock-wrapper :global(.btclock .digit.sats.sats-variant) {
+		font-family: 'Satoshi Symbol Variants', sans-serif;
 	}
 
 	.btclock-wrapper :global(.btclock .mediumText) {

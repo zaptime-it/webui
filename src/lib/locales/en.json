@@ -17,6 +17,8 @@
 			"useBigCharsMcap": "Use big characters for market cap",
 			"useBlkCountdown": "Blocks countdown for halving",
 			"useSatsSymbol": "Use sats symbol",
+			"satsVariant": "Sats symbol variant",
+			"satsVariantHelp": "Pick which of the 16 sats glyphs the device draws on the price screens.",
 			"useMscwTime": "Use Moscow Time",
 			"hideLeadZero": "Hide leading zero on hours",
 			"bitaxePollSec": "Bitaxe poll interval (seconds)",

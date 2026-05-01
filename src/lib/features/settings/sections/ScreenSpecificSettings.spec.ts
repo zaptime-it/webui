@@ -44,6 +44,21 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain("m['section.settings.useMscwTime']()");
 	});
 
+	test('ScreenSpecificSettings exposes the satsVariant picker, capability-gated', () => {
+		// satsVariant is a v4-only firmware addition: a 16-way visual
+		// picker rendering U+E000..U+E00F via the 'Satoshi Symbol Variants'
+		// webfont. Capability-gated on `'satsVariant' in data` so older
+		// firmware that doesn't emit the field skips the control. Source-
+		// level assertion keeps this in line with the other switch tests
+		// above and avoids mounting the full settings store.
+		const src = read('ScreenSpecificSettings.svelte');
+		expect(src).toContain("'satsVariant' in data");
+		expect(src).toContain('data-testid="sats-variant-picker"');
+		expect(src).toContain("name=\"satsVariant\"");
+		expect(src).toContain('data.satsVariant = i');
+		expect(src).toContain("m['section.settings.satsVariant']()");
+	});
+
 	test('ScreenSpecificSettings exposes the screens + currencies sections', () => {
 		const src = read('ScreenSpecificSettings.svelte');
 		// Both the screens block and the currencies block became reorderable

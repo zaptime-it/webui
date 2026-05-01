@@ -31,6 +31,17 @@
 	src: url('/fonts/Satoshi_Symbol.woff2') format('woff2');
 }
 
+/* Variants of the sats glyph at U+E000..U+E00F — same TTF the firmware
+   embeds, so the variant picker renders the exact glyph the device will
+   paint. Kept on its own family because the existing 'Satoshi Symbol'
+   webfont remaps ASCII 'S' for the inline price preview, and that subset
+   doesn't carry the PUA codepoints. */
+@font-face {
+	font-family: 'Satoshi Symbol Variants';
+	font-display: swap;
+	src: url('/fonts/SatoshiSymbolVariants.woff2') format('woff2');
+}
+
 @theme {
 	--font-sans: 'Ubuntu', system-ui, sans-serif;
 	--font-display: 'Antonio', sans-serif;

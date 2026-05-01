@@ -18,6 +18,8 @@
 			"useBigCharsMcap": "Gebruik grote tekens bij market cap",
 			"useBlkCountdown": "Blocks aftellen voor halving",
 			"useSatsSymbol": "Gebruik sats symbol",
+			"satsVariant": "Sats-symbool variant",
+			"satsVariantHelp": "Kies welke van de 16 sats-glyphs het apparaat tekent op de prijsschermen.",
 			"useMscwTime": "Moscow Time gebruiken",
 			"hideLeadZero": "Verberg voorloopnul bij uren",
 			"bitaxePollSec": "Bitaxe poll-interval (seconden)",

@@ -8,6 +8,15 @@
 	import { DataSourceType } from '$lib/types/settings';
 	import { previewSatsSymbol, previewSuffixPrice } from '$lib/util/screenPreview';
 
+	// 16 sats-symbol glyphs at U+E000..U+E00F of the SatoshiSymbol font.
+	// Each variant index maps to the codepoint at the same offset; the
+	// picker renders the actual glyph via the 'Satoshi Symbol Variants'
+	// webfont so users pick visually instead of by number.
+	const SATS_VARIANT_COUNT = 16;
+	const satsVariantGlyphs: string[] = Array.from({ length: SATS_VARIANT_COUNT }, (_, i) =>
+		String.fromCodePoint(0xe000 + i)
+	);
+
 	interface Props {
 		isOpen?: boolean;
 	}
@@ -123,6 +132,39 @@
 		/>
 	</div>
 
+	{#if 'satsVariant' in data && data.useSatsSymbol}
+		<div class="mt-4" data-testid="sats-variant-picker">
+			<h5 class="font-semibold mb-1">{m['section.settings.satsVariant']()}</h5>
+			<small class="block mb-2 text-base-content/70"
+				>{m['section.settings.satsVariantHelp']()}</small
+			>
+			<fieldset
+				class="grid gap-1.5"
+				style="grid-template-columns: repeat(8, minmax(0, 1fr));"
+				aria-label={m['section.settings.satsVariant']()}
+			>
+				{#each satsVariantGlyphs as glyph, i (i)}
+					<label
+						class="sats-variant-card"
+						class:selected={data.satsVariant === i}
+						title={`${i}`}
+					>
+						<input
+							type="radio"
+							name="satsVariant"
+							value={i}
+							checked={data.satsVariant === i}
+							onchange={() => (data.satsVariant = i)}
+							class="sr-only"
+						/>
+						<span class="sats-variant-glyph" aria-hidden="true">{glyph}</span>
+						<span class="sats-variant-index">{i}</span>
+					</label>
+				{/each}
+			</fieldset>
+		</div>
+	{/if}
+
 	<div class="mt-4" data-testid="screens-grid">
 		<h5 class="font-semibold mb-2">{m['section.settings.screens']()}</h5>
 		<ScreenRotationList
@@ -152,5 +194,37 @@
 	   preview chip renders the exact glyph the firmware will draw. */
 	.sats-glyph {
 		font-family: 'Satoshi Symbol', sans-serif;
+	}
+
+	.sats-variant-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.125rem;
+		padding: 0.375rem 0.25rem;
+		border: 1px solid var(--color-base-300);
+		border-radius: 0.375rem;
+		cursor: pointer;
+		background-color: var(--color-base-200);
+		transition: border-color 0.1s ease;
+	}
+	.sats-variant-card:hover {
+		border-color: var(--color-primary);
+	}
+	.sats-variant-card.selected {
+		border-color: var(--color-primary);
+		background-color: var(--color-primary);
+		color: var(--color-primary-content);
+	}
+	.sats-variant-glyph {
+		font-family: 'Satoshi Symbol Variants', sans-serif;
+		font-size: 1.5rem;
+		line-height: 1;
+	}
+	.sats-variant-index {
+		font-size: 0.625rem;
+		opacity: 0.7;
+		font-variant-numeric: tabular-nums;
 	}
 </style>

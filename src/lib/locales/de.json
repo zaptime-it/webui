@@ -18,6 +18,8 @@
 			"useBigCharsMcap": "Verwende große Zeichen für die Marktkapitalisierung",
 			"useBlkCountdown": "Blocks Countdown zur Halbierung",
 			"useSatsSymbol": "Sats-Symbol verwenden",
+			"satsVariant": "Sats-Symbol-Variante",
+			"satsVariantHelp": "Wähle, welche der 16 Sats-Glyphen das Gerät auf den Preis-Bildschirmen zeichnet.",
 			"useMscwTime": "Moscow Time verwenden",
 			"hideLeadZero": "Führende Null bei Stunden ausblenden",
 			"bitaxePollSec": "Bitaxe-Abfrageintervall (Sekunden)",

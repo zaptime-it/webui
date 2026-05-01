@@ -70,6 +70,7 @@ const {
 	bitaxePollSec: bitaxePollSecSchema,
 	poolWorker: poolWorkerSchema,
 	poolPollSec: poolPollSecSchema,
+	satsVariant: satsVariantSchema,
 	miningPoolUser: miningPoolUserSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
@@ -93,6 +94,9 @@ export const settingsSchema = v.looseObject({
 	bitaxePollSec: v.optional(bitaxePollSecSchema),
 	poolWorker: v.optional(poolWorkerSchema),
 	poolPollSec: v.optional(poolPollSecSchema),
+	// satsVariant landed in firmware after the initial v4 release —
+	// pre-satsVariant builds (and v3) don't emit it.
+	satsVariant: v.optional(satsVariantSchema),
 
 	// miningPoolUser: the device strips this for pools whose user slot
 	// holds a secret API key (ViaBTC, Foundry) and emits the companion
