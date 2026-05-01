@@ -132,25 +132,22 @@
 	}
 
 	/* The sats cell inherits flex centering from `.digit`, so the glyph
-	   should sit dead-centre. Keep its own padding aligned with the
-	   surrounding cells (top:6 / right:4 / bottom:10 / left:4 from the
-	   shared rule) and override only what's specific to the sats glyph:
-	   line-height:1 strips the font's intrinsic leading, font-size:1.6em
-	   bumps the glyph closer to the cell height without pushing it past
-	   the border radius. The legacy `padding-top: 35px` predates the
-	   flex layout — it manually shoved the glyph down into a cell that
-	   was already centred, which is why it looked off in both axes. */
+	   sits dead-centre with no overrides needed. The legacy
+	   `padding-top: 35px` predates the flex layout and shoved the glyph
+	   down inside an already-centred cell. line-height:1 strips the
+	   font's intrinsic leading so the cell hugs the actual glyph box. */
 	.btclock-wrapper :global(.btclock .digit.sats) {
 		font-family: 'Satoshi Symbol', sans-serif;
-		font-size: 1.6em;
 		line-height: 1;
 	}
 
-	/* When a satsVariant is selected, the cell holds a real PUA codepoint
-	   (U+E000..U+E00F) rather than the ASCII 'S' remap, so it needs the
-	   variants font that actually carries those glyphs. */
+	/* The PUA glyphs at U+E000..U+E00F fill their em-box, while Antonio's
+	   ASCII digits only fill the cap-height (~0.72em). At font-size 1em
+	   the variant glyph would tower over the digits beside it, so scale
+	   down to match the digit's visual height. */
 	.btclock-wrapper :global(.btclock .digit.sats.sats-variant) {
 		font-family: 'Satoshi Symbol Variants', sans-serif;
+		font-size: 0.72em;
 	}
 
 	.btclock-wrapper :global(.btclock .mediumText) {
