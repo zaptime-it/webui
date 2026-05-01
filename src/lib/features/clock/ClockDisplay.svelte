@@ -131,14 +131,18 @@
 		opacity: 1;
 	}
 
-	/* The sats cell inherits flex centering from `.digit`, so the glyph
-	   sits dead-centre with no overrides needed. The legacy
-	   `padding-top: 35px` predates the flex layout and shoved the glyph
-	   down inside an already-centred cell. line-height:1 strips the
-	   font's intrinsic leading so the cell hugs the actual glyph box. */
+	/* The shared `.digit` rule uses asymmetric vertical padding
+	   (top:6 / bottom:10) so that ASCII digits — whose cap-height glyph
+	   sits high in the em-box, with descender room below — visually
+	   centre in the cell. The SatoshiSymbol glyphs fill their em-box
+	   symmetrically, so that asymmetric padding pushes them up.
+	   Symmetric padding (same total vertical, so cell sizing is
+	   unchanged) restores the centre. line-height:1 strips the font's
+	   intrinsic leading so the cell hugs the actual glyph box. */
 	.btclock-wrapper :global(.btclock .digit.sats) {
 		font-family: 'Satoshi Symbol', sans-serif;
 		line-height: 1;
+		padding: 8px 4px;
 	}
 
 	/* The PUA glyphs at U+E000..U+E00F fill their em-box, while Antonio's
