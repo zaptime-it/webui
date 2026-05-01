@@ -54,7 +54,7 @@ describe('settings grids stay viewport-responsive', () => {
 		const src = read('ScreenSpecificSettings.svelte');
 		expect(src).toContain("'satsVariant' in data");
 		expect(src).toContain('data-testid="sats-variant-picker"');
-		expect(src).toContain("name=\"satsVariant\"");
+		expect(src).toContain('name="satsVariant"');
 		expect(src).toContain('data.satsVariant = i');
 		expect(src).toContain("m['section.settings.satsVariant']()");
 	});
