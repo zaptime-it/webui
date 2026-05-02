@@ -2,10 +2,7 @@
 	import * as m from '$lib/paraglide/messages';
 	import CollapseCard from '$lib/ui/CollapseCard.svelte';
 	import SwitchField from '$lib/ui/SwitchField.svelte';
-	import ScreenRotationList from './ScreenRotationList.svelte';
-	import CurrencyRotationList from './CurrencyRotationList.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
-	import { DataSourceType } from '$lib/types/settings';
 	import { previewSatsSymbol, previewSuffixPrice } from '$lib/util/screenPreview';
 
 	// 16 sats-symbol glyphs at U+E000..U+E00F of the SatoshiSymbol font.
@@ -23,13 +20,6 @@
 	let { isOpen = $bindable(true) }: Props = $props();
 
 	const data = $derived(settingsStore.data!);
-
-	const showCurrencies = $derived(
-		data?.actCurrencies &&
-			(data.dataSource === DataSourceType.BTCLOCK_SOURCE ||
-				data.dataSource === DataSourceType.CUSTOM_SOURCE ||
-				data.dataSource === DataSourceType.THIRD_PARTY_SOURCE)
-	);
 
 	const satsSymbolPreview = $derived(previewSatsSymbol({ useSatsSymbol: data?.useSatsSymbol }));
 	const suffixPricePreview = $derived(
@@ -162,28 +152,6 @@
 					</label>
 				{/each}
 			</fieldset>
-		</div>
-	{/if}
-
-	<div class="mt-4" data-testid="screens-grid">
-		<h5 class="font-semibold mb-2">{m['section.settings.screens']()}</h5>
-		<ScreenRotationList
-			bind:screens={data.screens}
-			activeCurrencyCount={data.actCurrencies?.length ?? 0}
-		/>
-	</div>
-
-	{#if showCurrencies && data.availableCurrencies}
-		<div class="mt-4" data-testid="currencies-grid">
-			<h5 class="font-semibold">{m['section.settings.currencies']()}</h5>
-			<small>{m['restartRequired']()}</small>
-			<div class="mt-2">
-				<CurrencyRotationList
-					availableCurrencies={data.availableCurrencies}
-					actCurrencies={data.actCurrencies}
-					onChange={(next) => (data.actCurrencies = next)}
-				/>
-			</div>
 		</div>
 	{/if}
 </CollapseCard>

@@ -59,18 +59,27 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain("m['section.settings.satsVariant']()");
 	});
 
-	test('ScreenSpecificSettings exposes the screens + currencies sections', () => {
-		const src = read('ScreenSpecificSettings.svelte');
-		// Both the screens block and the currencies block became reorderable
-		// lists (ScreenRotationList / CurrencyRotationList), so they no longer
-		// use the RESPONSIVE grid classes. The wrapping divs keep the testids
-		// so existing layout + navigation assertions can still locate them.
-		expect(src).toContain('data-testid="screens-grid"');
-		expect(src).toContain('ScreenRotationList');
-		expect(src).toContain('data-testid="currencies-grid"');
-		expect(src).toContain('CurrencyRotationList');
+	test('ScreenRotation + CurrencyRotation live in their own sibling sections', () => {
+		// The screens-rotation and currencies-rotation lists used to be
+		// children of ScreenSpecificSettings, which forced users to scroll
+		// past two long drag-and-drop lists to reach the Save button. They
+		// now live in their own CollapseCards so the user can collapse them
+		// independently. The testids stay so layout + navigation assertions
+		// can still locate them.
+		const screenSpecific = read('ScreenSpecificSettings.svelte');
+		expect(screenSpecific).not.toContain('ScreenRotationList');
+		expect(screenSpecific).not.toContain('CurrencyRotationList');
+
+		const rotation = read('ScreenRotationSection.svelte');
+		expect(rotation).toContain('data-testid="screens-grid"');
+		expect(rotation).toContain('ScreenRotationList');
+
+		const currency = read('CurrencyRotationSection.svelte');
+		expect(currency).toContain('data-testid="currencies-grid"');
+		expect(currency).toContain('CurrencyRotationList');
+
 		// Only the top switches grid still uses the responsive layout.
-		const matches = src.match(
+		const matches = screenSpecific.match(
 			new RegExp(RESPONSIVE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
 		);
 		expect(matches?.length ?? 0).toBeGreaterThanOrEqual(1);

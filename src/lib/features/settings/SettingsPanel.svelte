@@ -6,10 +6,13 @@
 	import { toast } from '$lib/stores/toast.svelte';
 	import { validateSettings, type FieldValidationError } from '$lib/util/validation';
 	import ScreenSpecificSettings from './sections/ScreenSpecificSettings.svelte';
+	import ScreenRotationSection from './sections/ScreenRotationSection.svelte';
+	import CurrencyRotationSection from './sections/CurrencyRotationSection.svelte';
 	import DisplaySettings from './sections/DisplaySettings.svelte';
 	import DataSourceSettings from './sections/DataSourceSettings.svelte';
 	import ExtraFeaturesSettings from './sections/ExtraFeaturesSettings.svelte';
 	import SystemSettings from './sections/SystemSettings.svelte';
+	import { DataSourceType } from '$lib/types/settings';
 
 	// Map firmware top-level error scopes / pseudo-fields onto the
 	// CollapseCard the user needs to expand to see the offending input.
@@ -17,11 +20,17 @@
 	// content and resolve via the field's id, not via this map.
 	const sectionForField: Record<
 		string,
-		'screen' | 'display' | 'dataSource' | 'extra' | 'system'
+		| 'screen'
+		| 'screenRotation'
+		| 'currencyRotation'
+		| 'display'
+		| 'dataSource'
+		| 'extra'
+		| 'system'
 	> = {
-		screens: 'screen',
-		currency: 'screen',
-		actCurrencies: 'screen',
+		screens: 'screenRotation',
+		currency: 'currencyRotation',
+		actCurrencies: 'currencyRotation',
 		dnd: 'extra',
 		bitaxe: 'extra',
 		miningPool: 'extra',
@@ -50,10 +59,19 @@
 		['local_public_pool', 'Public Pool (local)']
 	]);
 
-	type SectionKey = 'screen' | 'display' | 'dataSource' | 'extra' | 'system';
+	type SectionKey =
+		| 'screen'
+		| 'screenRotation'
+		| 'currencyRotation'
+		| 'display'
+		| 'dataSource'
+		| 'extra'
+		| 'system';
 	const SECTIONS_OPEN_KEY = 'settings.sectionsOpen';
 	const sectionDefaults: Record<SectionKey, boolean> = {
 		screen: true,
+		screenRotation: false,
+		currencyRotation: false,
 		display: false,
 		dataSource: false,
 		extra: false,
@@ -104,6 +122,16 @@
 			invalidNostrPubkey: m['section.settings.invalidNostrPubkey']()
 		})
 	);
+
+	const showCurrencyRotation = $derived.by(() => {
+		const d = settingsStore.data;
+		return Boolean(
+			d?.actCurrencies &&
+			(d.dataSource === DataSourceType.BTCLOCK_SOURCE ||
+				d.dataSource === DataSourceType.CUSTOM_SOURCE ||
+				d.dataSource === DataSourceType.THIRD_PARTY_SOURCE)
+		);
+	});
 
 	const focusError = (err: FieldValidationError) => (e: MouseEvent) => {
 		e.preventDefault();
@@ -282,28 +310,44 @@
 				</div>
 			{/if}
 			<form onsubmit={handleSubmit} class="space-y-4">
-				<ScreenSpecificSettings bind:isOpen={sectionsOpen.screen} />
-				<DisplaySettings bind:isOpen={sectionsOpen.display} />
-				<DataSourceSettings bind:isOpen={sectionsOpen.dataSource} />
-				<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
-				<SystemSettings bind:isOpen={sectionsOpen.system} />
+				<div class="space-y-4 settings-sections">
+					<ScreenSpecificSettings bind:isOpen={sectionsOpen.screen} />
+					<ScreenRotationSection bind:isOpen={sectionsOpen.screenRotation} />
+					{#if showCurrencyRotation}
+						<CurrencyRotationSection bind:isOpen={sectionsOpen.currencyRotation} />
+					{/if}
+					<DisplaySettings bind:isOpen={sectionsOpen.display} />
+					<DataSourceSettings bind:isOpen={sectionsOpen.dataSource} />
+					<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
+					<SystemSettings bind:isOpen={sectionsOpen.system} />
+				</div>
 
-				<div class="flex items-center gap-2 mt-4">
-					<button
-						type="submit"
-						class="btn btn-sm btn-primary"
-						disabled={!settingsStore.isDirty}
-					>
-						{m['button.save']()}
-					</button>
-					<button
-						type="button"
-						class="btn btn-sm"
-						onclick={handleReset}
-						disabled={!settingsStore.isDirty}
-					>
-						{m['button.reset']()}
-					</button>
+				<!-- Sticky action bar so Save / Reset stay reachable when any
+				     section is expanded. `position: sticky` keeps the bar
+				     pinned to the bottom of the settings card's scroll
+				     viewport; the inner translucent background + shadow
+				     lifts it above the form rows it overlaps. -->
+				<div
+					class="sticky bottom-0 z-10 -mx-6 mt-4 px-6 py-3 bg-base-100/90 backdrop-blur border-t border-base-200"
+					data-testid="settings-action-bar"
+				>
+					<div class="flex items-center gap-2">
+						<button
+							type="submit"
+							class="btn btn-sm btn-primary"
+							disabled={!settingsStore.isDirty}
+						>
+							{m['button.save']()}
+						</button>
+						<button
+							type="button"
+							class="btn btn-sm"
+							onclick={handleReset}
+							disabled={!settingsStore.isDirty}
+						>
+							{m['button.reset']()}
+						</button>
+					</div>
 				</div>
 			</form>
 		{/if}

@@ -152,7 +152,11 @@
 	.section-anchor :global(> .card) {
 		border: 1px solid var(--color-base-300, oklch(87% 0.01 250));
 		border-radius: 1rem;
-		overflow: hidden;
+		/* `overflow: clip` clips the ::before colored top strip to the
+		   rounded corner without establishing a scroll containing block,
+		   which would have killed `position: sticky` on the settings
+		   action bar inside the card. */
+		overflow: clip;
 		box-shadow:
 			0 1px 2px -1px rgba(0, 0, 0, 0.06),
 			0 2px 8px -4px rgba(0, 0, 0, 0.08);
