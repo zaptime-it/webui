@@ -26,10 +26,17 @@ const state = $state<{
 	// rebooted with reset settings, factory reset). Cleared on the next
 	// successful load() or save().
 	hasRemoteDrift: boolean;
+	// Set when a PATCH response carried `rebootRequired: true` (the patch
+	// staged a boot-only field; live system still runs the old value
+	// until a reboot). Sticky — subsequent runtime-only patches don't
+	// clear it because the earlier boot-only change is still pending.
+	// Cleared on restartClock() success, dismiss, or full page reload.
+	hasPendingReboot: boolean;
 }>({
 	value: { status: 'loading' },
 	pristine: null,
-	hasRemoteDrift: false
+	hasRemoteDrift: false,
+	hasPendingReboot: false
 });
 
 const derived = $derived.by(() => state.value);
@@ -133,6 +140,12 @@ export const settingsStore = {
 	dismissRemoteDrift() {
 		state.hasRemoteDrift = false;
 	},
+	get hasPendingReboot(): boolean {
+		return state.hasPendingReboot;
+	},
+	clearPendingReboot() {
+		state.hasPendingReboot = false;
+	},
 	async load(): Promise<void> {
 		try {
 			const raw = await getSettings();
@@ -158,6 +171,7 @@ export const settingsStore = {
 		if (res.ok && submitSnapshot) {
 			state.pristine = buildPristine(submitSnapshot);
 			state.hasRemoteDrift = false;
+			if (res.body?.rebootRequired) state.hasPendingReboot = true;
 		}
 		return res;
 	},

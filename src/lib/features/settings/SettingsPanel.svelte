@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
 	import { browser } from '$app/environment';
-	import { parseSettingsError } from '$lib/api/client';
+	import { parseSettingsError, restartClock } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { validateSettings, type FieldValidationError } from '$lib/util/validation';
@@ -160,6 +160,20 @@
 		void handleSubmit(e);
 	};
 
+	const handleRebootNow = async () => {
+		try {
+			const res = await restartClock();
+			if (res.ok) {
+				toast.success(m['section.settings.rebootingClock']());
+				settingsStore.clearPendingReboot();
+			} else {
+				toast.error(`${res.status}: ${res.statusText}`);
+			}
+		} catch {
+			toast.error(m['section.settings.errorSavingSettings']());
+		}
+	};
+
 	const handleSubmit = async (e: Event) => {
 		e.preventDefault();
 		const current = settingsStore.data;
@@ -281,6 +295,31 @@
 							</li>
 						{/each}
 					</ul>
+				</div>
+			{/if}
+			{#if settingsStore.hasPendingReboot}
+				<div
+					role="alert"
+					class="alert alert-warning alert-sm flex flex-col items-start gap-2 sm:flex-row sm:items-center"
+					data-testid="pending-reboot-banner"
+				>
+					<span class="grow">{m['section.settings.pendingRebootWarning']()}</span>
+					<div class="flex gap-2">
+						<button
+							type="button"
+							class="btn btn-xs btn-primary"
+							onclick={handleRebootNow}
+						>
+							{m['section.settings.rebootNow']()}
+						</button>
+						<button
+							type="button"
+							class="btn btn-xs btn-ghost"
+							onclick={() => settingsStore.clearPendingReboot()}
+						>
+							{m['button.dismiss']()}
+						</button>
+					</div>
 				</div>
 			{/if}
 			{#if settingsStore.hasRemoteDrift}

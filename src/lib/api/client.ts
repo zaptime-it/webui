@@ -101,6 +101,11 @@ export const getSettings = async (): Promise<Settings> => {
 
 export interface SettingsErrorBody {
 	error?: string;
+	// On 200 the firmware sets this to true when the patch touched a
+	// boot-only field (the new value is staged in NVS but the live system
+	// still runs the old value until reboot). Absent / false on patches
+	// that only touched runtime fields.
+	rebootRequired?: boolean;
 }
 
 export const patchSettings = async (
