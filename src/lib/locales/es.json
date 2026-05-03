@@ -20,6 +20,8 @@
 			"useSatsSymbol": "Usar símbolo sats",
 			"satsVariant": "Variante del símbolo sats",
 			"satsVariantHelp": "Elige cuál de los 16 glifos sats dibuja el dispositivo en las pantallas de precio.",
+			"digitFontPx": "Tamaño de los dígitos grandes",
+			"digitFontPxHelp": "Altura en píxeles de los dígitos grandes en las pantallas de datos. Por defecto 180. Menor = más espacio en blanco; mayor = llena el panel.",
 			"useMscwTime": "Usar Moscow Time",
 			"hideLeadZero": "Ocultar el cero inicial en las horas",
 			"bitaxePollSec": "Intervalo de sondeo Bitaxe (segundos)",

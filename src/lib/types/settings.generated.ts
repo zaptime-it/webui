@@ -111,6 +111,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'digitFontPx',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 80,
+		maxValue: 220,
+		defaultBool: false,
+		defaultInt: 180,
+		defaultStr: ''
+	},
+	{
 		key: 'disableLeds',
 		kind: 'boolean',
 		bootOnly: false,
@@ -778,6 +788,7 @@ export const settingsFieldSchemas = {
 	ceDisableSSL: v.boolean(),
 	ceEndpoint: v.string(),
 	dataSource: v.pipe(v.number(), v.minValue(0), v.maxValue(3)),
+	digitFontPx: v.pipe(v.number(), v.minValue(80), v.maxValue(220)),
 	disableLeds: v.boolean(),
 	dndEnabled: v.boolean(),
 	dndEndHour: v.pipe(v.number(), v.minValue(0), v.maxValue(23)),

@@ -20,6 +20,8 @@
 			"useSatsSymbol": "Sats-Symbol verwenden",
 			"satsVariant": "Sats-Symbol-Variante",
 			"satsVariantHelp": "Wähle, welche der 16 Sats-Glyphen das Gerät auf den Preis-Bildschirmen zeichnet.",
+			"digitFontPx": "Große Zifferngröße",
+			"digitFontPxHelp": "Pixelhöhe der großen Ziffern auf Daten-Bildschirmen. Standard 180. Kleiner = mehr Weißraum; größer = füllt das Panel.",
 			"useMscwTime": "Moscow Time verwenden",
 			"hideLeadZero": "Führende Null bei Stunden ausblenden",
 			"bitaxePollSec": "Bitaxe-Abfrageintervall (Sekunden)",

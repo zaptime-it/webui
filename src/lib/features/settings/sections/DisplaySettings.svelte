@@ -63,6 +63,18 @@
 			options={fontOptions}
 		/>
 
+		{#if 'digitFontPx' in data}
+			<RangeField
+				id="digitFontPx"
+				label={m['section.settings.digitFontPx']()}
+				bind:value={data.digitFontPx}
+				min={80}
+				max={220}
+				step={2}
+				helpText={m['section.settings.digitFontPxHelp']()}
+			/>
+		{/if}
+
 		<NumberField
 			id="timePerScreen"
 			label={m['section.settings.timePerScreen']()}

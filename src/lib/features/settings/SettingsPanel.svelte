@@ -36,6 +36,7 @@
 		miningPool: 'extra',
 		nostr: 'extra',
 		fontName: 'display',
+		digitFontPx: 'display',
 		invertedColor: 'display',
 		flMaxBrightness: 'display',
 		dataSource: 'dataSource',

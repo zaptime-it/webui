@@ -19,6 +19,8 @@
 			"useSatsSymbol": "Use sats symbol",
 			"satsVariant": "Sats symbol variant",
 			"satsVariantHelp": "Pick which of the 16 sats glyphs the device draws on the price screens.",
+			"digitFontPx": "Big digit size",
+			"digitFontPxHelp": "Pixel height of the big digits on data screens. Default 180. Lower = more whitespace; higher = fills the panel.",
 			"useMscwTime": "Use Moscow Time",
 			"hideLeadZero": "Hide leading zero on hours",
 			"bitaxePollSec": "Bitaxe poll interval (seconds)",
