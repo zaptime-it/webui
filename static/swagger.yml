@@ -317,6 +317,58 @@ paths:
       security: [{ basicAuth: [] }]
       responses:
         '200': { description: successful operation }
+  '/api/lights/effect':
+    post:
+      tags: [lights]
+      summary: Trigger a named LED effect
+      description: |
+        Queues a named effect onto the existing LED worker. Unknown JSON
+        keys are silently ignored so future fields (`color`, `count`,
+        `duration_ms`, …) can be added without breaking existing
+        clients. DND, `disableLeds`, and the global suppressor still
+        gate the effect inside the LED controller.
+      security: [{ basicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Lower-snake effect name. Maps internally to a
+                    `LedEffect` enum value.
+                  enum:
+                    - blink
+                    - blink_success
+                    - blink_error
+                    - rainbow
+                    - breathe
+                    - breathe_error
+                    - zap
+                    - identify
+                    - heartbeat
+                    - off
+                    - idle
+              example: { name: rainbow }
+      responses:
+        '200':
+          description: Effect queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  queued: { type: boolean, example: true }
+                  name: { type: string, example: rainbow }
+        '400':
+          description: |
+            Malformed body, missing `name`, or unknown effect name.
+            Body is `{ "error": "unknown effect" }` (or a similar
+            single-string `error` field).
   '/api/identify':
     post:
       tags: [system]
@@ -469,6 +521,82 @@ paths:
       security: [{ basicAuth: [] }]
       responses:
         '200': { description: text/event-stream }
+  '/api/diag/heap_trace/start':
+    post:
+      tags: [diag]
+      summary: Begin a leak-mode heap_trace window (dev builds only)
+      description: |
+        Routes through `heap_trace_init_standalone` +
+        `heap_trace_start(HEAP_TRACE_LEAKS)`. Endpoint is compiled out
+        unless the firmware is built with
+        `CONFIG_HEAP_TRACING_STANDALONE=y` — currently only the Rev A
+        build ships it. On builds without the option the route returns
+        404.
+
+        Calling `start` while a window is already armed will reset the
+        capture buffer.
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: Trace started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  started: { type: boolean, example: true }
+                  capacity:
+                    type: integer
+                    description: Number of leak-record slots in the trace buffer.
+                    example: 256
+                  depth:
+                    type: integer
+                    description: Per-record stack depth (`CONFIG_HEAP_TRACING_STACK_DEPTH`).
+                    example: 4
+        '404': { description: Endpoint not compiled in (CONFIG_HEAP_TRACING_STANDALONE=n) }
+        '409': { description: Trace could not be started (heap_trace_start returned non-OK) }
+  '/api/diag/heap_trace/stop':
+    post:
+      tags: [diag]
+      summary: Stop the active heap_trace window and dump live leaks
+      description: |
+        Stops the trace and returns the still-live records as JSON. Each
+        record is a single allocation that was not freed before this
+        call. Resolve `pcs[]` with
+        `xtensa-esp32s3-elf-addr2line -e <build>/btclock_v4.elf -f -p`.
+
+        See `docs/diag/heap_trace_2026-05-04/` in the firmware repo for
+        an example pair of dumps and a symbol-resolution sidecar.
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: Trace stopped, leak records returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Number of leak records returned.
+                  capacity:
+                    type: integer
+                    description: Buffer capacity at the time of the trace.
+                  leaks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sz: { type: integer, description: Allocation size in bytes }
+                        addr: { type: string, description: Heap address (hex string) }
+                        cc: { type: integer, description: ccount cycle counter at alloc time }
+                        pcs:
+                          type: array
+                          items: { type: string, description: Program counter (hex string) }
+                          description: |
+                            Stack frames of the allocation, deepest first.
+                            Length up to `CONFIG_HEAP_TRACING_STACK_DEPTH`.
+        '404': { description: Endpoint not compiled in (CONFIG_HEAP_TRACING_STANDALONE=n) }
 components:
   securitySchemes:
     basicAuth:
