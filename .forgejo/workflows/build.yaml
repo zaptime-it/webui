@@ -128,7 +128,7 @@ jobs:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
           direction: upload
-          tag: ${{ steps.getBlockHeight.outputs.blockHeight }}
+          tag: v3-${{ steps.getBlockHeight.outputs.blockHeight }}
           sha: '${{ github.sha }}'
           release-dir: output
           token: ${{ secrets.TOKEN }}
