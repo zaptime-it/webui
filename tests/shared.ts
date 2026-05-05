@@ -192,7 +192,7 @@ export const settingsJson = {
 	],
 	stealFocus: true,
 	suffixPrice: false,
-	suffixShareDot: false,
+	decimalShareDot: false,
 	supplyPercent: false,
 	timerRunning: true,
 	timerSeconds: 1800,

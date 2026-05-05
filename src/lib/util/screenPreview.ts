@@ -17,7 +17,8 @@
  *                          which both render the same way) vs no symbol
  *   - suffixPrice        : "57,798" vs "57.7k"
  *   - mowMode            : how digits collapse as the price grows
- *   - suffixShareDot     : "57.7k" vs "57.7 k"
+ *   - decimalShareDot     : "57.7k" vs "57.7 k" — applies to any
+ *                          decimal/suffix display, not only suffix mode
  */
 
 const SAMPLE_PRICE = 57798; // mid-range USD/BTC, picked to exercise k-suffix.
@@ -49,7 +50,7 @@ export interface ScreenPreviewFlags {
 	useSatsSymbol?: boolean;
 	suffixPrice?: boolean;
 	mowMode?: boolean;
-	suffixShareDot?: boolean;
+	decimalShareDot?: boolean;
 }
 
 /**
@@ -76,8 +77,8 @@ export const previewSatsSymbol = ({ useSatsSymbol }: ScreenPreviewFlags): SatsSy
 export const previewSuffixPrice = ({
 	suffixPrice,
 	mowMode = false,
-	suffixShareDot = false
+	decimalShareDot = false
 }: ScreenPreviewFlags): string => {
 	if (!suffixPrice) return formatPlain(SAMPLE_PRICE);
-	return formatSuffix(SAMPLE_PRICE, mowMode, suffixShareDot);
+	return formatSuffix(SAMPLE_PRICE, mowMode, decimalShareDot);
 };

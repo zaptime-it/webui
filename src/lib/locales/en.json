@@ -86,7 +86,7 @@
 			"customSource": "Use custom data source endpoint",
 			"useNostrTooltip": "Very experimental and unstable. Nostr data source is not required for Nostr Zap notifications.",
 			"mowMode": "Mow Suffix Mode",
-			"suffixShareDot": "Suffix compact notation",
+			"decimalShareDot": "Compact decimal notation",
 			"section": {
 				"displaysAndLed": "Displays and LEDs",
 				"screenSettings": "Screen specific",

@@ -72,6 +72,7 @@ const {
 	poolPollSec: poolPollSecSchema,
 	satsVariant: satsVariantSchema,
 	digitFontPx: digitFontPxSchema,
+	decimalShareDot: decimalShareDotSchema,
 	miningPoolUser: miningPoolUserSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
@@ -100,6 +101,9 @@ export const settingsSchema = v.looseObject({
 	satsVariant: v.optional(satsVariantSchema),
 	// digitFontPx is v4-only — older firmware doesn't emit it.
 	digitFontPx: v.optional(digitFontPxSchema),
+	// decimalShareDot replaced suffixShareDot in firmware; older builds
+	// still emit suffixShareDot under the previous name.
+	decimalShareDot: v.optional(decimalShareDotSchema),
 
 	// miningPoolUser: the device strips this for pools whose user slot
 	// holds a secret API key (ViaBTC, Foundry) and emits the companion

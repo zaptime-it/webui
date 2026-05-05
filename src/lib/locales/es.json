@@ -68,7 +68,7 @@
 			"removeCurrency": "Quitar de la rotación",
 			"noMatchingCurrency": "No hay monedas que coincidan",
 			"mowMode": "Modo de sufijo Mow",
-			"suffixShareDot": "Notación compacta de sufijo",
+			"decimalShareDot": "Notación decimal compacta",
 			"section": {
 				"displaysAndLed": "Pantallas y LED",
 				"screenSettings": "Específico de la pantalla",

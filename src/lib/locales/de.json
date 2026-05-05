@@ -69,7 +69,7 @@
 			"removeCurrency": "Aus Rotation entfernen",
 			"noMatchingCurrency": "Keine passende Währung",
 			"mowMode": "Mow suffixmodus",
-			"suffixShareDot": "Kompakte Suffix-Notation",
+			"decimalShareDot": "Kompakte Dezimalnotation",
 			"section": {
 				"displaysAndLed": "Anzeigen und LEDs",
 				"screenSettings": "Infospezifisch",

@@ -740,7 +740,7 @@ components:
         supplyPercent: { type: boolean }
         refrScrnChange: { type: boolean }
         inverseButtons: { type: boolean }
-        suffixShareDot: { type: boolean }
+        decimalShareDot: { type: boolean }
         enableDebugLog: { type: boolean }
         hostnamePrefix: { type: string }
         hostname: { type: string }

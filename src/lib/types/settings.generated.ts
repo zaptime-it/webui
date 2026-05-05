@@ -111,6 +111,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'decimalShareDot',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'digitFontPx',
 		kind: 'number',
 		bootOnly: false,
@@ -273,7 +283,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'fontName',
 		kind: 'string',
-		bootOnly: true,
+		bootOnly: false,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -671,16 +681,6 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
-		key: 'suffixShareDot',
-		kind: 'boolean',
-		bootOnly: false,
-		minValue: 0,
-		maxValue: 0,
-		defaultBool: false,
-		defaultInt: 0,
-		defaultStr: ''
-	},
-	{
 		key: 'supplyPercent',
 		kind: 'boolean',
 		bootOnly: false,
@@ -788,6 +788,7 @@ export const settingsFieldSchemas = {
 	ceDisableSSL: v.boolean(),
 	ceEndpoint: v.string(),
 	dataSource: v.pipe(v.number(), v.minValue(0), v.maxValue(3)),
+	decimalShareDot: v.boolean(),
 	digitFontPx: v.pipe(v.number(), v.minValue(80), v.maxValue(220)),
 	disableLeds: v.boolean(),
 	dndEnabled: v.boolean(),
@@ -844,7 +845,6 @@ export const settingsFieldSchemas = {
 	scrnRestoreZap: v.boolean(),
 	stealFocus: v.boolean(),
 	suffixPrice: v.boolean(),
-	suffixShareDot: v.boolean(),
 	supplyPercent: v.boolean(),
 	tzString: v.string(),
 	useBlkCountdown: v.boolean(),

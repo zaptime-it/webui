@@ -26,7 +26,7 @@
 		previewSuffixPrice({
 			suffixPrice: data?.suffixPrice,
 			mowMode: data?.mowMode,
-			suffixShareDot: data?.suffixShareDot
+			decimalShareDot: data?.decimalShareDot
 		})
 	);
 </script>
@@ -99,11 +99,9 @@
 			hint={!data.suffixPrice ? m['section.settings.requiresSuffixPrice']() : undefined}
 		/>
 		<SwitchField
-			id="suffixShareDot"
-			bind:checked={data.suffixShareDot}
-			label={m['section.settings.suffixShareDot']()}
-			disabled={!data.suffixPrice}
-			hint={!data.suffixPrice ? m['section.settings.requiresSuffixPrice']() : undefined}
+			id="decimalShareDot"
+			bind:checked={data.decimalShareDot}
+			label={m['section.settings.decimalShareDot']()}
 		/>
 		<SwitchField
 			id="verticalDesc"

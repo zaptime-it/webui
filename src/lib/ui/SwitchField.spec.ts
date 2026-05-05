@@ -1,6 +1,6 @@
 /**
  * Disabled SwitchField was visually indistinguishable from enabled state on
- * the dark theme, and gated fields (mowMode/suffixShareDot) didn't explain
+ * the dark theme, and gated fields (mowMode) didn't explain
  * why they were locked. These tests pin the rendered DOM contract: opacity
  * helper class on the disabled wrapper, optional hint text exposed via
  * aria-describedby, and tooltip via title attribute when disabled.

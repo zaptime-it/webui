@@ -125,7 +125,7 @@ describe('cold-start schema validation', () => {
 			supplyPercent: false,
 			refrScrnChange: false,
 			inverseButtons: false,
-			suffixShareDot: false,
+			decimalShareDot: false,
 			minSecPriceUpd: 30,
 			dataSource: 0,
 			mempoolInstance: 'mempool.space',

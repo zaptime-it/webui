@@ -70,7 +70,7 @@
 			"removeCurrency": "Verwijder uit rotatie",
 			"noMatchingCurrency": "Geen overeenkomende valuta",
 			"mowMode": "Mow achtervoegsel",
-			"suffixShareDot": "Achtervoegsel compacte notatie",
+			"decimalShareDot": "Compacte decimale notatie",
 			"section": {
 				"displaysAndLed": "Displays en LED's",
 				"screenSettings": "Schermspecifiek",

@@ -1320,7 +1320,7 @@
 					"inverseButtons": {
 						"type": "boolean"
 					},
-					"suffixShareDot": {
+					"decimalShareDot": {
 						"type": "boolean"
 					},
 					"enableDebugLog": {
