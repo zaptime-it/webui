@@ -1,5 +1,4 @@
 diff --git a/node_modules/@sveltejs/kit/src/exports/vite/index.js b/node_modules/@sveltejs/kit/src/exports/vite/index.js
-index fe829e7..fec6269 100644
 --- a/node_modules/@sveltejs/kit/src/exports/vite/index.js
 +++ b/node_modules/@sveltejs/kit/src/exports/vite/index.js
 @@ -940,9 +940,9 @@ async function kit({ svelte_config }) {
@@ -11,7 +10,7 @@ index fe829e7..fec6269 100644
 -									assetFileNames: `${prefix}/assets/[name].[hash][extname]`,
 +									entryFileNames: ssr ? '[name].js' : `${prefix}/[hash].${ext}`,
 +									chunkFileNames: ssr ? 'chunks/[name].js' : `${prefix}/c[hash].${ext}`,
-+									assetFileNames: `${prefix}/assets/[hash].[extname]`,
++									assetFileNames: `${prefix}/assets/[hash][extname]`,
  									hoistTransitiveImports: false,
  									sourcemapIgnoreList,
  									inlineDynamicImports: is_rolldown ? undefined : !split
