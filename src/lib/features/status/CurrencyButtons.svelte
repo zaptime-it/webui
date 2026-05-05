@@ -13,7 +13,8 @@
 		return (
 			ds === DataSourceType.BTCLOCK_SOURCE ||
 			ds === DataSourceType.CUSTOM_SOURCE ||
-			ds === DataSourceType.THIRD_PARTY_SOURCE
+			ds === DataSourceType.THIRD_PARTY_SOURCE ||
+			ds === DataSourceType.NOSTR_SOURCE
 		);
 	});
 

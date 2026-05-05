@@ -64,6 +64,9 @@
 			"otaPassHelp": "Déjalo en blanco para permitir OTA sin contraseña.",
 			"passwordSetLeaveBlank": "La contraseña está configurada. Déjalo en blanco para mantenerla.",
 			"currencies": "Monedas",
+			"addCurrency": "Agregar una moneda…",
+			"removeCurrency": "Quitar de la rotación",
+			"noMatchingCurrency": "No hay monedas que coincidan",
 			"mowMode": "Modo de sufijo Mow",
 			"suffixShareDot": "Notación compacta de sufijo",
 			"section": {

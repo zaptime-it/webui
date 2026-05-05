@@ -66,11 +66,60 @@ describe('CurrencyRotationList', () => {
 		// rotation order, followed by the remaining availableCurrencies in
 		// canonical order — matching what `actCurrencies` itself already
 		// implies about user intent.
-		expect(src).toContain('...act.map(');
-		expect(src).toContain('...avail.filter((c) => !actSet.has(c))');
+		expect(src).toContain('act.map((c) => ({ id: c, code: c, enabled: true }))');
+		expect(src).toContain('avail.filter((c) => !actSet.has(c))');
 	});
 
 	test('marks the currencies list with a stable test id', () => {
 		expect(src).toContain('data-testid="currencies-reorder-list"');
+	});
+
+	test('switches to large-list mode above the threshold', () => {
+		// Above LARGE_LIST_THRESHOLD the inactive set is too long to keep as
+		// checkbox rows — the component hides inactives from the sortable
+		// list and surfaces them through a typeahead instead.
+		expect(src).toContain('LARGE_LIST_THRESHOLD = 10');
+		expect(src).toContain('availableCurrencies.length > LARGE_LIST_THRESHOLD');
+		// computeRows takes a `large` flag; in large mode it returns only
+		// actives so inactive rows never render in the dnd list.
+		expect(src).toContain('if (large) return actives');
+	});
+
+	test('large-mode rows expose a remove (x) button with stable test id', () => {
+		// In large mode the toggle checkbox is gone — removal is the only
+		// way to take a currency out of the active list. Re-adding happens
+		// through the typeahead.
+		expect(src).toContain('data-testid="currency-remove-');
+		expect(src).toContain('removeAt(idx)');
+	});
+
+	test('large-mode renders an add-currency typeahead with suggestions', () => {
+		// The add control is a search input + dropdown of inactive available
+		// currencies. The dropdown should clamp suggestions to a small slice
+		// so an unfiltered 150-entry list never overflows the card.
+		expect(src).toContain('data-testid="currency-add-input"');
+		expect(src).toContain('data-testid="currency-add-typeahead"');
+		expect(src).toContain('MAX_SUGGESTIONS = 8');
+		expect(src).toContain('.slice(0, MAX_SUGGESTIONS)');
+		// Inactive set is derived from rows + availableCurrencies, not from
+		// the original `actCurrencies` prop — that way an in-flight add or
+		// remove updates the suggestions immediately.
+		expect(src).toContain('availableCurrencies.filter((c) => !actSet.has(c))');
+	});
+
+	test('typeahead supports keyboard navigation and Enter-to-add', () => {
+		// Arrow keys move the highlight; Enter commits the highlighted
+		// suggestion. Without this, the typeahead is mouse-only.
+		expect(src).toContain("e.key === 'ArrowDown'");
+		expect(src).toContain("e.key === 'ArrowUp'");
+		expect(src).toContain("e.key === 'Enter'");
+		expect(src).toContain("e.key === 'Escape'");
+	});
+
+	test('add prevents duplicates and only accepts known codes', () => {
+		// Defensive guards: typing an unknown code (or one already active)
+		// should be a no-op so the device never receives a phantom currency.
+		expect(src).toContain('if (!availableCurrencies.includes(code)) return');
+		expect(src).toContain('if (rows.some((r) => r.code === code && r.enabled)) return');
 	});
 });

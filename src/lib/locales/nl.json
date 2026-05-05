@@ -66,6 +66,9 @@
 			"otaPassHelp": "Laat leeg om OTA zonder wachtwoord toe te staan.",
 			"passwordSetLeaveBlank": "Wachtwoord is ingesteld. Laat leeg om het ongewijzigd te laten.",
 			"currencies": "Valuta's",
+			"addCurrency": "Voeg een valuta toe…",
+			"removeCurrency": "Verwijder uit rotatie",
+			"noMatchingCurrency": "Geen overeenkomende valuta",
 			"mowMode": "Mow achtervoegsel",
 			"suffixShareDot": "Achtervoegsel compacte notatie",
 			"section": {

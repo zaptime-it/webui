@@ -15,8 +15,7 @@
 {#if data.availableCurrencies}
 	<CollapseCard header={m['section.settings.currencies']()} bind:isOpen>
 		<div data-testid="currencies-grid">
-			<small>{m['restartRequired']()}</small>
-			<div class="mt-2">
+			<div>
 				<CurrencyRotationList
 					availableCurrencies={data.availableCurrencies}
 					actCurrencies={data.actCurrencies}

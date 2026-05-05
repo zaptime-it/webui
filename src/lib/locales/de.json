@@ -65,6 +65,9 @@
 			"otaPassHelp": "Leer lassen, um OTA ohne Passwort zuzulassen.",
 			"passwordSetLeaveBlank": "Passwort ist gesetzt. Leer lassen, um es nicht zu ändern.",
 			"currencies": "Währungen",
+			"addCurrency": "Währung hinzufügen…",
+			"removeCurrency": "Aus Rotation entfernen",
+			"noMatchingCurrency": "Keine passende Währung",
 			"mowMode": "Mow suffixmodus",
 			"suffixShareDot": "Kompakte Suffix-Notation",
 			"section": {

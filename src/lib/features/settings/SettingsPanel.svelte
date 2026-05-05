@@ -130,7 +130,8 @@
 			d?.actCurrencies &&
 			(d.dataSource === DataSourceType.BTCLOCK_SOURCE ||
 				d.dataSource === DataSourceType.CUSTOM_SOURCE ||
-				d.dataSource === DataSourceType.THIRD_PARTY_SOURCE)
+				d.dataSource === DataSourceType.THIRD_PARTY_SOURCE ||
+				d.dataSource === DataSourceType.NOSTR_SOURCE)
 		);
 	});
 
