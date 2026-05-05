@@ -122,7 +122,11 @@
 			"releaseDate": "Datum van publicatie",
 			"viewRelease": "Bekijk publicatie",
 			"autoUpdate": "Update installeren (experimenteel)",
-			"autoUpdateInProgress": "Automatische update wordt uitgevoerd. Even geduld a.u.b...."
+			"autoUpdateInProgress": "Automatische update wordt uitgevoerd. Even geduld a.u.b....",
+			"v4AnnounceTitle": "Firmware v4 komt eraan",
+			"v4AnnounceText": "Er komt een v4-release aan. Omdat het instellingenformaat en de flash-partities zijn gewijzigd, moet de update via USB met de Web Flasher worden uitgevoerd — installeren via de WebUI is niet mogelijk.",
+			"v4AnnounceLink": "Open Web Flasher",
+			"v4AnnounceDismiss": "Sluiten"
 		}
 	},
 	"colors": {

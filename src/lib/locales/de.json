@@ -132,7 +132,11 @@
 			"releaseDate": "Veröffentlichungsdatum",
 			"viewRelease": "Veröffentlichung anzeigen",
 			"autoUpdate": "Update installieren (experimentell)",
-			"autoUpdateInProgress": "Automatische Aktualisierung läuft, bitte warten..."
+			"autoUpdateInProgress": "Automatische Aktualisierung läuft, bitte warten...",
+			"v4AnnounceTitle": "Firmware v4 steht bevor",
+			"v4AnnounceText": "Ein v4-Release ist in Vorbereitung. Da sich das Einstellungsformat und die Flash-Partitionen geändert haben, muss das Update per USB über den Web Flasher eingespielt werden – eine Installation über die WebUI ist nicht möglich.",
+			"v4AnnounceLink": "Web Flasher öffnen",
+			"v4AnnounceDismiss": "Schließen"
 		}
 	},
 	"colors": {

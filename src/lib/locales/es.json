@@ -131,7 +131,11 @@
 			"releaseDate": "Fecha de lanzamiento",
 			"viewRelease": "Ver lanzamiento",
 			"autoUpdate": "Instalar actualización (experimental)",
-			"autoUpdateInProgress": "Actualización automática en progreso, espere..."
+			"autoUpdateInProgress": "Actualización automática en progreso, espere...",
+			"v4AnnounceTitle": "El firmware v4 está en camino",
+			"v4AnnounceText": "Se está preparando una versión v4. Como el formato de configuración y las particiones de flash han cambiado, la actualización debe realizarse por USB usando el Web Flasher — no puede instalarse desde la WebUI.",
+			"v4AnnounceLink": "Abrir Web Flasher",
+			"v4AnnounceDismiss": "Cerrar"
 		}
 	},
 	"button": {
