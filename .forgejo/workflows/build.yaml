@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - v3
   pull_request:
 
 jobs:
@@ -80,7 +81,7 @@ jobs:
 
       # The following steps only run on push to main
       - name: Get current block
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v3')
         id: getBlockHeight
         run: echo "blockHeight=$(curl -s https://mempool.space/api/blocks/tip/height)" >> $GITHUB_OUTPUT
 
@@ -108,21 +109,21 @@ jobs:
             echo "Directory size is within the threshold $DIRECTORY_SIZE"
           fi
       - name: Create tarball
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v3')
         run: tar czf webui.tgz --strip-components=1 dist
       - name: Build LittleFS
         run: |
           set -e
           /tmp/mklittlefs/mklittlefs -c build_gz -s 410000 output/littlefs.bin
       - name: Upload artifacts
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v3')
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
           path: |
             webui.tgz
             output/littlefs.bin
       - name: Create release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v3')
         uses: https://code.forgejo.org/actions/forgejo-release@v2.11.3
         with:
           url: 'https://git.btclock.dev/'
