@@ -122,7 +122,7 @@
 			"turnOn": "Encender",
 			"frontlight": "Luz de la pantalla",
 			"flashFrontlight": "Luz intermitente",
-			"fwCommitMismatch": "La versión de firmware es diferente de la versión WebUI, esto podría causar problemas."
+			"fwTooOld": "Firmware demasiado antiguo para esta WebUI. Requerido: {min}, en ejecución: {current}. Algunas funciones podrían fallar hasta que actualices."
 		},
 		"status": {
 			"memoryFree": "Memoria RAM libre",

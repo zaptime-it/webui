@@ -142,7 +142,7 @@
 			"flashFrontlight": "Flash",
 			"firmwareUpdate": "Firmware update",
 			"fwCommit": "Firmware commit",
-			"fwCommitMismatch": "The firmware version is different from the WebUI version, this might cause problems. "
+			"fwTooOld": "Firmware too old for this WebUI. Required: {min}, running: {current}. Some features may misbehave until you update."
 		},
 		"status": {
 			"title": "Status",

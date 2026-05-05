@@ -17,8 +17,11 @@ Why this script and not vite's compressor:
 """
 
 import gzip
+import json
 import os
 import shutil
+import subprocess
+import time
 from pathlib import Path
 from shutil import copyfileobj
 
@@ -65,3 +68,62 @@ input_directory = "dist"
 output_directory = "build_gz/www"
 
 process_directory(input_directory, output_directory)
+
+
+def webui_rev() -> str:
+    # Full 40-char SHA of HEAD in the WebUI submodule, with `-dirty` appended
+    # when the working tree has uncommitted changes. Matches the convention
+    # the v3-era WebUI CI used (`echo "$GITHUB_SHA" > output/commit.txt`).
+    # The firmware reads this at request time
+    # (components/webserver/control_server.cpp) and exposes it as `fsRev`
+    # in /api/settings. The frontend truncates for display.
+    try:
+        rev = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+        ).decode().strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
+    try:
+        dirty = subprocess.call(
+            ["git", "diff", "--quiet", "HEAD"], stderr=subprocess.DEVNULL
+        ) != 0
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        dirty = False
+    return f"{rev}-dirty" if dirty else rev
+
+
+# `manifest.json` is the single source of truth for the WebUI/firmware
+# compatibility contract. Its `minFirmware` field is read at WebUI
+# build-time (src/lib/util/version.ts imports src/lib/manifest.json) AND
+# baked into the LittleFS image here so a `curl /manifest.json` against
+# the device exposes the same value for tooling. `commit` lets the
+# firmware report `fsRev` in /api/settings independent of the firmware's
+# own version stamp — i.e. an OTA-flashed LittleFS image is reflected
+# immediately rather than tracking the firmware partition. The plain
+# text is ~120 bytes; small enough that we ship it ungzipped to avoid
+# forcing a gunzip path on the device.
+manifest_src = Path("src/lib/manifest.json")
+try:
+    manifest_data = json.loads(manifest_src.read_text())
+except FileNotFoundError:
+    print(f"WARNING: {manifest_src} missing; using minFirmware=unknown")
+    manifest_data = {"minFirmware": "unknown"}
+
+rev = webui_rev()
+manifest_out = {
+    "commit": rev,
+    "minFirmware": manifest_data.get("minFirmware", "unknown"),
+    "buildTime": int(time.time()),
+}
+manifest_path = Path(output_directory) / "manifest.json"
+manifest_path.write_text(json.dumps(manifest_out, indent="\t") + "\n")
+print(f"Wrote: {manifest_path} ({manifest_out})")
+
+# Backwards-compat: the firmware's first cut of fs_rev support read
+# /lfs/www/commit.txt directly. Keep emitting it so older firmware
+# flashed against a newer LittleFS image still surfaces fsRev. The
+# firmware-side reader prefers manifest.json when present.
+if rev:
+    commit_path = Path(output_directory) / "commit.txt"
+    commit_path.write_text(rev + "\n")
+    print(f"Wrote: {commit_path} ({rev})")

@@ -1,12 +1,15 @@
 /**
- * The fwCommitMismatch banner used to fire on every commit-level
- * difference between firmware and WebUI. Because the WebUI ships from a
- * separate repo, that meant the warning was almost always on, training
- * users to ignore it. The fix: a per-session dismissal stored in
- * sessionStorage, keyed on the (gitRev, fsRev) pair so a fresh build of
- * either side re-prompts.
+ * The previous fwCommitMismatch banner fired on every commit-level
+ * difference between firmware and WebUI. Because the WebUI ships from
+ * a separate repo, that meant the warning was almost always on,
+ * training users to ignore it. This spec replaces those tests with
+ * coverage of the new approach: the WebUI bakes a `MIN_FIRMWARE`
+ * floor at build time (src/lib/manifest.json) and only flags
+ * incompatibility when the device's reported `gitRev` is strictly
+ * older than that floor — semver-aware, including prerelease ordering
+ * (4.0.0-beta.13 > 4.0.0-beta.1, 4.0.0 > 4.0.0-rc, etc.).
  */
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -14,35 +17,41 @@ import { dirname, join } from 'node:path';
 const here = dirname(fileURLToPath(import.meta.url));
 const src = readFileSync(join(here, 'SystemInfo.svelte'), 'utf8');
 
-describe('SystemInfo: fw-mismatch banner', () => {
-	beforeEach(() => {
-		// Each test starts with a clean session storage so dismissal state
-		// doesn't bleed across cases.
-		sessionStorage.clear();
+describe('SystemInfo: fw-too-old banner', () => {
+	test('imports MIN_FIRMWARE from the version util (single source of truth)', () => {
+		expect(src).toMatch(/import\s+\{[^}]*MIN_FIRMWARE[^}]*\}\s+from\s+'\$lib\/util\/version'/);
 	});
 
-	test('dismissal key includes both commit hashes', () => {
-		// If the key only used gitRev or fsRev alone, a unilateral upgrade
-		// of the other side wouldn't re-prompt.
-		expect(src).toMatch(/fwMismatchDismissed:\$\{data\.gitRev\}:\$\{data\.fsRev\}/);
+	test('uses semver-aware compareVersions, not raw equality', () => {
+		// Equality on strings would re-introduce the original bug where
+		// a clean firmware build still tripped the banner because it
+		// disagreed with the WebUI repo's HEAD SHA on a per-commit basis.
+		expect(src).toMatch(/compareVersions\(/);
+		expect(src).not.toMatch(/data\.gitRev\s*!==\s*data\.fsRev/);
 	});
 
-	test('uses sessionStorage, not localStorage (resets per tab)', () => {
-		// localStorage would persist a "don't bug me" forever, hiding real
-		// regressions later. sessionStorage clears on tab close.
-		expect(src).toContain('sessionStorage.getItem');
-		expect(src).toContain('sessionStorage.setItem');
-		expect(src).not.toContain('localStorage');
+	test('banner gates on the new `incompatible` derived state', () => {
+		expect(src).toMatch(/{#if incompatible}/);
 	});
 
-	test('banner gates render on `!dismissed`, not just `mismatch`', () => {
-		// Without this gate, dismissing wouldn't actually hide the banner.
-		expect(src).toMatch(/{#if mismatch && !dismissed}/);
+	test('banner copy is parameterised with min + current version', () => {
+		// Without the params the user has no way to know what to update to.
+		expect(src).toMatch(/section\.control\.fwTooOld/);
+		expect(src).toMatch(/min:\s*MIN_FIRMWARE/);
+		expect(src).toMatch(/current:\s*data\?\.gitRev/);
 	});
 
-	test('Dismiss button writes "1" to the key and flips `dismissed`', () => {
-		// `data-testid` markers + literal "1" make the wiring auditable.
-		expect(src).toContain('data-testid="fw-mismatch-dismiss"');
-		expect(src).toMatch(/sessionStorage\.setItem\(dismissalKey,\s*'1'\)/);
+	test('no sessionStorage / dismissal logic remains', () => {
+		// The dismissal code was load-bearing only because the old
+		// banner was firing constantly. With a meaningful condition we
+		// don't need a "shut up" button — fix the firmware instead.
+		expect(src).not.toContain('sessionStorage');
+		expect(src).not.toContain('dismiss');
+		expect(src).not.toContain('fwMismatchDismissed');
+	});
+
+	test('no SHA-equality "mismatch" derived state remains', () => {
+		expect(src).not.toMatch(/const\s+mismatch\s*=/);
+		expect(src).not.toMatch(/fwCommitMismatch/);
 	});
 });

@@ -113,7 +113,7 @@
 			"frontlight": "Displaylicht",
 			"turnOn": "Aanzetten",
 			"flashFrontlight": "Knipper",
-			"fwCommitMismatch": "De firmwareversie verschilt van de WebUI -versie, dit kan problemen veroorzaken."
+			"fwTooOld": "Firmware te oud voor deze WebUI. Vereist: {min}, draait: {current}. Sommige functies kunnen onjuist werken totdat je de firmware bijwerkt."
 		},
 		"status": {
 			"title": "Status",

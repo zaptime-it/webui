@@ -123,7 +123,7 @@
 			"frontlight": "Displaybeleuchtung",
 			"turnOn": "Einschalten",
 			"flashFrontlight": "Blinken",
-			"fwCommitMismatch": "Die Firmware -Version unterscheidet sich von der WebUI -Version, dies kann zu Problemen führen."
+			"fwTooOld": "Firmware zu alt für diese WebUI. Erforderlich: {min}, läuft: {current}. Einige Funktionen können fehlerhaft sein, bis du aktualisierst."
 		},
 		"status": {
 			"title": "Status",

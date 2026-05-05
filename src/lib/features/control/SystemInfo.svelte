@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import * as m from '$lib/paraglide/messages';
 	import Skeleton from '$lib/ui/Skeleton.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
+	import { compareVersions, MIN_FIRMWARE } from '$lib/util/version';
 
 	const data = $derived(settingsStore.data);
-	const mismatch = $derived(!!data?.gitRev && !!data?.fsRev && data.gitRev !== data.fsRev);
 	const buildTimeStr = $derived.by(() => {
 		const t = data?.lastBuildTime;
 		if (!t) return '';
@@ -13,27 +12,20 @@
 		return new Date(ms).toLocaleString();
 	});
 
-	// Dismissal is keyed on the (gitRev, fsRev) pair: a fresh build of either
-	// component invalidates the dismissal, so a real divergence after an
-	// intentional upgrade re-prompts the user. Stored in sessionStorage so
-	// closing the tab also resets — we don't want a permanent "I don't care"
-	// hiding a genuine compatibility issue weeks later.
-	const dismissalKey = $derived(
-		data?.gitRev && data?.fsRev ? `fwMismatchDismissed:${data.gitRev}:${data.fsRev}` : ''
-	);
-	let dismissed = $state(false);
-	$effect(() => {
-		if (!browser || !dismissalKey) {
-			dismissed = false;
-			return;
-		}
-		dismissed = sessionStorage.getItem(dismissalKey) === '1';
+	// Compatibility check: this WebUI declares a minimum firmware version
+	// in src/lib/manifest.json. The banner fires only when the running
+	// firmware (gitRev — git describe of the firmware repo, optionally
+	// with -N-gSHA / -dirty suffixes that compareVersions strips) is
+	// strictly older than that minimum. Forward-compatible additions
+	// (new firmware fields the WebUI ignores) don't trip the banner.
+	// Empty gitRev means the firmware predates the gitRev field, which
+	// is older than any released minimum — surface as incompatible.
+	const incompatible = $derived.by(() => {
+		if (!data) return false;
+		const fw = data.gitRev?.trim() ?? '';
+		if (!fw) return true;
+		return compareVersions(fw, MIN_FIRMWARE) < 0;
 	});
-	const dismiss = () => {
-		if (!browser || !dismissalKey) return;
-		sessionStorage.setItem(dismissalKey, '1');
-		dismissed = true;
-	};
 </script>
 
 <section class="space-y-2">
@@ -56,24 +48,14 @@
 		<dt>{m['section.control.hostname']()}</dt>
 		<dd class="mono"><Skeleton value={data?.hostname ?? ''} /></dd>
 	</dl>
-	{#if mismatch && !dismissed}
-		<div
-			class="alert alert-warning text-sm flex items-start justify-between gap-2"
-			data-testid="fw-mismatch-banner"
-		>
+	{#if incompatible}
+		<div class="alert alert-warning text-sm" data-testid="fw-too-old-banner">
 			<span
-				>⚠️ <strong>{m['warning']()}</strong>: {m[
-					'section.control.fwCommitMismatch'
-				]()}</span
+				>⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwTooOld']({
+					min: MIN_FIRMWARE,
+					current: data?.gitRev ?? '?'
+				})}</span
 			>
-			<button
-				type="button"
-				class="btn btn-ghost btn-xs shrink-0"
-				onclick={dismiss}
-				data-testid="fw-mismatch-dismiss"
-			>
-				{m['button.dismiss']()}
-			</button>
 		</div>
 	{/if}
 </section>
