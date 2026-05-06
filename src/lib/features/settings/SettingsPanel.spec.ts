@@ -51,4 +51,23 @@ describe('SettingsPanel', () => {
 		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
 		expect(src).toMatch(/<svelte:window\s+onkeydown=\{handleKeydown\}/);
 	});
+
+	test('strips proxyPassSet from PATCH and drops empty proxyPass', () => {
+		// Mirrors the long-standing httpAuthPass / otaPass handling: the
+		// device ships a `*Set` companion that must never round-trip back as
+		// a settable field, and the plaintext buffer is only PATCHed when
+		// the user actually typed a new value. Sending an empty string
+		// would clear whatever the device has stored — almost never the
+		// intent on a full-form save.
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		expect(src).toContain('proxyPassSet: _pps');
+		expect(src).toMatch(/if \(!patch\.proxyPass\) delete patch\.proxyPass/);
+	});
+
+	test('routes proxy fields to the proxy section so validation links pop the right card open', () => {
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		expect(src).toMatch(/proxyEnabled: 'proxy'/);
+		expect(src).toMatch(/proxyHost: 'proxy'/);
+		expect(src).toMatch(/proxyBypass: 'proxy'/);
+	});
 });

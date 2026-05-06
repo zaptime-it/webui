@@ -631,6 +631,76 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'proxyBypass',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: '*.local,192.168.*,10.*,127.0.0.1'
+	},
+	{
+		key: 'proxyEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyHost',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyPass',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyPort',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 1,
+		maxValue: 65535,
+		defaultBool: false,
+		defaultInt: 1080,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyType',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 4,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyUser',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'refrScrnChange',
 		kind: 'boolean',
 		bootOnly: false,
@@ -840,6 +910,13 @@ export const settingsFieldSchemas = {
 	poolLogosUrl: v.string(),
 	poolPollSec: v.pipe(v.number(), v.minValue(10), v.maxValue(3600)),
 	poolWorker: v.string(),
+	proxyBypass: v.string(),
+	proxyEnabled: v.boolean(),
+	proxyHost: v.string(),
+	proxyPass: v.string(),
+	proxyPort: v.pipe(v.number(), v.minValue(1), v.maxValue(65535)),
+	proxyType: v.pipe(v.number(), v.minValue(0), v.maxValue(4)),
+	proxyUser: v.string(),
 	refrScrnChange: v.boolean(),
 	satsVariant: v.pipe(v.number(), v.minValue(0), v.maxValue(15)),
 	scrnRestoreZap: v.boolean(),

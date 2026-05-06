@@ -139,6 +139,14 @@ export const settingsJson = {
 	nostrZapPubkey: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422',
 	numScreens: 7,
 	otaEnabled: true,
+	proxyEnabled: false,
+	proxyType: 0,
+	proxyHost: '',
+	proxyPort: 1080,
+	proxyUser: '',
+	proxyPass: '',
+	proxyPassSet: false,
+	proxyBypass: '*.local,192.168.*,10.*,127.0.0.1',
 	refrScrnChange: false,
 	screens: [
 		{

@@ -3,8 +3,12 @@
 
 	interface Props {
 		id: string;
+		// Allow undefined so callers can bind to optional schema fields
+		// (e.g. v4-only fields with `v.optional(...)`). NumberField follows
+		// the same pattern; the `$effect` in the calling section seeds a
+		// default before the user can interact.
+		value: Value | undefined;
 		label: string;
-		value: Value;
 		options: Array<[string, Value]>;
 		helpText?: string;
 		size?: 'sm' | 'md' | 'lg';

@@ -74,6 +74,16 @@ const {
 	digitFontPx: digitFontPxSchema,
 	decimalShareDot: decimalShareDotSchema,
 	miningPoolUser: miningPoolUserSchema,
+	// Proxy fields landed after the initial v4 release — pre-proxy
+	// builds (and v3) don't emit them. Make every kField optional and
+	// re-declare below.
+	proxyEnabled: proxyEnabledSchema,
+	proxyType: proxyTypeSchema,
+	proxyHost: proxyHostSchema,
+	proxyPort: proxyPortSchema,
+	proxyUser: proxyUserSchema,
+	proxyPass: proxyPassSchema,
+	proxyBypass: proxyBypassSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
 void _act;
@@ -105,6 +115,18 @@ export const settingsSchema = v.looseObject({
 	// still emit suffixShareDot under the previous name.
 	decimalShareDot: v.optional(decimalShareDotSchema),
 
+	// Outbound proxy. v4-only and only present once the proxy_transport
+	// component lands. Optional so pre-proxy v4 fixtures and v3 devices
+	// parse cleanly. proxyPass is suppressed in GET (see proxyPassSet
+	// below); the field is declared here for the PATCH shape.
+	proxyEnabled: v.optional(proxyEnabledSchema),
+	proxyType: v.optional(proxyTypeSchema),
+	proxyHost: v.optional(proxyHostSchema),
+	proxyPort: v.optional(proxyPortSchema),
+	proxyUser: v.optional(proxyUserSchema),
+	proxyPass: v.optional(proxyPassSchema),
+	proxyBypass: v.optional(proxyBypassSchema),
+
 	// miningPoolUser: the device strips this for pools whose user slot
 	// holds a secret API key (ViaBTC, Foundry) and emits the companion
 	// `miningPoolUserSet` boolean instead — same protocol as the auth
@@ -125,6 +147,10 @@ export const settingsSchema = v.looseObject({
 	ip: v.string(),
 	httpAuthPassSet: v.boolean(),
 	otaPassSet: v.boolean(),
+	// proxyPass is suppressed in GET (mirrors httpAuthPass / otaPass);
+	// the device emits this companion boolean instead. Optional so v3
+	// devices and pre-proxy v4 builds parse without it.
+	proxyPassSet: v.optional(v.boolean()),
 	hwRev: v.string(),
 	fsRev: v.string(),
 	// gitRev / gitTag / lastBuildTime are only emitted when populated:

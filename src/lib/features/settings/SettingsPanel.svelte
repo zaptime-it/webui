@@ -12,6 +12,7 @@
 	import DataSourceSettings from './sections/DataSourceSettings.svelte';
 	import ExtraFeaturesSettings from './sections/ExtraFeaturesSettings.svelte';
 	import SystemSettings from './sections/SystemSettings.svelte';
+	import ProxySettings from './sections/ProxySettings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
 
 	// Map firmware top-level error scopes / pseudo-fields onto the
@@ -27,6 +28,7 @@
 		| 'dataSource'
 		| 'extra'
 		| 'system'
+		| 'proxy'
 	> = {
 		screens: 'screenRotation',
 		currency: 'currencyRotation',
@@ -45,7 +47,14 @@
 		httpAuthUser: 'system',
 		httpAuthPass: 'system',
 		otaPass: 'system',
-		otaEnabled: 'system'
+		otaEnabled: 'system',
+		proxyEnabled: 'proxy',
+		proxyType: 'proxy',
+		proxyHost: 'proxy',
+		proxyPort: 'proxy',
+		proxyUser: 'proxy',
+		proxyPass: 'proxy',
+		proxyBypass: 'proxy'
 	};
 
 	const miningPoolMap = new Map<string, string>([
@@ -67,7 +76,8 @@
 		| 'display'
 		| 'dataSource'
 		| 'extra'
-		| 'system';
+		| 'system'
+		| 'proxy';
 	const SECTIONS_OPEN_KEY = 'settings.sectionsOpen';
 	const sectionDefaults: Record<SectionKey, boolean> = {
 		screen: true,
@@ -76,7 +86,8 @@
 		display: false,
 		dataSource: false,
 		extra: false,
-		system: false
+		system: false,
+		proxy: false
 	};
 
 	const loadSectionsOpen = (): Record<SectionKey, boolean> => {
@@ -187,6 +198,7 @@
 			// Never PATCH them back — they are computed, not user-editable.
 			httpAuthPassSet: _haps,
 			otaPassSet: _ops,
+			proxyPassSet: _pps,
 			...rest
 		} = current;
 		void _gitRev;
@@ -194,15 +206,17 @@
 		void _lbt;
 		void _haps;
 		void _ops;
+		void _pps;
 
 		// 3.4.0 password handling: the GET response carries *Set booleans,
-		// not plaintext. Only patch httpAuthPass / otaPass if the user typed
-		// a new value. Sending an empty string would clear whatever the
-		// device currently has stored, which is almost never what anyone
-		// submitting the full form actually wants.
+		// not plaintext. Only patch httpAuthPass / otaPass / proxyPass if
+		// the user typed a new value. Sending an empty string would clear
+		// whatever the device currently has stored, which is almost never
+		// what anyone submitting the full form actually wants.
 		const patch: Partial<typeof rest> = { ...rest };
 		if (!patch.httpAuthPass) delete patch.httpAuthPass;
 		if (!patch.otaPass) delete patch.otaPass;
+		if (!patch.proxyPass) delete patch.proxyPass;
 
 		// Screen rotation order travels in the `order` field per entry.
 		// Stamp the current array index so the firmware can treat the save
@@ -361,6 +375,7 @@
 					<DataSourceSettings bind:isOpen={sectionsOpen.dataSource} />
 					<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
 					<SystemSettings bind:isOpen={sectionsOpen.system} />
+					<ProxySettings bind:isOpen={sectionsOpen.proxy} />
 				</div>
 
 				<!-- Sticky action bar so Save / Reset stay reachable when any
