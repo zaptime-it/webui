@@ -571,6 +571,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422'
 	},
 	{
+		key: 'nostrZapPubkeys',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'otaEnabled',
 		kind: 'boolean',
 		bootOnly: true,
@@ -904,6 +914,7 @@ export const settingsFieldSchemas = {
 	nostrRelay: v.string(),
 	nostrZapNotify: v.boolean(),
 	nostrZapPubkey: v.string(),
+	nostrZapPubkeys: v.string(),
 	otaEnabled: v.boolean(),
 	otaPass: v.string(),
 	poolGlobalStats: v.boolean(),

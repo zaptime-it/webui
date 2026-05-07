@@ -84,8 +84,13 @@ const {
 	proxyUser: proxyUserSchema,
 	proxyPass: proxyPassSchema,
 	proxyBypass: proxyBypassSchema,
+	// nostrZapPubkeys ships as string[] over the wire (CSV in NVS) — same
+	// pattern as actCurrencies. Drop the auto-generated kString schema and
+	// re-declare as v.array(v.string()) below.
+	nostrZapPubkeys: _nostrZapPubkeys,
 	...kFieldsHttp
 } = settingsFieldSchemas;
+void _nostrZapPubkeys;
 void _act;
 void _dndEnabled;
 void _dndEndHour;
@@ -99,6 +104,15 @@ export const settingsSchema = v.looseObject({
 
 	// kField keys with a divergent HTTP shape:
 	actCurrencies: v.array(v.string()),
+	// nostrZapPubkeys ships as JSON array; CSV in NVS. Stored next to the
+	// legacy kString `nostrZapPubkey` (still in kFieldsHttp) which the
+	// firmware keeps populated as the array's first entry for back-compat
+	// with stale clients. Multi-pubkey reception is plumbed through the
+	// firmware listener via NIP-01's `#p` array filter. Optional so a
+	// pre-multi firmware (or v3) without the plural key still parses;
+	// the WebUI falls back to wrapping `nostrZapPubkey` into a 1-entry
+	// list in that case.
+	nostrZapPubkeys: v.optional(v.array(v.string())),
 
 	// v4-only fields. Optional so v3 devices (which don't emit them) parse.
 	hideLeadZero: v.optional(hideLeadZeroSchema),

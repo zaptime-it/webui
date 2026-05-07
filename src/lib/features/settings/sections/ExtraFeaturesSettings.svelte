@@ -47,12 +47,72 @@
 		'nostrZapNotify' in data && !isValidNostrRelayUrl(data.nostrRelay ?? '')
 	);
 
-	const normalizeNostrKey = (key: 'nostrPubKey' | 'nostrZapPubkey') => {
-		const raw = (data[key] as string).trim();
-		data[key] = raw;
-		if (isValidNpub(raw)) toast.info(m['section.settings.convertingValidNpub']());
-		const pk = getPubKey(raw);
-		if (pk) data[key] = pk;
+	// Normalise a free-form pubkey input — accepts hex or npub, returns
+	// the canonical 64-char lowercase hex on success, null on failure.
+	// Toasts the npub→hex conversion so the user sees the same feedback
+	// the singular nostrPubKey field gives in DataSourceSettings.
+	const normalizePubkeyInput = (raw: string): string | null => {
+		const trimmed = raw.trim();
+		if (!trimmed) return null;
+		if (isValidNpub(trimmed)) toast.info(m['section.settings.convertingValidNpub']());
+		return getPubKey(trimmed);
+	};
+
+	// Cap matches the firmware's kMaxZapPubkeys (settings/nostr_config.hpp).
+	// REQ filter size is bounded by this cap on the wire.
+	const MAX_ZAP_PUBKEYS = 8;
+
+	// Source of truth for the chip list. Falls back to wrapping the legacy
+	// singular `nostrZapPubkey` for installs where the firmware hasn't
+	// emitted the plural slot yet (pre-multi firmware, v3). The PATCH
+	// always sends the plural.
+	const zapPubkeys = $derived.by((): string[] => {
+		if (Array.isArray(data.nostrZapPubkeys)) return data.nostrZapPubkeys;
+		return data.nostrZapPubkey ? [data.nostrZapPubkey] : [];
+	});
+
+	let zapInput = $state('');
+	let zapInputError = $state<string | null>(null);
+
+	const setZapPubkeys = (next: string[]) => {
+		data.nostrZapPubkeys = next;
+		// Keep the legacy singular synced to the array's first entry —
+		// the device-side bridge is order-coherent (plural wins on PATCH)
+		// but echoing it client-side avoids confusing diff displays in
+		// any code path that still reads `nostrZapPubkey`.
+		data.nostrZapPubkey = next[0] ?? '';
+	};
+
+	const addZapPubkey = () => {
+		zapInputError = null;
+		if (zapPubkeys.length >= MAX_ZAP_PUBKEYS) {
+			zapInputError = m['section.settings.nostrZapPubkeysFull']();
+			return;
+		}
+		const pk = normalizePubkeyInput(zapInput);
+		if (!pk) {
+			zapInputError = m['section.settings.invalidNostrPubkey']();
+			return;
+		}
+		if (zapPubkeys.includes(pk)) {
+			zapInputError = m['section.settings.nostrZapPubkeysDuplicate']();
+			return;
+		}
+		setZapPubkeys([...zapPubkeys, pk]);
+		zapInput = '';
+	};
+
+	const removeZapPubkey = (idx: number) => {
+		setZapPubkeys(zapPubkeys.filter((_, i) => i !== idx));
+	};
+
+	const handleZapInputKeydown = (e: KeyboardEvent) => {
+		// Enter or comma commits the entry. Pasting a comma-separated
+		// list is handled below in the input event.
+		if (e.key === 'Enter' || e.key === ',') {
+			e.preventDefault();
+			addZapPubkey();
+		}
 	};
 
 	const testBitaxe = async () => {
@@ -137,8 +197,6 @@
 	// by convention: add a pool here if you add the override in firmware.
 	const poolsWithGlobalStats = new Set(['noderunners', 'satoshiradio']);
 	const supportsGlobalStats = $derived(poolsWithGlobalStats.has(data.miningPoolName));
-
-	const zapInvalid = $derived(!isValidHexPubKey(data.nostrZapPubkey ?? ''));
 </script>
 
 <CollapseCard header={m['section.settings.section.extraFeatures']()} bind:isOpen>
@@ -359,16 +417,68 @@
 					]?.({ setting: m['section.settings.timePerScreen']() }) ??
 						'Restore previous screen state after zap') as string}
 				/>
-				<Field
-					id="nostrZapPubkey"
-					label={m['section.settings.nostrZapPubkey']()}
-					bind:value={data.nostrZapPubkey}
-					required
-					minlength={64}
-					invalid={zapInvalid}
-					helpText={zapInvalid ? m['section.settings.invalidNostrPubkey']() : undefined}
-					onChange={() => normalizeNostrKey('nostrZapPubkey')}
-				/>
+				<div class="form-control mt-2" data-testid="nostrZapPubkeys">
+					<label class="label" for="nostrZapPubkeys-input">
+						<span class="label-text">{m['section.settings.nostrZapPubkeys']()}</span>
+					</label>
+					{#if zapPubkeys.length > 0}
+						<ul class="flex flex-wrap gap-1 mb-2">
+							{#each zapPubkeys as pk, idx (pk)}
+								<li
+									class="badge badge-lg gap-2 font-mono text-xs"
+									class:badge-error={!isValidHexPubKey(pk)}
+									class:badge-neutral={isValidHexPubKey(pk)}
+									id={`nostrZapPubkeys-${idx}`}
+								>
+									<span class="truncate max-w-[16ch]" title={pk}>
+										{pk.slice(0, 8)}…{pk.slice(-4)}
+									</span>
+									<button
+										type="button"
+										class="btn btn-xs btn-ghost btn-circle"
+										aria-label={m['section.settings.nostrZapPubkeysRemove']()}
+										onclick={() => removeZapPubkey(idx)}
+									>
+										✕
+									</button>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+					<div class="join w-full">
+						<input
+							id="nostrZapPubkeys-input"
+							type="text"
+							class="input input-bordered input-sm join-item flex-1 font-mono"
+							class:input-error={zapInputError !== null}
+							placeholder={m['section.settings.nostrZapPubkeysAdd']()}
+							bind:value={zapInput}
+							onkeydown={handleZapInputKeydown}
+							oninput={() => {
+								zapInputError = null;
+							}}
+							disabled={zapPubkeys.length >= MAX_ZAP_PUBKEYS}
+						/>
+						<button
+							type="button"
+							class="btn btn-sm btn-success join-item"
+							onclick={addZapPubkey}
+							disabled={zapPubkeys.length >= MAX_ZAP_PUBKEYS ||
+								zapInput.trim().length === 0}
+							data-testid="nostrZapPubkeys-add"
+						>
+							{m['section.settings.nostrZapPubkeysAddBtn']()}
+						</button>
+					</div>
+					<label class="label" for="nostrZapPubkeys-input">
+						<span class="label-text-alt opacity-70">
+							{zapInputError ?? m['section.settings.nostrZapPubkeysHint']()}
+						</span>
+						<span class="label-text-alt opacity-50">
+							{zapPubkeys.length}/{MAX_ZAP_PUBKEYS}
+						</span>
+					</label>
+				</div>
 			{/if}
 		</div>
 	{/if}

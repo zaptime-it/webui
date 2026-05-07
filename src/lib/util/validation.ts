@@ -49,13 +49,23 @@ export const validateSettings = (
 		});
 	}
 
-	const zap = data.nostrZapPubkey;
-	if (typeof zap === 'string' && zap.length > 0 && !isValidHexPubKey(zap)) {
-		out.push({
-			id: 'nostrZapPubkey',
-			section: 'extra',
-			message: messages.invalidNostrPubkey,
-			field: 'nostrZapPubkey'
+	const zaps = data.nostrZapPubkeys;
+	if (Array.isArray(zaps)) {
+		// One error row per malformed entry; index in the DOM id so the
+		// anchor link can focus the offending chip rather than the whole
+		// list. Empty entries are tolerated (the firmware drops them on
+		// PATCH) but are skipped here so a partially-typed entry doesn't
+		// trigger a top-of-form error before the user finishes pasting.
+		zaps.forEach((entry, idx) => {
+			if (typeof entry !== 'string' || entry.length === 0) return;
+			if (!isValidHexPubKey(entry)) {
+				out.push({
+					id: `nostrZapPubkeys-${idx}`,
+					section: 'extra',
+					message: messages.invalidNostrPubkey,
+					field: 'nostrZapPubkeys'
+				});
+			}
 		});
 	}
 
