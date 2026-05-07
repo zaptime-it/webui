@@ -95,6 +95,7 @@
 			"flFlashOnZap": "Flash de luz frontal con Nostr Zap",
 			"showAll": "Mostrar todo",
 			"hideAll": "Ocultar todo",
+			"flOffOnDnd": "Luz frontal apagada durante No molestar",
 			"flOffWhenDark": "Luz de la pantalla cuando está oscuro",
 			"luxLightToggleText": "Establecer en 0 para desactivar",
 			"verticalDesc": "Descripción de pantalla vertical",

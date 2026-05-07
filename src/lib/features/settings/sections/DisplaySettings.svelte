@@ -202,6 +202,11 @@
 				bind:checked={data.flFlashOnUpd}
 				label={m['section.settings.flFlashOnUpd']()}
 			/>
+			<SwitchField
+				id="flOffOnDnd"
+				bind:checked={data.flOffOnDnd}
+				label={m['section.settings.flOffOnDnd']()}
+			/>
 			{#if data.hasLightLevel}
 				<SwitchField
 					id="flOffWhenDark"

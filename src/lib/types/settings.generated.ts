@@ -271,6 +271,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'flOffOnDnd',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'flOffWhenDark',
 		kind: 'boolean',
 		bootOnly: false,
@@ -884,6 +894,7 @@ export const settingsFieldSchemas = {
 	flFlashOnUpd: v.boolean(),
 	flFlashOnZap: v.boolean(),
 	flMaxBrightness: v.pipe(v.number(), v.minValue(0), v.maxValue(65535)),
+	flOffOnDnd: v.boolean(),
 	flOffWhenDark: v.boolean(),
 	fontName: v.string(),
 	fullRefreshMin: v.pipe(v.number(), v.minValue(0), v.maxValue(1440)),

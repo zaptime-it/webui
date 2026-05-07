@@ -153,6 +153,7 @@ describe('cold-start schema validation', () => {
 			flFlashOnZap: false,
 			hasLightLevel: false,
 			luxLightToggle: 0,
+			flOffOnDnd: true,
 			flOffWhenDark: false,
 			wpTimeout: 600,
 			tzString: 'UTC0',

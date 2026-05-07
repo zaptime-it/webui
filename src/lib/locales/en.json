@@ -120,6 +120,7 @@
 			"flFlashOnZap": "Frontlight flash on Nostr Zap",
 			"showAll": "Show all",
 			"hideAll": "Hide all",
+			"flOffOnDnd": "Frontlight off during Do Not Disturb",
 			"flOffWhenDark": "Frontlight off when dark",
 			"luxLightToggleText": "Set to 0 to disable",
 			"verticalDesc": "Use vertical screen description",
