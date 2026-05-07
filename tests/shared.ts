@@ -136,7 +136,12 @@ export const settingsJson = {
 	miningPoolUser: '38Qkkei3SuF1Eo45BaYmRHUneRD54yyTFy',
 	mowMode: false,
 	nostrZapNotify: true,
+	// Firmware emits both keys: nostrZapPubkeys is the canonical array
+	// (CSV in NVS, array on the wire); nostrZapPubkey is the legacy
+	// echo of the array's first entry for back-compat with stale
+	// clients. Mirror that here.
 	nostrZapPubkey: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422',
+	nostrZapPubkeys: ['b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422'],
 	numScreens: 7,
 	otaEnabled: true,
 	proxyEnabled: false,

@@ -166,19 +166,34 @@ test('npub values will be converted to hex pubkeys', async ({ page }) => {
 	await waitForReady(page);
 	await page.getByRole('button', { name: 'Show all' }).click();
 
-	for (const field of ['#nostrZapPubkey']) {
-		await expect(page.locator(field)).toBeVisible();
-		for (const val of ['npub1k5f85zx0xdskyayqpfpc0zq6n7vwqjuuxugkayk72fgynp34cs3qfcvqg2']) {
-			await page.fill(field, val);
-
-			await page.getByLabel('Nostr Relay').click();
-			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
-
-			expect(resultValue).toBe(
-				'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422'
-			);
-		}
+	// Default fixture seeds one demo chip. Remove it first so the npub
+	// we're about to type doesn't get rejected as a duplicate (the demo
+	// chip's hex matches the npub's decoded hex, that's the whole point
+	// of testing npub→hex conversion against a known answer).
+	const removeFirstChip = page.locator('#nostrZapPubkeys-0 button[aria-label="Remove pubkey"]');
+	if (await removeFirstChip.isVisible()) {
+		await removeFirstChip.click();
 	}
+
+	const input = page.locator('#nostrZapPubkeys-input');
+	const addBtn = page.locator('[data-testid="nostrZapPubkeys-add"]');
+	await expect(input).toBeVisible();
+
+	const npub = 'npub1k5f85zx0xdskyayqpfpc0zq6n7vwqjuuxugkayk72fgynp34cs3qfcvqg2';
+	const hex = 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422';
+
+	await input.fill(npub);
+	await addBtn.click();
+
+	// Chip's full pubkey lives in the inner `<span title>` so the chip
+	// can show a truncated form without losing the canonical value.
+	const chipTitle = await page.locator('#nostrZapPubkeys-0 span').first().getAttribute('title');
+	expect(chipTitle).toBe(hex);
+
+	// Visible (truncated) chip text: first 8 chars + ellipsis + last 4.
+	await expect(page.locator('#nostrZapPubkeys-0 span').first()).toContainText(
+		`${hex.slice(0, 8)}…${hex.slice(-4)}`
+	);
 });
 
 test('empty nostr relay field is not accepted', async ({ page }) => {
