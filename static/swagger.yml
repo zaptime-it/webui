@@ -493,6 +493,30 @@ paths:
       responses:
         '200': { description: successful operation }
         '400': { description: Missing parameter }
+  '/api/frontlight/set':
+    post:
+      tags: [frontlight]
+      summary: Set per-channel frontlight duties (manual override)
+      description: |
+        Body is a flat JSON array of 12-bit duty values (0..4095), one
+        entry per panel-backlight channel. Length must equal `numScreens`
+        (or be empty to clear all channels to 0). Bypasses the DND gate
+        and the always-on / lux fader so a debug pattern (e.g. zebra)
+        persists until any subsequent block-flash, ambient transition,
+        or brightness PATCH resumes uniform fader control.
+      security: [{ basicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { type: integer, minimum: 0, maximum: 4095 }
+            example: [2048, 0, 2048, 0, 2048, 0, 2048]
+      responses:
+        '200': { description: successful operation }
+        '400': { description: bad json / channel count mismatch / out of range }
+        '503': { description: frontlight not present on this board }
   '/events':
     get:
       tags: [system]
@@ -648,10 +672,23 @@ components:
           items: { type: string }
         leds: { '$ref': '#/components/schemas/ArrayOfLeds' }
         dnd: { '$ref': '#/components/schemas/DndNestedStatus' }
-        flStatus:
-          type: array
-          items: { type: integer }
-          description: Present when hardware has frontlight support.
+        frontlight:
+          type: object
+          description: Present when the board has frontlight hardware.
+          properties:
+            on:
+              type: boolean
+              description: True when at least one channel is non-zero.
+            duties:
+              type: array
+              description: Per-channel current 12-bit duty (0..4095). One entry per panel.
+              items: { type: integer, minimum: 0, maximum: 4095 }
+            targetDuty:
+              type: integer
+              description: Where the global fader is heading (single-value approximation).
+            configuredBrightness:
+              type: integer
+              description: User's "on" brightness preference (`flMaxBrightness`).
         lightLevel:
           type: integer
           description: Present when ambient light sensor is available.
