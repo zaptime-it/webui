@@ -39,8 +39,18 @@
 		data.invertedColor = Boolean(Number(data.invertedColor));
 	};
 
+	// `data.timerSeconds` is the canonical local cache (mirroring NVS),
+	// `data.timePerScreen` is the WebUI-only display unit. When the user
+	// edits the minutes input we mirror back to seconds so the dirty-
+	// tracking and post-PATCH pristine snapshot stay self-consistent.
+	// The conversion is derived from the just-edited `timePerScreen`
+	// value — no hardcoded fallback. Both the firmware GET response and
+	// `deriveTimePerScreen` in the store also derive from `timerSeconds`
+	// (seconds is the single source of truth).
 	const onTimePerScreenChange = () => {
-		data.timerSeconds = (data.timePerScreen ?? 1) * 60;
+		if (data.timePerScreen !== undefined) {
+			data.timerSeconds = data.timePerScreen * 60;
+		}
 	};
 </script>
 
@@ -78,7 +88,7 @@
 		<NumberField
 			id="timePerScreen"
 			label={m['section.settings.timePerScreen']()}
-			bind:value={() => data.timePerScreen ?? 1, (v) => (data.timePerScreen = v)}
+			bind:value={data.timePerScreen}
 			min={1}
 			step={1}
 			required

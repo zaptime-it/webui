@@ -41,9 +41,21 @@ const state = $state<{
 
 const derived = $derived.by(() => state.value);
 
+// Derive the WebUI-only `timePerScreen` (integer minutes) from the
+// canonical `timerSeconds` stored in NVS. Single source of truth: the
+// seconds value; minutes are a presentation unit and never written to
+// the local model independently. We use ceiling division + a min-1
+// floor to match the firmware's BuildGetResponse computation
+// `(timer_s + 59u) / 60u` — so a fresh-NVS device that stores 600 s
+// shows "10 min", and any legacy sub-60 s value rounds up to 1 min
+// instead of 0 (which would violate the NumberField's `min={1}`).
+// Always-recompute (rather than fill-only-if-undefined) so a partial
+// patch via `update()` that touches timerSeconds keeps the derived
+// minutes consistent without requiring the caller to remember to
+// strip timePerScreen first.
 const deriveTimePerScreen = (s: Settings): Settings => ({
 	...s,
-	timePerScreen: Math.floor(s.timerSeconds / 60)
+	timePerScreen: Math.max(1, Math.ceil(s.timerSeconds / 60))
 });
 
 // One JSON.stringify per top-level field. For primitives this is a single
