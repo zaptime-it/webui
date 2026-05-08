@@ -196,22 +196,24 @@ test('npub values will be converted to hex pubkeys', async ({ page }) => {
 	);
 });
 
-test('empty nostr relay field is not accepted', async ({ page }) => {
+test('empty nostr relay list is rejected when zap notify is enabled', async ({ page }) => {
 	await page.goto('/');
 	await waitForReady(page);
 	await page.getByRole('button', { name: 'Show all' }).click();
 
-	const nostrRelayField = page.getByLabel('Nostr Relay');
-	await expect(nostrRelayField).toBeVisible();
+	// Default fixture seeds one chip in the canonical (Extra Features)
+	// chip list. Remove it to drive the chip list empty, then assert the
+	// form-level validation summary surfaces nostrRelays as required —
+	// the chip list has no native `required` to lean on, so the Save
+	// path's pre-flight catches the empty list instead.
+	const removeBtn = page.locator('#nostrRelays-0 button[aria-label="Remove relay"]');
+	await expect(removeBtn).toBeVisible();
+	await removeBtn.click();
 
-	await nostrRelayField.fill('');
-
-	await page.getByRole('button', { name: 'Save', exact: true }).click();
-	const validationMessage = await nostrRelayField.evaluate(
-		(el) => (el as HTMLInputElement).validationMessage
+	await expect(page.getByTestId('validation-summary')).toBeVisible();
+	await expect(page.getByTestId('validation-link-nostrRelays-input')).toContainText(
+		'At least one Nostr relay is required'
 	);
-
-	expect(validationMessage).toContain('Please fill out this field');
 });
 
 test('screens should be able to change', async ({ page }) => {
