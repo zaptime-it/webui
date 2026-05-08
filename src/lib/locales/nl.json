@@ -120,6 +120,8 @@
 			"nostrRelaysRemove": "Relay verwijderen",
 			"nostrRelaysDuplicate": "Relay staat al in de lijst",
 			"nostrRelaysFull": "Limiet bereikt (4 relays)",
+			"nostrRelaysUnreachable": "Kan geen verbinding maken met relay",
+			"nostrRelaysAddedTitle": "Verbonden met Nostr-relay",
 			"nostrRelayRequired": "Minstens één Nostr-relay is vereist",
 			"invalidNostrRelay": "Ongeldige Nostr-relay, URL moet beginnen met wss://",
 			"thirdPartyExtrasWarning": "De externe gegevensbron (mempool.space/Kraken) is erg data-intensief; Bitaxe, mining-pool-statistieken of Nostr-zaps tegelijk inschakelen kan het apparaat laten vastlopen. Gebruik bij voorkeur de BTClock-bron of een aangepast endpoint — wil je toch extra's, schakel ze dan niet allemaal tegelijk in."

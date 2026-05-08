@@ -112,6 +112,8 @@
 			"nostrRelaysRemove": "Relay entfernen",
 			"nostrRelaysDuplicate": "Relay bereits in der Liste",
 			"nostrRelaysFull": "Limit erreicht (4 Relays)",
+			"nostrRelaysUnreachable": "Verbindung zum Relay nicht möglich",
+			"nostrRelaysAddedTitle": "Mit Nostr-Relay verbunden",
 			"nostrRelayRequired": "Mindestens ein Nostr-Relay ist erforderlich",
 			"invalidNostrRelay": "Ungültiger Nostr-Relay, URL muss mit wss:// beginnen",
 			"thirdPartySource": "mempool.space/coincap.io Verwenden",

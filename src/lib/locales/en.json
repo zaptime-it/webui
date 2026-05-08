@@ -82,6 +82,8 @@
 			"nostrRelaysRemove": "Remove relay",
 			"nostrRelaysDuplicate": "Relay already in list",
 			"nostrRelaysFull": "Limit reached (4 relays)",
+			"nostrRelaysUnreachable": "Could not connect to relay",
+			"nostrRelaysAddedTitle": "Connected to Nostr relay",
 			"nostrRelayRequired": "At least one Nostr relay is required",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
 			"invalidNostrRelay": "Invalid Nostr relay, URL must start with wss://",

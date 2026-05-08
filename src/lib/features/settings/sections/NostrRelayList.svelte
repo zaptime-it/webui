@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
-	import { isValidNostrRelayUrl } from '$lib/util/nostr';
+	import { isValidNostrRelayUrl, isValidNostrRelay, fetchNostrRelayInfo } from '$lib/util/nostr';
+	import { toast } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		relays: string[];
@@ -19,10 +20,26 @@
 	// a single WSS per relay via NIP-01 multi-sub.
 	const MAX_NOSTR_RELAYS = 4;
 
+	// Cap how long we wait for the browser-side WSS handshake before
+	// declaring the relay unreachable. nostr-tools' Relay.connect doesn't
+	// expose a timeout knob, so we race it ourselves. 8s is comfortably
+	// above the relays we've measured (~300ms) and below the user's
+	// patience threshold for a button click.
+	const RELAY_PROBE_TIMEOUT_MS = 8000;
+
 	let input = $state('');
 	let inputError = $state<string | null>(null);
+	let testing = $state(false);
 
-	const addRelay = () => {
+	const probeRelay = async (url: string): Promise<boolean> => {
+		const probe = isValidNostrRelay(url);
+		const timeout = new Promise<boolean>((resolve) =>
+			setTimeout(() => resolve(false), RELAY_PROBE_TIMEOUT_MS)
+		);
+		return Promise.race([probe, timeout]);
+	};
+
+	const addRelay = async () => {
 		inputError = null;
 		const url = input.trim();
 		if (!url) return;
@@ -38,8 +55,31 @@
 			inputError = m['section.settings.nostrRelaysDuplicate']();
 			return;
 		}
-		onChange([...relays, url]);
-		input = '';
+		// Probe the relay from the browser before persisting it. A relay
+		// that won't open a WSS handshake from here usually won't open one
+		// from the device either — refusing to add it short-circuits a
+		// "saved but never connects" mystery. NIP-11 metadata is fetched
+		// in parallel for the success toast; its absence isn't fatal
+		// (some private relays don't serve NIP-11).
+		testing = true;
+		try {
+			const [reachable, info] = await Promise.all([
+				probeRelay(url),
+				fetchNostrRelayInfo(url)
+			]);
+			if (!reachable) {
+				inputError = m['section.settings.nostrRelaysUnreachable']();
+				return;
+			}
+			const title = info?.name
+				? `${m['section.settings.nostrRelaysAddedTitle']()}: ${info.name}`
+				: m['section.settings.nostrRelaysAddedTitle']();
+			toast.success(title, url);
+			onChange([...relays, url]);
+			input = '';
+		} finally {
+			testing = false;
+		}
 	};
 
 	const removeRelay = (idx: number) => {
@@ -49,7 +89,7 @@
 	const handleKeydown = (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
-			addRelay();
+			void addRelay();
 		}
 	};
 </script>
@@ -93,16 +133,19 @@
 			oninput={() => {
 				inputError = null;
 			}}
-			disabled={disabled || relays.length >= MAX_NOSTR_RELAYS}
+			disabled={disabled || testing || relays.length >= MAX_NOSTR_RELAYS}
 		/>
 		<button
 			type="button"
 			class="btn btn-sm btn-success join-item"
 			onclick={addRelay}
-			disabled={disabled || relays.length >= MAX_NOSTR_RELAYS || input.trim().length === 0}
+			disabled={disabled ||
+				testing ||
+				relays.length >= MAX_NOSTR_RELAYS ||
+				input.trim().length === 0}
 			data-testid={`${idPrefix}-add`}
 		>
-			{m['section.settings.nostrRelaysAddBtn']()}
+			{testing ? '…' : m['section.settings.nostrRelaysAddBtn']()}
 		</button>
 	</div>
 	<label class="label" for={`${idPrefix}-input`}>
