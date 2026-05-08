@@ -30,4 +30,21 @@ describe('SettingsPanel', () => {
 		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
 		expect(src).toContain('patch.screens.map((s, i) => ({ ...s, order: i }))');
 	});
+
+	test('Cmd/Ctrl+S handler always preventDefaults to suppress browser save dialog', () => {
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		const m = src.match(/handleKeydown[\s\S]*?\};/);
+		expect(m).toBeTruthy();
+		const block = m![0];
+		const preventIdx = block.indexOf('e.preventDefault');
+		const dirtyIdx = block.indexOf('isDirty');
+		expect(preventIdx).toBeGreaterThan(-1);
+		expect(dirtyIdx).toBeGreaterThan(-1);
+		expect(preventIdx).toBeLessThan(dirtyIdx);
+	});
+
+	test('mounts a svelte:window onkeydown listener so shortcut works without field focus', () => {
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		expect(src).toMatch(/<svelte:window\s+onkeydown=\{handleKeydown\}/);
+	});
 });

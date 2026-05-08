@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
+	import { browser } from '$app/environment';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import ScreenSpecificSettings from './sections/ScreenSpecificSettings.svelte';
@@ -20,22 +21,63 @@
 		['local_public_pool', 'Public Pool (local)']
 	]);
 
-	let screenOpen = $state(true);
-	let displayOpen = $state(false);
-	let dataSourceOpen = $state(false);
-	let extraOpen = $state(false);
-	let systemOpen = $state(false);
+	type SectionKey = 'screen' | 'display' | 'dataSource' | 'extra' | 'system';
+	const SECTIONS_OPEN_KEY = 'settings.sectionsOpen';
+	const sectionDefaults: Record<SectionKey, boolean> = {
+		screen: true,
+		display: false,
+		dataSource: false,
+		extra: false,
+		system: false
+	};
+
+	const loadSectionsOpen = (): Record<SectionKey, boolean> => {
+		if (!browser) return { ...sectionDefaults };
+		try {
+			const raw = localStorage.getItem(SECTIONS_OPEN_KEY);
+			if (!raw) return { ...sectionDefaults };
+			const parsed = JSON.parse(raw) as Partial<Record<SectionKey, boolean>>;
+			const merged = { ...sectionDefaults };
+			for (const k of Object.keys(sectionDefaults) as SectionKey[]) {
+				if (typeof parsed[k] === 'boolean') merged[k] = parsed[k] as boolean;
+			}
+			return merged;
+		} catch {
+			return { ...sectionDefaults };
+		}
+	};
+
+	const sectionsOpen = $state(loadSectionsOpen());
+
+	$effect(() => {
+		if (!browser) return;
+		try {
+			localStorage.setItem(SECTIONS_OPEN_KEY, JSON.stringify(sectionsOpen));
+		} catch {
+			// non-fatal (quota/disabled storage): just lose persistence
+		}
+	});
 
 	const showAll = () => {
-		screenOpen = displayOpen = dataSourceOpen = extraOpen = systemOpen = true;
+		for (const k of Object.keys(sectionsOpen) as SectionKey[]) sectionsOpen[k] = true;
 	};
 	const hideAll = () => {
-		screenOpen = displayOpen = dataSourceOpen = extraOpen = systemOpen = false;
+		for (const k of Object.keys(sectionsOpen) as SectionKey[]) sectionsOpen[k] = false;
 	};
 
 	const handleReset = async (e: Event) => {
 		e.preventDefault();
 		await settingsStore.load();
+	};
+
+	// Ctrl+S / Cmd+S saves while this panel is mounted and always suppresses
+	// the browser "save page" dialog for this shortcut.
+	const handleKeydown = (e: KeyboardEvent) => {
+		const isSaveCombo = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's';
+		if (!isSaveCombo) return;
+		e.preventDefault();
+		if (!settingsStore.isDirty) return;
+		void handleSubmit(e);
 	};
 
 	const handleSubmit = async (e: Event) => {
@@ -85,6 +127,8 @@
 	};
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 <div class="card bg-base-100 shadow @container" id="settings-card">
 	<div class="card-body space-y-4">
 		<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -118,11 +162,11 @@
 			</div>
 		{:else}
 			<form onsubmit={handleSubmit} class="space-y-4">
-				<ScreenSpecificSettings bind:isOpen={screenOpen} />
-				<DisplaySettings bind:isOpen={displayOpen} />
-				<DataSourceSettings bind:isOpen={dataSourceOpen} />
-				<ExtraFeaturesSettings bind:isOpen={extraOpen} {miningPoolMap} />
-				<SystemSettings bind:isOpen={systemOpen} />
+				<ScreenSpecificSettings bind:isOpen={sectionsOpen.screen} />
+				<DisplaySettings bind:isOpen={sectionsOpen.display} />
+				<DataSourceSettings bind:isOpen={sectionsOpen.dataSource} />
+				<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
+				<SystemSettings bind:isOpen={sectionsOpen.system} />
 
 				<div class="flex items-center gap-2 mt-4">
 					<button type="submit" class="btn btn-sm btn-primary" disabled={!settingsStore.isDirty}>

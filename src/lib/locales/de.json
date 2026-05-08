@@ -20,6 +20,7 @@
 			"useSatsSymbol": "Sats-Symbol verwenden",
 			"useMscwTime": "Moscow Time verwenden",
 			"suffixPrice": "Suffix-Preisformat",
+			"requiresSuffixPrice": "Setzt voraus, dass „Suffix-Preisformat“ aktiviert ist",
 			"disableLeds": "Alle LED-Effekte deaktivieren",
 			"otaUpdates": "OTA updates",
 			"enableMdns": "mDNS",
