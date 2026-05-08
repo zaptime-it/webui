@@ -633,7 +633,28 @@ components:
         price: { type: boolean }
         blocks: { type: boolean }
         V2: { type: boolean }
-        nostr: { type: boolean }
+        nostr:
+          type: array
+          description: |
+            Per-relay Nostr connection state, one entry per configured
+            relay (firmware ≥ 4.0.0-rc.4). The array's order matches
+            `settings.nostrRelays`. Empty when no Nostr feature is wired
+            (`dataSource != 2` AND `nostrZapNotify` off, or every relay
+            URL was rejected at boot). Pre-rc.4 firmware emitted this
+            field as a single boolean — clients should feature-detect
+            on `Array.isArray()`.
+          items: { '$ref': '#/components/schemas/NostrRelayStatus' }
+    NostrRelayStatus:
+      type: object
+      description: One relay's live WebSocket state (in `connectionStatus.nostr`).
+      required: [url, connected]
+      properties:
+        url:
+          type: string
+          example: 'wss://relay.primal.net'
+        connected:
+          type: boolean
+          description: True while the WSS handshake is up and the relay is reachable.
     DndNestedStatus:
       type: object
       description: DND block embedded in `GET /api/status` and SSE payload
@@ -746,9 +767,54 @@ components:
         mempoolSecure: { type: boolean }
         localPoolHost: { type: string }
         nostrPubKey: { type: string }
-        nostrRelay: { type: string }
+        nostrRelay:
+          type: string
+          deprecated: true
+          description: |
+            Legacy single-relay slot. On `GET` this mirrors
+            `nostrRelays[0]` for back-compat with pre-rc.4 clients; on
+            `PATCH` a string write is bridged into a 1-element
+            `nostrRelays`. New clients should read and write
+            `nostrRelays` instead.
+        nostrRelays:
+          type: array
+          description: |
+            Configured Nostr relay URLs (firmware ≥ 4.0.0-rc.4). Each
+            entry opens one WebSocket; the data source (when
+            `dataSource=2`) and the zap listener (when `nostrZapNotify`
+            is on) share a single WSS per relay via NIP-01 multi-sub.
+            Boot-only — a `PATCH` returns `rebootRequired: true` and the
+            new list takes effect on the next boot. Cap of 4 entries
+            (validator returns `nostrRelays:too_many` past that).
+            Bad-scheme entries return `nostrRelays:bad_scheme`.
+          maxItems: 4
+          items:
+            type: string
+            pattern: '^(wss|ws)://'
+            example: 'wss://relay.primal.net'
         nostrZapNotify: { type: boolean }
-        nostrZapPubkey: { type: string }
+        nostrZapPubkey:
+          type: string
+          deprecated: true
+          description: |
+            Legacy single-pubkey slot. On `GET` mirrors
+            `nostrZapPubkeys[0]`; on `PATCH` a string write is bridged
+            into a 1-element `nostrZapPubkeys`. New clients should read
+            and write `nostrZapPubkeys` instead.
+        nostrZapPubkeys:
+          type: array
+          description: |
+            Zap-recipient pubkeys. The listener emits one NIP-01 REQ
+            with `#p` matching every entry, so all recipients share one
+            subscription per relay. Cap of 8 entries (validator returns
+            `nostrZapPubkeys:too_many` past that). Each must be 64-char
+            lowercase hex.
+          maxItems: 8
+          items:
+            type: string
+            minLength: 64
+            maxLength: 64
+            pattern: '^[0-9a-f]{64}$'
         ledFlashOnZap: { type: boolean }
         scrnRestoreZap: { type: boolean }
         fontName: { type: string }

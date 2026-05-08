@@ -856,6 +856,45 @@
 				}
 			}
 		},
+		"/api/frontlight/set": {
+			"post": {
+				"tags": ["frontlight"],
+				"summary": "Set per-channel frontlight duties (manual override)",
+				"description": "Body is a flat JSON array of 12-bit duty values (0..4095), one\nentry per panel-backlight channel. Length must equal `numScreens`\n(or be empty to clear all channels to 0). Bypasses the DND gate\nand the always-on / lux fader so a debug pattern (e.g. zebra)\npersists until any subsequent block-flash, ambient transition,\nor brightness PATCH resumes uniform fader control.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"type": "integer",
+									"minimum": 0,
+									"maximum": 4095
+								}
+							},
+							"example": [2048, 0, 2048, 0, 2048, 0, 2048]
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation"
+					},
+					"400": {
+						"description": "bad json / channel count mismatch / out of range"
+					},
+					"503": {
+						"description": "frontlight not present on this board"
+					}
+				}
+			}
+		},
 		"/events": {
 			"get": {
 				"tags": ["system"],
@@ -1006,7 +1045,26 @@
 						"type": "boolean"
 					},
 					"nostr": {
-						"type": "boolean"
+						"type": "array",
+						"description": "Per-relay Nostr connection state, one entry per configured\nrelay (firmware \u2265 4.0.0-rc.4). The array's order matches\n`settings.nostrRelays`. Empty when no Nostr feature is wired\n(`dataSource != 2` AND `nostrZapNotify` off, or every relay\nURL was rejected at boot). Pre-rc.4 firmware emitted this\nfield as a single boolean \u2014 clients should feature-detect\non `Array.isArray()`.\n",
+						"items": {
+							"$ref": "#/components/schemas/NostrRelayStatus"
+						}
+					}
+				}
+			},
+			"NostrRelayStatus": {
+				"type": "object",
+				"description": "One relay's live WebSocket state (in `connectionStatus.nostr`).",
+				"required": ["url", "connected"],
+				"properties": {
+					"url": {
+						"type": "string",
+						"example": "wss://relay.primal.net"
+					},
+					"connected": {
+						"type": "boolean",
+						"description": "True while the WSS handshake is up and the relay is reachable."
 					}
 				}
 			},
@@ -1102,12 +1160,32 @@
 					"dnd": {
 						"$ref": "#/components/schemas/DndNestedStatus"
 					},
-					"flStatus": {
-						"type": "array",
-						"items": {
-							"type": "integer"
-						},
-						"description": "Present when hardware has frontlight support."
+					"frontlight": {
+						"type": "object",
+						"description": "Present when the board has frontlight hardware.",
+						"properties": {
+							"true": {
+								"type": "boolean",
+								"description": "True when at least one channel is non-zero."
+							},
+							"duties": {
+								"type": "array",
+								"description": "Per-channel current 12-bit duty (0..4095). One entry per panel.",
+								"items": {
+									"type": "integer",
+									"minimum": 0,
+									"maximum": 4095
+								}
+							},
+							"targetDuty": {
+								"type": "integer",
+								"description": "Where the global fader is heading (single-value approximation)."
+							},
+							"configuredBrightness": {
+								"type": "integer",
+								"description": "User's \"on\" brightness preference (`flMaxBrightness`)."
+							}
+						}
 					},
 					"lightLevel": {
 						"type": "integer",
@@ -1238,13 +1316,38 @@
 						"type": "string"
 					},
 					"nostrRelay": {
-						"type": "string"
+						"type": "string",
+						"deprecated": true,
+						"description": "Legacy single-relay slot. On `GET` this mirrors\n`nostrRelays[0]` for back-compat with pre-rc.4 clients; on\n`PATCH` a string write is bridged into a 1-element\n`nostrRelays`. New clients should read and write\n`nostrRelays` instead.\n"
+					},
+					"nostrRelays": {
+						"type": "array",
+						"description": "Configured Nostr relay URLs (firmware \u2265 4.0.0-rc.4). Each\nentry opens one WebSocket; the data source (when\n`dataSource=2`) and the zap listener (when `nostrZapNotify`\nis on) share a single WSS per relay via NIP-01 multi-sub.\nBoot-only \u2014 a `PATCH` returns `rebootRequired: true` and the\nnew list takes effect on the next boot. Cap of 4 entries\n(validator returns `nostrRelays:too_many` past that).\nBad-scheme entries return `nostrRelays:bad_scheme`.\n",
+						"maxItems": 4,
+						"items": {
+							"type": "string",
+							"pattern": "^(wss|ws)://",
+							"example": "wss://relay.primal.net"
+						}
 					},
 					"nostrZapNotify": {
 						"type": "boolean"
 					},
 					"nostrZapPubkey": {
-						"type": "string"
+						"type": "string",
+						"deprecated": true,
+						"description": "Legacy single-pubkey slot. On `GET` mirrors\n`nostrZapPubkeys[0]`; on `PATCH` a string write is bridged\ninto a 1-element `nostrZapPubkeys`. New clients should read\nand write `nostrZapPubkeys` instead.\n"
+					},
+					"nostrZapPubkeys": {
+						"type": "array",
+						"description": "Zap-recipient pubkeys. The listener emits one NIP-01 REQ\nwith `#p` matching every entry, so all recipients share one\nsubscription per relay. Cap of 8 entries (validator returns\n`nostrZapPubkeys:too_many` past that). Each must be 64-char\nlowercase hex.\n",
+						"maxItems": 8,
+						"items": {
+							"type": "string",
+							"minLength": 64,
+							"maxLength": 64,
+							"pattern": "^[0-9a-f]{64}$"
+						}
 					},
 					"ledFlashOnZap": {
 						"type": "boolean"
