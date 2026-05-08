@@ -6,17 +6,11 @@
 	import SelectField from '$lib/ui/SelectField.svelte';
 	import SwitchField from '$lib/ui/SwitchField.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
-	import {
-		isValidHexPubKey,
-		getPubKey,
-		isValidNpub,
-		isValidNostrRelayUrl,
-		isValidNostrRelay,
-		fetchNostrRelayInfo
-	} from '$lib/util/nostr';
+	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
 	import { fetchBitaxeInfo, fetchLocalPoolInfo, FetchError } from '$lib/api/external';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { DataSourceType } from '$lib/types/settings';
+	import NostrRelayList from './NostrRelayList.svelte';
 
 	const describeError = (err: unknown, opts: { thing: string }): [string, string] => {
 		if (err instanceof FetchError) {
@@ -40,12 +34,24 @@
 
 	let validBitaxe = $state(false);
 	let validLocalPool = $state(false);
-	let validNostrRelay = $state(false);
-	let testingNostrRelay = $state(false);
 
-	const relayInvalid = $derived(
-		'nostrZapNotify' in data && !isValidNostrRelayUrl(data.nostrRelay ?? '')
-	);
+	// Source of truth for the relay chip list. Falls back to wrapping the
+	// legacy singular `nostrRelay` for installs where the firmware hasn't
+	// emitted the plural slot yet (pre-rc.4, v3). The PATCH always sends
+	// the plural; the firmware bridges back-compat.
+	const relays = $derived.by((): string[] => {
+		if (Array.isArray(data.nostrRelays)) return data.nostrRelays;
+		return data.nostrRelay ? [data.nostrRelay] : [];
+	});
+
+	const setRelays = (next: string[]) => {
+		data.nostrRelays = next;
+		// Echo the array's first entry into the legacy singular slot so any
+		// code path that still reads `nostrRelay` (and the device-side bridge)
+		// stays order-coherent. The firmware's PATCH bridge prefers the
+		// plural; this keeps the GET-shape mirror in sync client-side.
+		data.nostrRelay = next[0] ?? '';
+	};
 
 	// Normalise a free-form pubkey input — accepts hex or npub, returns
 	// the canonical 64-char lowercase hex on success, null on failure.
@@ -127,49 +133,6 @@
 			validBitaxe = false;
 			const [title, message] = describeError(err, { thing: 'Bitaxe' });
 			toast.error(title, message);
-		}
-	};
-
-	const describeRelayInfo = (info: Awaited<ReturnType<typeof fetchNostrRelayInfo>>): string => {
-		if (!info) return '';
-		const parts: string[] = [];
-		if (info.software) {
-			parts.push(info.version ? `${info.software} ${info.version}` : info.software);
-		} else if (info.version) {
-			parts.push(info.version);
-		}
-		if (Array.isArray(info.supported_nips) && info.supported_nips.length > 0) {
-			parts.push(`${info.supported_nips.length} NIPs`);
-		}
-		return parts.join(' · ');
-	};
-
-	const testNostrRelay = async () => {
-		if (relayInvalid) {
-			toast.error(m['section.settings.invalidNostrRelay']());
-			return;
-		}
-		testingNostrRelay = true;
-		try {
-			const [ok, info] = await Promise.all([
-				isValidNostrRelay(data.nostrRelay),
-				fetchNostrRelayInfo(data.nostrRelay)
-			]);
-			if (ok) {
-				const title = info?.name ? `Connected to ${info.name}` : 'Connected to Nostr relay';
-				const detail = describeRelayInfo(info) || data.nostrRelay;
-				toast.success(title, detail);
-				validNostrRelay = true;
-			} else {
-				validNostrRelay = false;
-				toast.error('Could not connect to Nostr relay', data.nostrRelay);
-			}
-		} catch (err) {
-			validNostrRelay = false;
-			const [title, message] = describeError(err, { thing: 'Nostr relay' });
-			toast.error(title, message);
-		} finally {
-			testingNostrRelay = false;
 		}
 	};
 
@@ -366,27 +329,12 @@
 	{#if 'nostrZapNotify' in data}
 		<div class="mt-4">
 			<h5 class="font-semibold mb-2">Nostr</h5>
-			<Field
-				id="nostrRelay"
-				label={m['section.settings.nostrRelay']()}
-				bind:value={data.nostrRelay}
-				required
-				invalid={relayInvalid}
-				valid={validNostrRelay}
-				helpText={relayInvalid ? m['section.settings.invalidNostrRelay']() : undefined}
-			>
-				{#snippet action()}
-					<button
-						type="button"
-						class="join-item btn btn-sm btn-success"
-						onclick={testNostrRelay}
-						disabled={relayInvalid || testingNostrRelay}
-						data-testid="nostrrelay-test-btn"
-					>
-						{testingNostrRelay ? '...' : 'Test'}
-					</button>
-				{/snippet}
-			</Field>
+			<NostrRelayList
+				{relays}
+				onChange={setRelays}
+				idPrefix="nostrRelays"
+				label={m['section.settings.nostrRelays']()}
+			/>
 			<SwitchField
 				id="nostrZapNotify"
 				bind:checked={data.nostrZapNotify}

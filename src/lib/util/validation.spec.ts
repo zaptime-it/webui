@@ -1,16 +1,28 @@
 import { describe, test, expect } from 'vitest';
 import { validateSettings } from './validation';
 import type { Settings } from '$lib/types/settings';
+import { DataSourceType } from '$lib/types/settings';
 
 const fakeSettings = (overrides: Partial<Settings> = {}): Settings =>
 	({
 		nostrPubKey: '',
 		nostrZapPubkey: '',
 		nostrZapPubkeys: [],
+		// Default keeps the relay-required validator quiet: BTCLOCK_SOURCE
+		// + zap notify off means no relay needed. Tests that exercise the
+		// relay branch override these.
+		nostrRelay: '',
+		nostrRelays: [],
+		nostrZapNotify: false,
+		dataSource: DataSourceType.BTCLOCK_SOURCE,
 		...overrides
 	}) as unknown as Settings;
 
-const messages = { invalidNostrPubkey: 'Invalid pubkey' };
+const messages = {
+	invalidNostrPubkey: 'Invalid pubkey',
+	invalidNostrRelay: 'Invalid relay',
+	nostrRelayRequired: 'At least one relay required'
+};
 
 describe('validateSettings', () => {
 	test('returns no errors for null data', () => {
@@ -83,6 +95,61 @@ describe('validateSettings', () => {
 			}),
 			messages
 		);
+		// nostrRelays-input slips between the two when zap notify isn't set;
+		// here both branches are off so only the two pubkey errors fire.
 		expect(errs.map((e) => e.id)).toEqual(['nostrPubKey', 'nostrZapPubkeys-0']);
+	});
+
+	test('flags an invalid nostrRelays entry under the extra section, indexed', () => {
+		const errs = validateSettings(
+			fakeSettings({
+				nostrRelays: ['wss://relay.primal.net', 'http://nope', 'wss://relay2']
+			}),
+			messages
+		);
+		expect(errs).toHaveLength(1);
+		expect(errs[0]).toMatchObject({
+			id: 'nostrRelays-1',
+			section: 'extra',
+			field: 'nostrRelays',
+			message: 'Invalid relay'
+		});
+	});
+
+	test('flags missing relays when zap notify is enabled', () => {
+		const errs = validateSettings(
+			fakeSettings({ nostrZapNotify: true, nostrRelays: [] }),
+			messages
+		);
+		expect(errs).toHaveLength(1);
+		expect(errs[0]).toMatchObject({
+			id: 'nostrRelays-input',
+			section: 'extra',
+			field: 'nostrRelays',
+			message: 'At least one relay required'
+		});
+	});
+
+	test('flags missing relays when Nostr is selected as data source', () => {
+		const errs = validateSettings(
+			fakeSettings({ dataSource: DataSourceType.NOSTR_SOURCE, nostrRelays: [] }),
+			messages
+		);
+		expect(errs.map((e) => e.id)).toEqual(['nostrRelays-input']);
+	});
+
+	test('legacy singular nostrRelay satisfies the required check', () => {
+		// Pre-rc.4 firmware emits only `nostrRelay`; the WebUI bridges by
+		// wrapping it into a 1-entry list. The required check should treat
+		// that as "have at least one".
+		const errs = validateSettings(
+			fakeSettings({
+				nostrZapNotify: true,
+				nostrRelay: 'wss://relay.primal.net',
+				nostrRelays: undefined as unknown as string[]
+			}),
+			messages
+		);
+		expect(errs).toEqual([]);
 	});
 });

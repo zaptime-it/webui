@@ -135,6 +135,7 @@ describe('cold-start schema validation', () => {
 			ceDisableSSL: false,
 			nostrPubKey: '',
 			nostrRelay: '',
+			nostrRelays: [],
 			nostrZapNotify: false,
 			nostrZapPubkey: '',
 			disableLeds: false,

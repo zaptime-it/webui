@@ -114,6 +114,15 @@ export const settingsSchema = v.looseObject({
 	// list in that case.
 	nostrZapPubkeys: v.optional(v.array(v.string())),
 
+	// nostrRelays follows the same pattern as nostrZapPubkeys: JSON array
+	// on the wire, CSV in NVS. The firmware keeps the legacy kString
+	// `nostrRelay` (still in kFieldsHttp) populated as the array's first
+	// entry for back-compat. Boot-only — a PATCH that changes the list
+	// returns rebootRequired=true. Optional so a pre-rc.4 firmware (or v3)
+	// without the plural key still parses; the WebUI falls back to wrapping
+	// `nostrRelay` into a 1-entry list in that case.
+	nostrRelays: v.optional(v.array(v.string())),
+
 	// v4-only fields. Optional so v3 devices (which don't emit them) parse.
 	hideLeadZero: v.optional(hideLeadZeroSchema),
 	wifiRebootMin: v.optional(wifiRebootMinSchema),
@@ -201,11 +210,19 @@ export const ledSchema = v.object({
 	blue: v.optional(v.number())
 });
 
+export const nostrRelayStatusSchema = v.object({
+	url: v.string(),
+	connected: v.boolean()
+});
+
 export const connectionStatusSchema = v.object({
 	price: v.boolean(),
 	blocks: v.boolean(),
 	V2: v.optional(v.boolean()),
-	nostr: v.optional(v.boolean())
+	// Firmware ≥ 4.0.0-rc.4 ships per-relay state as an array; pre-rc.4
+	// builds emitted a single boolean. Accept either so a fleet mid-upgrade
+	// keeps parsing.
+	nostr: v.optional(v.union([v.boolean(), v.array(nostrRelayStatusSchema)]))
 });
 
 export const statusSchema = v.looseObject({

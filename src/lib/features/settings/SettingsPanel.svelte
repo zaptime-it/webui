@@ -131,7 +131,9 @@
 
 	const validationErrors = $derived(
 		validateSettings(settingsStore.data, {
-			invalidNostrPubkey: m['section.settings.invalidNostrPubkey']()
+			invalidNostrPubkey: m['section.settings.invalidNostrPubkey'](),
+			invalidNostrRelay: m['section.settings.invalidNostrRelay'](),
+			nostrRelayRequired: m['section.settings.nostrRelayRequired']()
 		})
 	);
 

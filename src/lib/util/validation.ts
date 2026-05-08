@@ -13,7 +13,8 @@
  */
 
 import type { Settings } from '$lib/types/settings';
-import { isValidHexPubKey } from '$lib/util/nostr';
+import { DataSourceType } from '$lib/types/settings';
+import { isValidHexPubKey, isValidNostrRelayUrl } from '$lib/util/nostr';
 
 export interface FieldValidationError {
 	/** DOM id of the offending input — used to anchor + focus. */
@@ -34,7 +35,7 @@ export interface FieldValidationError {
  */
 export const validateSettings = (
 	data: Settings | null,
-	messages: { invalidNostrPubkey: string }
+	messages: { invalidNostrPubkey: string; invalidNostrRelay: string; nostrRelayRequired: string }
 ): FieldValidationError[] => {
 	if (!data) return [];
 	const out: FieldValidationError[] = [];
@@ -46,6 +47,48 @@ export const validateSettings = (
 			section: 'dataSource',
 			message: messages.invalidNostrPubkey,
 			field: 'nostrPubKey'
+		});
+	}
+
+	// Resolve the chip list using the same legacy-bridge fallback the
+	// settings sections use, so a v3 / pre-rc.4 device (only `nostrRelay`)
+	// still validates the singular slot through this code path.
+	const relays: string[] = Array.isArray(data.nostrRelays)
+		? (data.nostrRelays as string[])
+		: typeof data.nostrRelay === 'string' && data.nostrRelay.length > 0
+			? [data.nostrRelay as string]
+			: [];
+
+	relays.forEach((entry, idx) => {
+		if (typeof entry !== 'string' || entry.length === 0) return;
+		if (!isValidNostrRelayUrl(entry)) {
+			out.push({
+				// nostrRelays-${idx} is also the chip's DOM id in
+				// NostrRelayList.svelte (idPrefix="nostrRelays" — ExtraFeatures
+				// wins the focus when both sections are open, which matches
+				// the original behaviour where the Extra section's relay input
+				// was the canonical "Nostr Relay" field).
+				id: `nostrRelays-${idx}`,
+				section: 'extra',
+				message: messages.invalidNostrRelay,
+				field: 'nostrRelays'
+			});
+		}
+	});
+
+	// At least one relay is required when the firmware needs one — Nostr
+	// data source or zap notify both open subscriptions through nostrRelays.
+	// Surface this as a form-level error (firmware would 4xx the PATCH
+	// otherwise; cheaper to flag client-side). Use the chip-list input id
+	// so the anchor link focuses the field where the user adds entries.
+	const needsRelay =
+		data.dataSource === DataSourceType.NOSTR_SOURCE || data.nostrZapNotify === true;
+	if (needsRelay && relays.length === 0) {
+		out.push({
+			id: 'nostrRelays-input',
+			section: 'extra',
+			message: messages.nostrRelayRequired,
+			field: 'nostrRelays'
 		});
 	}
 

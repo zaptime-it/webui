@@ -1,8 +1,15 @@
+export interface NostrRelayStatus {
+	url: string;
+	connected: boolean;
+}
+
 export interface ConnectionStatus {
 	price: boolean;
 	blocks: boolean;
 	V2: boolean;
-	nostr: boolean;
+	// Firmware ≥ 4.0.0-rc.4 emits one entry per configured relay; pre-rc.4
+	// builds emitted a single boolean. Feature-detect with `Array.isArray()`.
+	nostr: boolean | NostrRelayStatus[];
 }
 
 export interface DndStatus {

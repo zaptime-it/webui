@@ -56,7 +56,10 @@ export const statusJson = {
 		price: false,
 		blocks: false,
 		V2: true,
-		nostr: true
+		// Firmware ≥ 4.0.0-rc.4 ships per-relay state as `[{url, connected}]`.
+		// Pre-rc.4 emitted a single boolean — the WebUI feature-detects with
+		// Array.isArray, so both shapes round-trip through the status pill.
+		nostr: [{ url: 'wss://relay.primal.net', connected: true }]
 	},
 	rssi: -66,
 	data: ['BLOCK/HEIGHT', '0', '0', '0', '0', '0', '0'],
@@ -224,9 +227,11 @@ export const settingsJson = {
 	mempoolSecure: true,
 	localPoolHost: '',
 	nostrPubKey: '',
-	// Non-empty by default so the "empty nostr relay field is not
-	// accepted" Playwright test can dirty the form by clearing it.
+	// Firmware emits both keys: nostrRelays is the canonical array (CSV in
+	// NVS, array on the wire); nostrRelay is the legacy echo of the array's
+	// first entry for back-compat with stale clients. Mirror that here.
 	nostrRelay: 'wss://relay.primal.net',
+	nostrRelays: ['wss://relay.primal.net'],
 	ledFlashOnZap: false,
 	scrnRestoreZap: false,
 	hasFrontlight: false,

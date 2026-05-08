@@ -6,14 +6,26 @@
 
 	const settings = $derived(settingsStore.data);
 	const status = $derived(statusStore.data);
+
+	// Strip the wss:// scheme so the pill stays compact; the full URL goes
+	// in the title for hover. Falls back to the raw URL if `new URL()`
+	// rejects the input (shouldn't happen — the firmware validates on the
+	// PATCH path — but a relay reply we can't parse shouldn't crash the bar).
+	const shortRelayLabel = (url: string): string => {
+		try {
+			return new URL(url).host;
+		} catch {
+			return url;
+		}
+	};
 </script>
 
-{#snippet pill(label: string, connected: boolean | undefined)}
+{#snippet pill(label: string, connected: boolean | undefined, tooltip?: string)}
 	<span
 		class="conn-pill"
 		class:conn-pill--ok={!!connected}
 		class:conn-pill--bad={!connected}
-		title={connected ? 'connected' : 'disconnected'}
+		title={tooltip ?? (connected ? 'connected' : 'disconnected')}
 	>
 		<span class="conn-dot" aria-hidden="true"></span>
 		<span>{label}</span>
@@ -22,7 +34,18 @@
 
 <div class="flex flex-wrap items-center gap-2 text-sm">
 	{#if settings && (settings.dataSource === DataSourceType.NOSTR_SOURCE || settings.nostrZapNotify)}
-		{@render pill(m['section.status.nostrConnection'](), status?.connectionStatus?.nostr)}
+		{@const nostrConn = status?.connectionStatus?.nostr}
+		{#if Array.isArray(nostrConn)}
+			{#each nostrConn as relay (relay.url)}
+				{@render pill(
+					shortRelayLabel(relay.url),
+					relay.connected,
+					`${relay.url} — ${relay.connected ? 'connected' : 'disconnected'}`
+				)}
+			{/each}
+		{:else}
+			{@render pill(m['section.status.nostrConnection'](), nostrConn)}
+		{/if}
 	{/if}
 
 	{#if settings && settings.dataSource !== DataSourceType.NOSTR_SOURCE}

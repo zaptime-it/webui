@@ -5,15 +5,9 @@
 	import SwitchField from '$lib/ui/SwitchField.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
-	import {
-		isValidHexPubKey,
-		getPubKey,
-		isValidNpub,
-		isValidNostrRelayUrl,
-		isValidNostrRelay,
-		fetchNostrRelayInfo
-	} from '$lib/util/nostr';
+	import { isValidHexPubKey, getPubKey, isValidNpub } from '$lib/util/nostr';
 	import { toast } from '$lib/stores/toast.svelte';
+	import NostrRelayList from './NostrRelayList.svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -31,51 +25,19 @@
 	};
 
 	const pubkeyInvalid = $derived(!isValidHexPubKey(data.nostrPubKey ?? ''));
-	const relayInvalid = $derived(!isValidNostrRelayUrl(data.nostrRelay ?? ''));
 
-	let validNostrRelay = $state(false);
-	let testingNostrRelay = $state(false);
+	// Same source-of-truth derivation as ExtraFeaturesSettings — both
+	// sections render the same shared list. The chip lists carry distinct
+	// `idPrefix` values so DOM ids stay unique when both CollapseCards
+	// are open simultaneously.
+	const relays = $derived.by((): string[] => {
+		if (Array.isArray(data.nostrRelays)) return data.nostrRelays;
+		return data.nostrRelay ? [data.nostrRelay] : [];
+	});
 
-	const describeRelayInfo = (info: Awaited<ReturnType<typeof fetchNostrRelayInfo>>): string => {
-		if (!info) return '';
-		const parts: string[] = [];
-		if (info.software) {
-			parts.push(info.version ? `${info.software} ${info.version}` : info.software);
-		} else if (info.version) {
-			parts.push(info.version);
-		}
-		if (Array.isArray(info.supported_nips) && info.supported_nips.length > 0) {
-			parts.push(`${info.supported_nips.length} NIPs`);
-		}
-		return parts.join(' · ');
-	};
-
-	const testNostrRelay = async () => {
-		if (relayInvalid) {
-			toast.error(m['section.settings.invalidNostrRelay']());
-			return;
-		}
-		testingNostrRelay = true;
-		try {
-			const [ok, info] = await Promise.all([
-				isValidNostrRelay(data.nostrRelay),
-				fetchNostrRelayInfo(data.nostrRelay)
-			]);
-			if (ok) {
-				const title = info?.name ? `Connected to ${info.name}` : 'Connected to Nostr relay';
-				const detail = describeRelayInfo(info) || data.nostrRelay;
-				toast.success(title, detail);
-				validNostrRelay = true;
-			} else {
-				validNostrRelay = false;
-				toast.error('Could not connect to Nostr relay', data.nostrRelay);
-			}
-		} catch {
-			validNostrRelay = false;
-			toast.error('Could not connect to Nostr relay', data.nostrRelay);
-		} finally {
-			testingNostrRelay = false;
-		}
+	const setRelays = (next: string[]) => {
+		data.nostrRelays = next;
+		data.nostrRelay = next[0] ?? '';
 	};
 </script>
 
@@ -104,7 +66,7 @@
 			/>
 			<span class="label-text">{m['section.settings.dataSource.thirdParty']()}</span>
 		</label>
-		{#if data.nostrRelay}
+		{#if relays.length > 0}
 			<label class="label cursor-pointer justify-start gap-2" for="nostr_source">
 				<input
 					type="radio"
@@ -150,27 +112,12 @@
 		{/if}
 
 		{#if data.dataSource === DataSourceType.NOSTR_SOURCE}
-			<Field
-				id="nostrRelay"
-				label={m['section.settings.nostrRelay']()}
-				bind:value={data.nostrRelay}
-				required
-				invalid={relayInvalid}
-				valid={validNostrRelay}
-				helpText={relayInvalid ? m['section.settings.invalidNostrRelay']() : undefined}
-			>
-				{#snippet action()}
-					<button
-						type="button"
-						class="join-item btn btn-sm btn-success"
-						onclick={testNostrRelay}
-						disabled={relayInvalid || testingNostrRelay}
-						data-testid="nostrrelay-test-btn"
-					>
-						{testingNostrRelay ? '...' : 'Test'}
-					</button>
-				{/snippet}
-			</Field>
+			<NostrRelayList
+				{relays}
+				onChange={setRelays}
+				idPrefix="dataSource-nostrRelays"
+				label={m['section.settings.nostrRelays']()}
+			/>
 			<Field
 				id="nostrPubKey"
 				label={m['section.settings.nostrPubKey']()}
