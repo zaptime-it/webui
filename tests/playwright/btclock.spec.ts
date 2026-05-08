@@ -121,9 +121,10 @@ test('index page has working language selector', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: 'Configuración' })).toBeVisible();
 });
 
-test('api page has expected load button', async ({ page }) => {
+test('api page auto-loads the OpenAPI docs', async ({ page }) => {
 	await page.goto('/api');
-	await expect(page.getByRole('button', { name: 'Load' })).toBeVisible();
+	await expect(page.locator('#swagger-ui-container .information-container')).toBeVisible();
+	await expect(page.getByText('BTClock API')).toBeVisible();
 });
 
 test('time values can not be zero or negative', async ({ page }) => {
