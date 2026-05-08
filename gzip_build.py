@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 from shutil import copyfileobj
 
-SKIP_FILES = {".DS_Store", "swagger.yml"}
+SKIP_FILES = {".DS_Store", "openapi.yml"}
 
 
 def gzip_file(input_file: str, output_file: str) -> None:
