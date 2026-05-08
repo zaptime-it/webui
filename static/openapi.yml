@@ -1,29 +1,12 @@
 ---
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: BTClock API
-  version: '3.4.0'
+  version: '4.0.0'
   description: |
-    BTClock V3 HTTP API as implemented by the firmware `src/lib/net/webserver/` module.
+    BTClock HTTP API as implemented by the firmware `src/lib/net/webserver/` module.
     REST routes are under `/api/...`; SSE lives at `/events`; OTA uploads use `/upload/...`.
     The embedded WebUI may rewrite `/api` to `/` for same-origin routing.
-
-    ## 3.4.0 breaking changes
-
-    - State-changing routes moved from `GET` to `POST`. The legacy `GET`
-      forms (e.g. `GET /api/identify`, `GET /api/restart`,
-      `GET /api/action/pause`, `GET /api/full_refresh`,
-      `GET /api/show/*`, `GET /api/lights/*`, `GET /api/frontlight/*`) are
-      no longer registered.
-    - Settings writes moved from `PATCH /api/json/settings` to
-      `PATCH /api/settings`. The old URL is gone.
-    - `POST /api/show/custom` and `POST /api/lights/set` are POST-only;
-      the firmware no longer accepts PATCH on those routes.
-    - The `customEndpoint` settings key is retired — use `ceEndpoint`
-      instead (there is no migration shim).
-    - `GET /api/settings` no longer returns plaintext passwords; see the
-      `Settings` schema for the `httpAuthPassSet` / `otaPassSet`
-      booleans.
 
     ## Validation errors
 

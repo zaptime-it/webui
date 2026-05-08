@@ -368,7 +368,7 @@ file a `bd` issue before starting one of the bigger items.
 - Endpoint shapes: [src/lib/api/client.ts](src/lib/api/client.ts) is the
   single source of truth. If a curl recipe doesn't match what the UI does,
   the UI is right.
-- Endpoint reference: [static/swagger.yml](static/swagger.yml).
+- Endpoint reference: [static/openapi.yml](static/openapi.yml).
 - Firmware-side handler registration:
   [../components/webserver/control_server.cpp](../components/webserver/control_server.cpp).
 - Field schema (firmware): [../components/settings/include/settings/schema.hpp](../components/settings/include/settings/schema.hpp).

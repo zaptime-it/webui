@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import './swagger-dark.css';
-
-	let swaggerLoaded = $state(false);
 
 	const loadSwagger = () => {
 		const w = window as unknown as {
@@ -10,45 +7,49 @@
 			SwaggerUIStandalonePreset?: unknown;
 			ui?: unknown;
 		};
-		if (!w.SwaggerUIBundle) return;
-		swaggerLoaded = true;
+		if (!w.SwaggerUIBundle) return false;
 		w.ui = w.SwaggerUIBundle({
-			url: '/swagger.json',
+			url: '/openapi.json',
 			dom_id: '#swagger-ui-container',
 			presets: [
 				(w.SwaggerUIBundle as unknown as { presets: { apis: unknown } }).presets.apis,
 				w.SwaggerUIStandalonePreset
 			]
 		});
+		return true;
 	};
 
-	onMount(() => loadSwagger());
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		if (loadSwagger()) return;
+		const interval = setInterval(() => {
+			if (loadSwagger()) clearInterval(interval);
+		}, 50);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <svelte:head>
 	<title>API playground</title>
 	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js"
-		integrity="sha512-7ihPQv5ibiTr0DW6onbl2MIKegdT6vjpPySyIb4Ftp68kER6Z7Yiub0tFoMmCHzZfQE9+M+KSjQndv6NhYxDgg=="
+		src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.32.5/swagger-ui-bundle.js"
+		integrity="sha512-8njFkr+dYTxMuDP/ZNLh/olQ13Xm8UNI6EtBIluL76ClDWbLJwDIUs1iltCjCfkIFTWJZ0ufexfXiBRezjinVw=="
 		crossorigin="anonymous"
 		referrerpolicy="no-referrer"
 	></script>
 	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js"
-		integrity="sha512-UrYi+60Ci3WWWcoDXbMmzpoi1xpERbwjPGij6wTh8fXl81qNdioNNHExr9ttnBebKF0ZbVnPlTPlw+zECUK1Xw=="
+		src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.32.5/swagger-ui-standalone-preset.js"
+		integrity="sha512-PzDFKOEV2YYSuAB29kSkriT9BOtRSAdlPNhB/0uw2UxJpxzWNvJInE/oYX7Yeui6hjEXtQzNOE2SL52pp0mDTw=="
 		crossorigin="anonymous"
 		referrerpolicy="no-referrer"
 	></script>
 	<link
 		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css"
-		integrity="sha512-+9UD8YSD9GF7FzOH38L9S6y56aYNx3R4dYbOCgvTJ2ZHpJScsahNdaMQJU/8osUiz9FPu0YZ8wdKf4evUbsGSg=="
+		href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.32.5/swagger-ui.css"
+		integrity="sha512-xMCEx1YGY9/YdKYbdQB0N6ZvxbjTT10OnbvJfDcnkxE0P3UjV0jqsK0yrzVGH1OCOdV7CYzCBiqLl+/7g8ZpRQ=="
 		crossorigin="anonymous"
 		referrerpolicy="no-referrer"
 	/>
 </svelte:head>
 
-<section class:invisible={swaggerLoaded}>
-	<button type="button" class="btn" onclick={loadSwagger}>Load</button>
-</section>
 <div id="swagger-ui-container"></div>

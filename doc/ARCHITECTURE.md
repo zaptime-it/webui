@@ -214,6 +214,6 @@ unless it's a primitive.
 | `src/lib/util/validation.ts`                     | Form-level validation registry                                  |
 | `src/lib/features/settings/SettingsPanel.svelte` | Save flow, error highlighting, Cmd+S, drift banner              |
 | `src/lib/features/firmware/UploadForm.svelte`    | OTA upload + statusStore.beginOtaUpload                         |
-| `static/swagger.yml` / `static/swagger.json`     | OpenAPI spec; YAML is the source                                |
+| `static/openapi.yml` / `static/openapi.json`     | OpenAPI spec; YAML is the source                                |
 | `scripts/generate-settings-meta.py`              | Codegen for `settings.generated.ts`                             |
 | `gzip_build.py`                                  | Post-build LittleFS staging                                     |

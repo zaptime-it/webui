@@ -10,7 +10,7 @@ Why this script and not vite's compressor:
     image past the 4 MB v3 SPIFFS partition (411 KB). We rmtree the output
     dir before writing anything.
   * We skip `.DS_Store` (macOS metadata, useless on the device) and
-    `swagger.yml` (the JSON form is what `/api.html` loads — see
+    `openapi.yml` (the JSON form is what `/api.html` loads — see
     src/routes/api/+page.svelte; the YAML is the source-of-truth and only
     needs to live in static/). Every byte saved on the SPIFFS image
     translates directly into headroom for the bundle.
@@ -26,8 +26,8 @@ from pathlib import Path
 from shutil import copyfileobj
 
 # Files we never want on the device. .DS_Store is macOS Finder metadata;
-# swagger.yml duplicates swagger.json on-disk and isn't fetched by /api.html.
-SKIP_FILES = {".DS_Store", "swagger.yml"}
+# openapi.yml duplicates openapi.json on-disk and isn't fetched by /api.html.
+SKIP_FILES = {".DS_Store", "openapi.yml"}
 
 
 def gzip_file(input_file: str, output_file: str) -> None:
