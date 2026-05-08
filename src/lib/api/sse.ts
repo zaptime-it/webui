@@ -1,7 +1,8 @@
 /**
  * EventSource wrapper for the BTClock `/events` stream.
  *
- * Ported verbatim from the original reconnect loop in src/routes/+page.svelte.
+ * Reconnects with exponential backoff after transport errors to avoid
+ * hammering a flaky AP/device link.
  * Callers receive a disposer that closes the current connection and cancels
  * the reconnect timer.
  */
@@ -14,10 +15,23 @@ export interface SseHandlers {
 	onDisconnect?: () => void;
 }
 
+export const SSE_BACKOFF_INITIAL_MS = 1000;
+export const SSE_BACKOFF_MAX_MS = 30000;
+export const SSE_CLEAN_RECONNECT_MS = 5000;
+
+export const computeBackoffMs = (attempt: number): number =>
+	Math.min(SSE_BACKOFF_INITIAL_MS * 2 ** attempt, SSE_BACKOFF_MAX_MS);
+
 export const connectStatusStream = (handlers: SseHandlers): (() => void) => {
 	let active = true;
 	let current: EventSource | null = null;
 	let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+	let errorAttempts = 0;
+
+	const scheduleReconnect = (delayMs: number) => {
+		if (!active) return;
+		reconnectTimer = setTimeout(connect, delayMs);
+	};
 
 	const connect = () => {
 		if (!active) return;
@@ -27,6 +41,7 @@ export const connectStatusStream = (handlers: SseHandlers): (() => void) => {
 		evt.addEventListener('open', () => handlers.onOpen?.());
 
 		evt.addEventListener('status', (e: MessageEvent) => {
+			errorAttempts = 0;
 			try {
 				handlers.onStatus(JSON.parse(e.data));
 			} catch (err) {
@@ -38,7 +53,8 @@ export const connectStatusStream = (handlers: SseHandlers): (() => void) => {
 			if (e.data === 'closing') {
 				handlers.onDisconnect?.();
 				evt.close();
-				reconnectTimer = setTimeout(connect, 5000);
+				errorAttempts = 0;
+				scheduleReconnect(SSE_CLEAN_RECONNECT_MS);
 			}
 		});
 
@@ -46,7 +62,9 @@ export const connectStatusStream = (handlers: SseHandlers): (() => void) => {
 			console.error('EventSource failed:', err);
 			handlers.onDisconnect?.();
 			evt.close();
-			reconnectTimer = setTimeout(connect, 1000);
+			const delay = computeBackoffMs(errorAttempts);
+			errorAttempts++;
+			scheduleReconnect(delay);
 		});
 	};
 

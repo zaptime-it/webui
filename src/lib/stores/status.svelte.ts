@@ -9,10 +9,30 @@ import { getStatus } from '$lib/api/client';
 import { connectStatusStream } from '$lib/api/sse';
 import type { Status, StatusState } from '$lib/types/status';
 
-const state = $state<{ value: StatusState; isUpdating: boolean; connected: boolean }>({
+const RSSI_FLOOR_DBM = -100;
+const RSSI_CEILING_DBM = -50;
+const rssiToPercent = (rssi: number): number => {
+	const span = RSSI_CEILING_DBM - RSSI_FLOOR_DBM;
+	const pct = ((rssi - RSSI_FLOOR_DBM) / span) * 100;
+	return Math.min(Math.max(pct, 0), 100);
+};
+
+type OptimisticOverrides = {
+	timerRunning?: boolean;
+	dndActive?: boolean;
+	dndEnabled?: boolean;
+};
+
+const state = $state<{
+	value: StatusState;
+	isUpdating: boolean;
+	connected: boolean;
+	optimistic: OptimisticOverrides;
+}>({
 	value: { status: 'loading' },
 	isUpdating: false,
-	connected: false
+	connected: false,
+	optimistic: {}
 });
 
 const mergeStatus = (incoming: Partial<Status>) => {
@@ -28,6 +48,7 @@ const mergeStatus = (incoming: Partial<Status>) => {
 	} else {
 		state.value = { status: 'ready', data: incoming as Status };
 	}
+	state.optimistic = {};
 };
 
 const markConnected = () => {
@@ -66,14 +87,28 @@ export const statusStore = {
 	get connected(): boolean {
 		return state.connected;
 	},
+	get timerRunning(): boolean | undefined {
+		return state.optimistic.timerRunning ?? this.data?.timerRunning;
+	},
+	get dndActive(): boolean | undefined {
+		return state.optimistic.dndActive ?? this.data?.dnd?.active;
+	},
+	get dndEnabled(): boolean | undefined {
+		return state.optimistic.dndEnabled ?? this.data?.dnd?.enabled;
+	},
+	applyOptimistic(patch: OptimisticOverrides): void {
+		state.optimistic = { ...state.optimistic, ...patch };
+	},
+	clearOptimistic(): void {
+		state.optimistic = {};
+	},
 	get memoryFreePercent(): number {
 		const d = this.data;
 		if (!d || !d.espHeapSize) return 0;
 		return Math.floor((d.espFreeHeap / d.espHeapSize) * 100);
 	},
 	get rssiPercent(): number {
-		const rssi = this.data?.rssi ?? -100;
-		return Math.min(Math.max(2 * (rssi + 100), 0), 100);
+		return rssiToPercent(this.data?.rssi ?? RSSI_FLOOR_DBM);
 	},
 	get wifiStrengthColor(): string {
 		const p = this.rssiPercent;
