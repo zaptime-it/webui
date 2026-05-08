@@ -238,6 +238,7 @@ export const settingsJson = {
 	flFlashOnZap: false,
 	hasLightLevel: false,
 	luxLightToggle: 0,
+	flOffOnDnd: true,
 	flOffWhenDark: false,
 	httpAuthEnabled: false,
 	httpAuthUser: '',
