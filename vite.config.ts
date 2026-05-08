@@ -11,62 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Rewrites SvelteKit's single-page fallback `bundle.html` into a standalone
-// `bundle.js` + `index.html` pair anchored on the `.overlay` class. The BTClock
-// firmware serves these two files from LittleFS.
-const rewrapBundle = async ({ cssClass }: { cssClass: string }): Promise<void> => {
-	const distDir = path.resolve(__dirname, 'dist');
-	const bundleHtml = path.join(distDir, 'bundle.html');
-	const bundleJs = path.join(distDir, 'bundle.js');
-	const indexPage = path.join(distDir, 'index.page');
-	const indexHtml = path.join(distDir, 'index.html');
-
-	// Idempotent: a previous build already produced bundle.js. (The
-	// adapter-static fallback regenerates bundle.html each build, so this
-	// only short-circuits within a single watcher tick.)
-	if (await exists(bundleJs)) return;
-
-	console.log('\nStart re-wrapping...');
-	let html: string;
-	try {
-		html = await fs.readFile(bundleHtml, 'utf8');
-	} catch {
-		console.log(
-			`[Error]: No bundle.html generated, check svelte.config.js -> config.kit.adapter -> fallback: "bundle.html"`
-		);
-		return;
-	}
-
-	const matchData = html.match(/(?<=<script\b[^>]*>)([\s\S]*?)(?=<\/script>)/gm);
-	if (!matchData?.[0]) {
-		console.log('[Error]: No proper <script> tag found in bundle.html');
-		return;
-	}
-
-	const cleanData = matchData[0]
-		.trim()
-		.replace(
-			/document\.querySelector\('\[data-sveltekit-hydrate="[^"]+"\]'\)\.parentNode/,
-			`document.querySelector(".${cssClass}")`
-		);
-
-	await fs.writeFile(bundleJs, cleanData);
-	// `dist/index.page` is the static-adapter prerender output; rename to
-	// the .html the firmware serves. Both renames + the bundle.html
-	// removal are best-effort — already-renamed / already-deleted is
-	// fine on subsequent builds.
-	await fs.rename(indexPage, indexHtml).catch(() => {});
-	await fs.rm(bundleHtml, { force: true }).catch(() => {});
-	console.log('Finished: bundle.js + index.html have been regenerated.\n');
-};
-
-const exists = async (p: string): Promise<boolean> => {
-	try {
-		await fs.access(p);
-		return true;
-	} catch {
-		return false;
-	}
+// adapter-static emits `dist/bundle.html` as the SPA fallback for the
+// non-prerendered `/api` and `/convert` routes. The firmware doesn't
+// route unknown paths to it (no SPA fallback in control_server.cpp), so
+// it would only bloat the LittleFS image. Drop it post-build.
+const dropFallbackHtml = async (): Promise<void> => {
+	await fs.rm(path.resolve(__dirname, 'dist/bundle.html'), { force: true });
 };
 
 export default defineConfig({
@@ -95,11 +45,11 @@ export default defineConfig({
 				]
 			: []),
 		{
-			name: 'postbuild-command',
+			name: 'postbuild-cleanup',
 			closeBundle: {
 				order: 'post',
 				async handler() {
-					await rewrapBundle({ cssClass: 'overlay' });
+					await dropFallbackHtml();
 				}
 			}
 		}

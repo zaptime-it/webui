@@ -34,9 +34,13 @@ as `data/` inside the firmware tree; the absolute links work everywhere.
 
 The build serves from `/lfs/www/` on the device — `gzip_build.py` writes
 under `build_gz/www/` because the firmware's `kWebRootBase = "/lfs/www"`
-(see `components/webserver/control_server.cpp`). The firmware mounts the
-gzipped `bundle.js` inside a wrapper page; that's why the post-build
-rewrap step in `vite.config.ts` exists.
+(see `components/webserver/control_server.cpp`). The firmware does no
+rewriting: a `GET /` resolves to `index.html`, every other path is a
+literal `fopen(/lfs/www/<path>[.gz])`, and missing files 404. The
+post-build step in `vite.config.ts` only deletes adapter-static's unused
+`bundle.html` SPA fallback so it doesn't get gzipped onto the partition.
+`/api` and `/convert` set `prerender = false` and are reached only via
+SvelteKit client routing.
 
 ---
 

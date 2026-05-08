@@ -26,15 +26,19 @@ from LittleFS, set it to an empty string at build time.
 ## Production build
 
 ```bash
-pnpm build             # produces dist/ with bundle.js + index.html (post-build rewrap)
+pnpm build             # produces dist/ with prerendered index.html + hashed JS/CSS
 python3 gzip_build.py  # gzips everything under dist/ into build_gz/
 mklittlefs -c build_gz -s 409600 output/littlefs.bin
 ```
 
-The post-build rewrap step in `vite.config.ts` turns SvelteKit's
-`bundle.html` fallback into a self-contained `bundle.js` that the BTClock
-firmware mounts inside the `.overlay` container. The filename-shortening
-patch in `patches/` keeps asset names within LittleFS's filename limit.
+The firmware serves files literally out of `/lfs/www/` (see
+`control_server.cpp`), so the build keeps that directory minimal: only
+`/` is prerendered, and a tiny post-build step in `vite.config.ts`
+deletes adapter-static's `bundle.html` SPA fallback (the firmware
+doesn't route unknown paths to it). `/api` and `/convert` opt out of
+prerendering and are reached only via SvelteKit client routing. The
+filename-shortening patch in `patches/` keeps asset names within
+LittleFS's filename limit.
 
 ## Tests
 
