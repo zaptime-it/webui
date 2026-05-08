@@ -1,0 +1,10 @@
+overrides:
+  es5-ext: '>=0.10.64'
+  ws: '>=8.19.0'
+  micromatch: '>=4.0.8'
+  form-data: '>=4.0.5'
+
+allowBuilds:
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true

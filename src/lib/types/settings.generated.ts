@@ -561,6 +561,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: 'wss://relay.primal.net'
 	},
 	{
+		key: 'nostrRelays',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'nostrZapNotify',
 		kind: 'boolean',
 		bootOnly: false,
@@ -923,6 +933,7 @@ export const settingsFieldSchemas = {
 	mowMode: v.boolean(),
 	nostrPubKey: v.string(),
 	nostrRelay: v.string(),
+	nostrRelays: v.string(),
 	nostrZapNotify: v.boolean(),
 	nostrZapPubkey: v.string(),
 	nostrZapPubkeys: v.string(),
