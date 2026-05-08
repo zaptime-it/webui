@@ -122,17 +122,31 @@ jobs:
           artifacts: 'output/littlefs.bin,webui.tgz'
           allowUpdates: true
           removeArtifacts: true
+          replacesArtifacts: true
           makeLatest: true
+      - name: Create v3 release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/v3'
+        uses: ncipollo/release-action@v1.21.0
+        with:
+          tag: v3-${{ steps.getBlockHeight.outputs.blockHeight }}
+          commit: v3
+          name: v3-${{ steps.getBlockHeight.outputs.blockHeight }}
+          artifacts: 'output/littlefs.bin,webui.tgz'
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: true
+          makeLatest: false
       - name: Create v4 beta release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/feature/v4-firmware' || github.ref == 'refs/heads/v4')
         uses: ncipollo/release-action@v1.21.0
         with:
           tag: v4-${{ steps.getBlockHeight.outputs.blockHeight }}
-          commit: feature/v4-firmware
+          commit: ${{ github.ref_name }}
           name: v4-${{ steps.getBlockHeight.outputs.blockHeight }}
           artifacts: 'output/littlefs.bin,webui.tgz'
           allowUpdates: true
           removeArtifacts: true
+          replacesArtifacts: true
           prerelease: true
           makeLatest: false
       - name: Pushes littlefs.bin to web flasher
@@ -150,7 +164,7 @@ jobs:
           user-name: ${{github.actor}}
           user-email: ${{github.actor}}@users.noreply.github.com
       - name: Pushes v4 beta littlefs.bin to web flasher
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/v4-firmware'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/feature/v4-firmware' || github.ref == 'refs/heads/v4')
         id: push_directory_v4
         uses: cpina/github-action-push-to-another-repository@main
         env:
