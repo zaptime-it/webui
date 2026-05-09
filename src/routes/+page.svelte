@@ -81,13 +81,15 @@
 			if (settingsStore.isReady) void settingsStore.checkRemoteDrift();
 		};
 		window.addEventListener('focus', onFocus);
-		document.addEventListener('visibilitychange', () => {
+		const onVisibilityChange = () => {
 			if (document.visibilityState === 'visible') onFocus();
-		});
+		};
+		document.addEventListener('visibilitychange', onVisibilityChange);
 
 		return () => {
 			window.removeEventListener('resize', updateLayout);
 			window.removeEventListener('focus', onFocus);
+			document.removeEventListener('visibilitychange', onVisibilityChange);
 			observer?.disconnect();
 			statusStore.disconnect();
 		};
