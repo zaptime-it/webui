@@ -5,6 +5,7 @@ describe('previewSatsSymbol', () => {
 	test('without the symbol the symbol slot is empty and price is plain digits', () => {
 		const out = previewSatsSymbol({ useSatsSymbol: false });
 		expect(out.symbol).toBe('');
+		expect(out.markerStyle).toBe('none');
 		expect(out.price).toMatch(/^\d/);
 	});
 
@@ -15,9 +16,23 @@ describe('previewSatsSymbol', () => {
 		// which is what the previous version did and what we're fixing.
 		const out = previewSatsSymbol({ useSatsSymbol: true });
 		expect(out.symbol).toBe(SATS_SYMBOL_GLYPH);
+		expect(out.markerStyle).toBe('satoshi');
 		expect(SATS_SYMBOL_GLYPH).toBe('S');
 		expect(out.symbol).not.toBe('₿');
 		expect(out.price).toMatch(/^\d/);
+	});
+
+	test('useBtcSymbol shows U+20BF with btc marker style (system monospace in UI)', () => {
+		const out = previewSatsSymbol({ useSatsSymbol: false, useBtcSymbol: true });
+		expect(out.symbol).toBe('\u20BF');
+		expect(out.markerStyle).toBe('btc');
+		expect(out.price).toMatch(/^\d/);
+	});
+
+	test('when both flags true the preview matches firmware (₿ wins)', () => {
+		const out = previewSatsSymbol({ useSatsSymbol: true, useBtcSymbol: true });
+		expect(out.markerStyle).toBe('btc');
+		expect(out.symbol).toBe('\u20BF');
 	});
 });
 

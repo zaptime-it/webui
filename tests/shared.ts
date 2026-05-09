@@ -221,6 +221,7 @@ export const settingsJson = {
 	// authored. Real devices always emit these; the fixture would loop
 	// on "Loading…" without them.
 	useSatsSymbol: false,
+	useBtcSymbol: false,
 	useMscwTime: false,
 	useBlkCountdown: false,
 	inverseButtons: false,

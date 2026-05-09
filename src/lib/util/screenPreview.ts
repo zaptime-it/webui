@@ -1,7 +1,7 @@
 /**
  * Tiny preview-string builder for the screen-specific settings toggles.
  *
- * Toggling `useSatsSymbol`, `mowMode`, `suffixPrice`, etc. only shows up
+ * Toggling `useSatsSymbol`, `useBtcSymbol`, `mowMode`, `suffixPrice`, etc. only shows up
  * on the device after the next paint, so users can't tell what each
  * option will produce without saving + watching the clock. These helpers
  * return a representative string for a given price + flag combination so
@@ -15,6 +15,9 @@
  *                          'S' from the Satoshi Symbol webfont — see
  *                          src/app.css and the settings sats preview chip,
  *                          which both render the same way) vs no symbol
+ *   - useBtcSymbol       : mutually exclusive with useSatsSymbol on-device;
+ *                          preview prefixes U+20BF (BTC sign), monospace-styled
+ *                          in the WebUI because Ubuntu lacks the glyph
  *   - suffixPrice        : "57,798" vs "57.7k"
  *   - mowMode            : how digits collapse as the price grows
  *   - decimalShareDot     : "57.7k" vs "57.7 k" — applies to any
@@ -48,6 +51,8 @@ const formatSuffix = (price: number, mowMode: boolean, shareDot: boolean): strin
 
 export interface ScreenPreviewFlags {
 	useSatsSymbol?: boolean;
+	/** Mutually exclusive with `useSatsSymbol` on device + PATCH; preview prefers ₿ when both true. */
+	useBtcSymbol?: boolean;
 	suffixPrice?: boolean;
 	mowMode?: boolean;
 	decimalShareDot?: boolean;
@@ -63,15 +68,28 @@ export interface ScreenPreviewFlags {
  */
 export const SATS_SYMBOL_GLYPH = 'S';
 
+export type SatsMarkerPreviewStyle = 'none' | 'satoshi' | 'btc';
+
 export interface SatsSymbolPreview {
 	symbol: string;
 	price: string;
+	markerStyle: SatsMarkerPreviewStyle;
 }
 
-export const previewSatsSymbol = ({ useSatsSymbol }: ScreenPreviewFlags): SatsSymbolPreview => ({
-	symbol: useSatsSymbol ? SATS_SYMBOL_GLYPH : '',
-	price: formatPlain(SAMPLE_PRICE)
-});
+/** Inline chip for the sats / ₿ marker toggles — ₿ uses system monospace in CSS (Ubuntu lacks U+20BF). */
+export const previewSatsSymbol = ({
+	useSatsSymbol,
+	useBtcSymbol
+}: ScreenPreviewFlags): SatsSymbolPreview => {
+	const price = formatPlain(SAMPLE_PRICE);
+	if (useBtcSymbol) {
+		return { symbol: '\u20BF', price, markerStyle: 'btc' };
+	}
+	if (useSatsSymbol) {
+		return { symbol: SATS_SYMBOL_GLYPH, price, markerStyle: 'satoshi' };
+	}
+	return { symbol: '', price, markerStyle: 'none' };
+};
 
 export const previewSuffixPrice = ({
 	suffixPrice,

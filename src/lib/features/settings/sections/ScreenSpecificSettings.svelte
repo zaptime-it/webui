@@ -21,7 +21,35 @@
 
 	const data = $derived(settingsStore.data!);
 
-	const satsSymbolPreview = $derived(previewSatsSymbol({ useSatsSymbol: data?.useSatsSymbol }));
+	type MarkerMode = 'none' | 'sats' | 'btc';
+
+	const markerMode = $derived.by((): MarkerMode => {
+		if ('useBtcSymbol' in data && data.useBtcSymbol) return 'btc';
+		if (data.useSatsSymbol) return 'sats';
+		return 'none';
+	});
+
+	const applyMarkerMode = (mode: MarkerMode) => {
+		if (mode === 'none') {
+			data.useSatsSymbol = false;
+			if ('useBtcSymbol' in data) data.useBtcSymbol = false;
+			return;
+		}
+		if (mode === 'sats') {
+			data.useSatsSymbol = true;
+			if ('useBtcSymbol' in data) data.useBtcSymbol = false;
+			return;
+		}
+		data.useSatsSymbol = false;
+		if ('useBtcSymbol' in data) data.useBtcSymbol = true;
+	};
+
+	const markerPreview = $derived(
+		previewSatsSymbol({
+			useSatsSymbol: data?.useSatsSymbol,
+			useBtcSymbol: data?.useBtcSymbol
+		})
+	);
 	const suffixPricePreview = $derived(
 		previewSuffixPrice({
 			suffixPrice: data?.suffixPrice,
@@ -51,22 +79,6 @@
 			bind:checked={data.useBlkCountdown}
 			label={m['section.settings.useBlkCountdown']()}
 		/>
-		<div class="flex items-center justify-between gap-2">
-			<SwitchField
-				id="useSatsSymbol"
-				bind:checked={data.useSatsSymbol}
-				label={m['section.settings.useSatsSymbol']()}
-			/>
-			<code
-				class="text-xs px-1.5 py-0.5 rounded bg-base-200 text-base-content/70 whitespace-nowrap"
-				data-testid="useSatsSymbol-preview"
-				aria-hidden="true"
-				>{#if satsSymbolPreview.symbol}<span class="sats-glyph"
-						>{satsSymbolPreview.symbol}</span
-					>
-				{/if}{satsSymbolPreview.price}</code
-			>
-		</div>
 		<SwitchField
 			id="useMscwTime"
 			bind:checked={data.useMscwTime}
@@ -120,6 +132,75 @@
 		/>
 	</div>
 
+	<div
+		class="mt-3 space-y-2"
+		id="price-marker-radiogroup"
+		data-testid="price-marker-radiogroup"
+		role="radiogroup"
+		aria-labelledby="price-marker-heading"
+	>
+		<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+			<span id="price-marker-heading" class="text-sm font-medium text-base-content/90"
+				>{m['section.settings.priceMarkerHeading']()}</span
+			>
+			<code
+				class="text-xs shrink-0 self-start whitespace-nowrap rounded bg-base-200 px-1.5 py-0.5 text-base-content/70 sm:self-center"
+				data-testid="sats-marker-preview"
+				aria-hidden="true"
+				>{#if markerPreview.markerStyle === 'btc'}<span class="btc-marker"
+						>{markerPreview.symbol}</span
+					>{:else if markerPreview.markerStyle === 'satoshi'}<span class="sats-glyph"
+						>{markerPreview.symbol}</span
+					>
+				{/if}{markerPreview.price}</code
+			>
+		</div>
+		<div class="join join-vertical w-full sm:join-horizontal sm:max-w-2xl">
+			<label
+				class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
+			>
+				<input
+					type="radio"
+					name="priceMarker"
+					class="sr-only"
+					checked={markerMode === 'none'}
+					onchange={() => applyMarkerMode('none')}
+				/>
+				{m['section.settings.priceMarkerNone']()}
+			</label>
+			<label
+				class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
+				title={m['section.settings.priceMarkerSatsAria']()}
+			>
+				<input
+					type="radio"
+					name="priceMarker"
+					class="sr-only"
+					checked={markerMode === 'sats'}
+					onchange={() => applyMarkerMode('sats')}
+				/>
+				<span class="sats-glyph text-base leading-none" aria-hidden="true">S</span>
+				<span class="sr-only">{m['section.settings.priceMarkerSatsAria']()}</span>
+			</label>
+			{#if 'useBtcSymbol' in data}
+				<label
+					class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
+					title={m['section.settings.priceMarkerBtcAria']()}
+				>
+					<input
+						type="radio"
+						name="priceMarker"
+						class="sr-only"
+						checked={markerMode === 'btc'}
+						onchange={() => applyMarkerMode('btc')}
+					/>
+					<span class="btc-marker text-base leading-none" aria-hidden="true">₿</span>
+					<span class="sr-only">{m['section.settings.priceMarkerBtcAria']()}</span>
+				</label>
+			{/if}
+		</div>
+	</div>
+
 	{#if 'satsVariant' in data && data.useSatsSymbol}
 		<div class="mt-4" data-testid="sats-variant-picker">
 			<h5 class="font-semibold mb-1">{m['section.settings.satsVariant']()}</h5>
@@ -162,6 +243,13 @@
 		font-family: 'Satoshi Symbol', sans-serif;
 	}
 
+	/* Ubuntu (WebUI body) has no U+20BF; stack falls back to OS monospace on each platform. */
+	.btc-marker {
+		font-family:
+			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
+			'Courier New', monospace;
+	}
+
 	.sats-variant-card {
 		display: flex;
 		flex-direction: column;
@@ -192,5 +280,12 @@
 		font-size: 0.625rem;
 		opacity: 0.7;
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* DaisyUI join + label-wrapped radios: highlight the segment that matches NVS flags */
+	.marker-radio-label:has(input:checked) {
+		background-color: var(--color-primary);
+		color: var(--color-primary-content);
+		border-color: var(--color-primary);
 	}
 </style>

@@ -116,6 +116,7 @@ describe('cold-start schema validation', () => {
 			stealFocus: false,
 			mcapBigChar: false,
 			useSatsSymbol: false,
+			useBtcSymbol: false,
 			useMscwTime: false,
 			useBlkCountdown: false,
 			suffixPrice: false,

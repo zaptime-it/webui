@@ -44,6 +44,19 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain("m['section.settings.useMscwTime']()");
 	});
 
+	test('ScreenSpecificSettings uses joined radio buttons for price marker + preview', () => {
+		const src = read('ScreenSpecificSettings.svelte');
+		expect(src).toContain('data-testid="price-marker-radiogroup"');
+		expect(src).toContain('id="price-marker-radiogroup"');
+		expect(src).toContain('join join-vertical');
+		expect(src).toContain('sm:join-horizontal');
+		expect(src).toContain('name="priceMarker"');
+		expect(src).toContain('applyMarkerMode');
+		expect(src).toContain('data-testid="sats-marker-preview"');
+		expect(src).toContain('btc-marker');
+		expect(src).toContain("m['section.settings.priceMarkerHeading']()");
+	});
+
 	test('ScreenSpecificSettings exposes the satsVariant picker, capability-gated', () => {
 		// satsVariant is a v4-only firmware addition: a 16-way visual
 		// picker rendering U+E000..U+E00F via the 'Satoshi Symbol Variants'

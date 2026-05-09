@@ -70,4 +70,11 @@ describe('SettingsPanel', () => {
 		expect(src).toMatch(/proxyHost: 'proxy'/);
 		expect(src).toMatch(/proxyBypass: 'proxy'/);
 	});
+
+	test('maps symbol pref validation errors to price-marker-radiogroup for scroll target', () => {
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		expect(src).toContain('price-marker-radiogroup');
+		expect(src).toContain("fid === 'useSatsSymbol'");
+		expect(src).toContain("fid === 'useBtcSymbol'");
+	});
 });

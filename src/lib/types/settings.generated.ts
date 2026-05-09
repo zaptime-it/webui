@@ -19,102 +19,874 @@ export interface SettingsFieldMeta {
 	defaultStr: string;
 }
 
-
 export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
-	{ key: 'actCurrencies', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'USD,EUR,JPY' },
-	{ key: 'bitaxeEnabled', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'bitaxeHostname', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'bitaxe1' },
-	{ key: 'bitaxePollSec', kind: 'number', bootOnly: false, minValue: 5, maxValue: 300, defaultBool: false, defaultInt: 10, defaultStr: '' },
-	{ key: 'blockFeeDec', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'blockFlashColor', kind: 'number', bootOnly: false, minValue: 0, maxValue: 16777215, defaultBool: false, defaultInt: 14697216, defaultStr: '' },
-	{ key: 'ceDisableSSL', kind: 'boolean', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'ceEndpoint', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'ws-staging.btclock.dev' },
-	{ key: 'dataSource', kind: 'number', bootOnly: true, minValue: 0, maxValue: 3, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'decimalShareDot', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'digitFontPx', kind: 'number', bootOnly: false, minValue: 80, maxValue: 220, defaultBool: false, defaultInt: 180, defaultStr: '' },
-	{ key: 'disableLeds', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'dndEnabled', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'dndEndHour', kind: 'number', bootOnly: false, minValue: 0, maxValue: 23, defaultBool: false, defaultInt: 7, defaultStr: '' },
-	{ key: 'dndEndMin', kind: 'number', bootOnly: false, minValue: 0, maxValue: 59, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'dndStartHour', kind: 'number', bootOnly: false, minValue: 0, maxValue: 23, defaultBool: false, defaultInt: 22, defaultStr: '' },
-	{ key: 'dndStartMin', kind: 'number', bootOnly: false, minValue: 0, maxValue: 59, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'dndTimeEnabled', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'enableDebugLog', kind: 'boolean', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'flAlwaysOn', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'flDisable', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'flEffectDelay', kind: 'number', bootOnly: false, minValue: 0, maxValue: 1000, defaultBool: false, defaultInt: 15, defaultStr: '' },
-	{ key: 'flFlashOnUpd', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'flFlashOnZap', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'flMaxBrightness', kind: 'number', bootOnly: false, minValue: 0, maxValue: 65535, defaultBool: false, defaultInt: 2048, defaultStr: '' },
-	{ key: 'flOffOnDnd', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'flOffWhenDark', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'fontName', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'antonio' },
-	{ key: 'fullRefreshMin', kind: 'number', bootOnly: false, minValue: 0, maxValue: 1440, defaultBool: false, defaultInt: 60, defaultStr: '' },
-	{ key: 'gitReleaseUrl', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v4/releases/latest' },
-	{ key: 'hideLeadZero', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'hostnamePrefix', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'btclock' },
-	{ key: 'httpAuthEnabled', kind: 'boolean', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'httpAuthPass', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'httpAuthUser', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'btclock' },
-	{ key: 'inverseButtons', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'invertedColor', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'labelFitPct', kind: 'number', bootOnly: false, minValue: 25, maxValue: 100, defaultBool: false, defaultInt: 100, defaultStr: '' },
-	{ key: 'ledBrightness', kind: 'number', bootOnly: false, minValue: 0, maxValue: 255, defaultBool: false, defaultInt: 128, defaultStr: '' },
-	{ key: 'ledFlashOnUpd', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'ledFlashOnZap', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'ledTestOnPower', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'localPoolHost', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'umbrel.local:2019' },
-	{ key: 'luxLightToggle', kind: 'number', bootOnly: false, minValue: 0, maxValue: 65535, defaultBool: false, defaultInt: 128, defaultStr: '' },
-	{ key: 'mcapBigChar', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'mdnsEnabled', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'mempoolInstance', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'mempool.space' },
-	{ key: 'mempoolSecure', kind: 'boolean', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'minSecPriceUpd', kind: 'number', bootOnly: false, minValue: 1, maxValue: 3600, defaultBool: false, defaultInt: 30, defaultStr: '' },
-	{ key: 'miningPoolName', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'noderunners' },
-	{ key: 'miningPoolStats', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'miningPoolUser', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '38Qkkei3SuF1Eo45BaYmRHUneRD54yyTFy' },
-	{ key: 'mowMode', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'nostrPubKey', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '642317135fd4c4205323b9dea8af3270657e62d51dc31a657c0ec8aab31c6288' },
-	{ key: 'nostrRelay', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'wss://relay.primal.net' },
-	{ key: 'nostrRelays', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'nostrZapNotify', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'nostrZapPubkey', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422' },
-	{ key: 'nostrZapPubkeys', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'otaEnabled', kind: 'boolean', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'otaPass', kind: 'string', bootOnly: true, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'poolGlobalStats', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'poolLogosUrl', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'https://git.btclock.dev/btclock/mining-pool-logos/raw/branch/main' },
-	{ key: 'poolPollSec', kind: 'number', bootOnly: false, minValue: 10, maxValue: 3600, defaultBool: false, defaultInt: 60, defaultStr: '' },
-	{ key: 'poolWorker', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'proxyBypass', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '*.local,192.168.*,10.*,127.0.0.1' },
-	{ key: 'proxyEnabled', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'proxyHost', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'proxyPass', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'proxyPort', kind: 'number', bootOnly: false, minValue: 1, maxValue: 65535, defaultBool: false, defaultInt: 1080, defaultStr: '' },
-	{ key: 'proxyType', kind: 'number', bootOnly: false, minValue: 0, maxValue: 4, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'proxyUser', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'refrScrnChange', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'satsVariant', kind: 'number', bootOnly: false, minValue: 0, maxValue: 15, defaultBool: false, defaultInt: 7, defaultStr: '' },
-	{ key: 'scrnRestoreZap', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'stealFocus', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'suffixPrice', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'supplyPercent', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'tzString', kind: 'string', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: 'Europe/Amsterdam' },
-	{ key: 'useBlkCountdown', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'useBtcSymbol', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'useMscwTime', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'useSatsSymbol', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: false, defaultInt: 0, defaultStr: '' },
-	{ key: 'verticalDesc', kind: 'boolean', bootOnly: false, minValue: 0, maxValue: 0, defaultBool: true, defaultInt: 0, defaultStr: '' },
-	{ key: 'wifiRebootMin', kind: 'number', bootOnly: false, minValue: 0, maxValue: 120, defaultBool: false, defaultInt: 10, defaultStr: '' },
-	{ key: 'wpTimeout', kind: 'number', bootOnly: true, minValue: 0, maxValue: 3600, defaultBool: false, defaultInt: 900, defaultStr: '' },
+	{
+		key: 'actCurrencies',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'USD,EUR,JPY'
+	},
+	{
+		key: 'bitaxeEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'bitaxeHostname',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'bitaxe1'
+	},
+	{
+		key: 'bitaxePollSec',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 5,
+		maxValue: 300,
+		defaultBool: false,
+		defaultInt: 10,
+		defaultStr: ''
+	},
+	{
+		key: 'blockFeeDec',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'blockFlashColor',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 16777215,
+		defaultBool: false,
+		defaultInt: 14697216,
+		defaultStr: ''
+	},
+	{
+		key: 'ceDisableSSL',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'ceEndpoint',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'ws-staging.btclock.dev'
+	},
+	{
+		key: 'dataSource',
+		kind: 'number',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 3,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'decimalShareDot',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'digitFontPx',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 80,
+		maxValue: 220,
+		defaultBool: false,
+		defaultInt: 180,
+		defaultStr: ''
+	},
+	{
+		key: 'disableLeds',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'dndEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'dndEndHour',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 23,
+		defaultBool: false,
+		defaultInt: 7,
+		defaultStr: ''
+	},
+	{
+		key: 'dndEndMin',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 59,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'dndStartHour',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 23,
+		defaultBool: false,
+		defaultInt: 22,
+		defaultStr: ''
+	},
+	{
+		key: 'dndStartMin',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 59,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'dndTimeEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'enableDebugLog',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flAlwaysOn',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flDisable',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flEffectDelay',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 1000,
+		defaultBool: false,
+		defaultInt: 15,
+		defaultStr: ''
+	},
+	{
+		key: 'flFlashOnUpd',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flFlashOnZap',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flMaxBrightness',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 65535,
+		defaultBool: false,
+		defaultInt: 2048,
+		defaultStr: ''
+	},
+	{
+		key: 'flOffOnDnd',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'flOffWhenDark',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'fontName',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'antonio'
+	},
+	{
+		key: 'fullRefreshMin',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 1440,
+		defaultBool: false,
+		defaultInt: 60,
+		defaultStr: ''
+	},
+	{
+		key: 'gitReleaseUrl',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v4/releases/latest'
+	},
+	{
+		key: 'hideLeadZero',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'hostnamePrefix',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'btclock'
+	},
+	{
+		key: 'httpAuthEnabled',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'httpAuthPass',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'httpAuthUser',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'btclock'
+	},
+	{
+		key: 'inverseButtons',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'invertedColor',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'labelFitPct',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 25,
+		maxValue: 100,
+		defaultBool: false,
+		defaultInt: 100,
+		defaultStr: ''
+	},
+	{
+		key: 'ledBrightness',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 255,
+		defaultBool: false,
+		defaultInt: 128,
+		defaultStr: ''
+	},
+	{
+		key: 'ledFlashOnUpd',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'ledFlashOnZap',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'ledTestOnPower',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'localPoolHost',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'umbrel.local:2019'
+	},
+	{
+		key: 'luxLightToggle',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 65535,
+		defaultBool: false,
+		defaultInt: 128,
+		defaultStr: ''
+	},
+	{
+		key: 'mcapBigChar',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'mdnsEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'mempoolInstance',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'mempool.space'
+	},
+	{
+		key: 'mempoolSecure',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'minSecPriceUpd',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 1,
+		maxValue: 3600,
+		defaultBool: false,
+		defaultInt: 30,
+		defaultStr: ''
+	},
+	{
+		key: 'miningPoolName',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'noderunners'
+	},
+	{
+		key: 'miningPoolStats',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'miningPoolUser',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: '38Qkkei3SuF1Eo45BaYmRHUneRD54yyTFy'
+	},
+	{
+		key: 'mowMode',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'nostrPubKey',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: '642317135fd4c4205323b9dea8af3270657e62d51dc31a657c0ec8aab31c6288'
+	},
+	{
+		key: 'nostrRelay',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'wss://relay.primal.net'
+	},
+	{
+		key: 'nostrRelays',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'nostrZapNotify',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'nostrZapPubkey',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'b5127a08cf33616274800a4387881a9f98e04b9c37116e92de5250498635c422'
+	},
+	{
+		key: 'nostrZapPubkeys',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'otaEnabled',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'otaPass',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'poolGlobalStats',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'poolLogosUrl',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'https://git.btclock.dev/btclock/mining-pool-logos/raw/branch/main'
+	},
+	{
+		key: 'poolPollSec',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 10,
+		maxValue: 3600,
+		defaultBool: false,
+		defaultInt: 60,
+		defaultStr: ''
+	},
+	{
+		key: 'poolWorker',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyBypass',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: '*.local,192.168.*,10.*,127.0.0.1'
+	},
+	{
+		key: 'proxyEnabled',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyHost',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyPass',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyPort',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 1,
+		maxValue: 65535,
+		defaultBool: false,
+		defaultInt: 1080,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyType',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 4,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'proxyUser',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'refrScrnChange',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'satsVariant',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 15,
+		defaultBool: false,
+		defaultInt: 7,
+		defaultStr: ''
+	},
+	{
+		key: 'scrnRestoreZap',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'stealFocus',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'suffixPrice',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'supplyPercent',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'tzString',
+		kind: 'string',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: 'Europe/Amsterdam'
+	},
+	{
+		key: 'useBlkCountdown',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'useBtcSymbol',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'useMscwTime',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'useSatsSymbol',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'verticalDesc',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'wifiRebootMin',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 120,
+		defaultBool: false,
+		defaultInt: 10,
+		defaultStr: ''
+	},
+	{
+		key: 'wpTimeout',
+		kind: 'number',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 3600,
+		defaultBool: false,
+		defaultInt: 900,
+		defaultStr: ''
+	}
 ];
 
 export const settingsFieldsByKey: Readonly<Record<string, SettingsFieldMeta>> = Object.freeze(
 	Object.fromEntries(settingsFieldMeta.map((f) => [f.key, f]))
 );
 
-export const isBootOnly = (key: string): boolean =>
-	settingsFieldsByKey[key]?.bootOnly === true;
+export const isBootOnly = (key: string): boolean => settingsFieldsByKey[key]?.bootOnly === true;
 
 /**
  * Per-field Valibot schemas mirroring kFields. Numeric fields carry their
@@ -212,5 +984,5 @@ export const settingsFieldSchemas = {
 	useSatsSymbol: v.boolean(),
 	verticalDesc: v.boolean(),
 	wifiRebootMin: v.pipe(v.number(), v.minValue(0), v.maxValue(120)),
-	wpTimeout: v.pipe(v.number(), v.minValue(0), v.maxValue(3600)),
+	wpTimeout: v.pipe(v.number(), v.minValue(0), v.maxValue(3600))
 } as const;
