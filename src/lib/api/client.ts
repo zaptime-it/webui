@@ -80,10 +80,16 @@ export const parseSettingsError = (
 	return { field: left, reason: right, raw: text };
 };
 
-const post = (path: string): Promise<Response> =>
-	fetch(url(path), { method: 'POST', credentials: 'same-origin' });
+const post = (path: string, body?: unknown): Promise<Response> =>
+	fetch(url(path), {
+		method: 'POST',
+		credentials: 'same-origin',
+		headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+		body: body === undefined ? undefined : JSON.stringify(body)
+	});
 
-const postEnv = async (path: string): Promise<ApiResult> => envelope(await post(path));
+const postEnv = async (path: string, body?: unknown): Promise<ApiResult> =>
+	envelope(await post(path, body));
 
 /* ----- settings ----- */
 
@@ -135,17 +141,15 @@ export const getStatus = async (): Promise<Status> => {
 };
 
 /* ----- show actions ----- */
-// Firmware exposes path-template rewrites for these, but the query-parameter
-// form is the "real" route. Use it directly so there is one URL shape, not
-// two-with-a-server-side-rewrite.
+// POST actions now send parameters in JSON body (vs query strings).
 
 export const showText = (text: string): Promise<ApiResult> =>
-	postEnv(`/api/show/text?t=${encodeURIComponent(text)}`);
+	postEnv('/api/show/text', { t: text });
 
-export const showScreen = (id: number): Promise<ApiResult> => postEnv(`/api/show/screen?s=${id}`);
+export const showScreen = (id: number): Promise<ApiResult> => postEnv('/api/show/screen', { s: id });
 
 export const showCurrency = (code: string): Promise<ApiResult> =>
-	postEnv(`/api/show/currency?c=${encodeURIComponent(code)}`);
+	postEnv('/api/show/currency', { c: code });
 
 /* ----- LEDs ----- */
 
@@ -167,7 +171,7 @@ export const frontlightOn = (): Promise<ApiResult> => postEnv('/api/frontlight/o
 export const frontlightOff = (): Promise<ApiResult> => postEnv('/api/frontlight/off');
 export const frontlightFlash = (): Promise<ApiResult> => postEnv('/api/frontlight/flash');
 export const frontlightBrightness = (value: number): Promise<ApiResult> =>
-	postEnv(`/api/frontlight/brightness?b=${value}`);
+	postEnv('/api/frontlight/brightness', { b: value });
 
 /* ----- system ----- */
 

@@ -383,36 +383,36 @@ export const initMock = async ({ page }: { page: Page }) => {
 		await route.fulfill({ json: statusJson });
 	});
 
-	// 3.4.0 URL shape: POST /api/show/screen?s={id} (query param). Route patterns
-	// use RegExp here rather than glob strings because the literal `?` in the
-	// URL would otherwise collide with the glob single-char wildcard.
-	await page.route(/\/api\/show\/screen\?s=10$/, async (route) => {
-		statusJson.currentScreen = 1;
-		statusJson.data = ['MSCW/TIME', ' ', ' ', '2', '6', '4', '4'];
-
-		await route.fulfill({ json: statusJson });
-	});
-
-	await page.route(/\/api\/show\/screen\?s=20$/, async (route) => {
-		statusJson.currentScreen = 2;
-		statusJson.data = ['BTC/USD', '$', '3', '7', '8', '2', '4'];
-
-		await route.fulfill({ json: statusJson });
-	});
-
-	await page.route(/\/api\/show\/screen\?s=4$/, async (route) => {
-		statusJson.currentScreen = 4;
-		statusJson.data = [
-			'BIT/COIN',
-			'HALV/ING',
-			'0/YRS',
-			'149/DAYS',
-			'8/HRS',
-			'30/MINS',
-			'TO/GO'
-		];
-
-		await route.fulfill({ json: statusJson });
+	// POST /api/show/screen now carries `{ s: <id> }` in JSON body.
+	await page.route('*/**/api/show/screen', async (route) => {
+		const screen = (route.request().postDataJSON() as { s?: number } | null)?.s;
+		if (screen === 10) {
+			statusJson.currentScreen = 1;
+			statusJson.data = ['MSCW/TIME', ' ', ' ', '2', '6', '4', '4'];
+			await route.fulfill({ json: statusJson });
+			return;
+		}
+		if (screen === 20) {
+			statusJson.currentScreen = 2;
+			statusJson.data = ['BTC/USD', '$', '3', '7', '8', '2', '4'];
+			await route.fulfill({ json: statusJson });
+			return;
+		}
+		if (screen === 4) {
+			statusJson.currentScreen = 4;
+			statusJson.data = [
+				'BIT/COIN',
+				'HALV/ING',
+				'0/YRS',
+				'149/DAYS',
+				'8/HRS',
+				'30/MINS',
+				'TO/GO'
+			];
+			await route.fulfill({ json: statusJson });
+			return;
+		}
+		await route.fulfill({ status: 400, json: { error: 'unexpected screen' } });
 	});
 
 	// /api/settings handles both GET (full settings) and the 3.4.0 PATCH (settings update).

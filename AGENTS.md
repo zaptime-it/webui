@@ -109,7 +109,7 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
 
 ### Control card (left)
 
-- **Text overlay** — POST `/api/show/text?t=<text>`, char limit = `numScreens`.
+- **Text overlay** — POST `/api/show/text` with JSON body `{"t":"<text>"}` (legacy `?t=` fallback still accepted), char limit = `numScreens`.
 - **LEDs** — colour pickers per panel + "keep same colour" toggle, Set / Off
   via POST `/api/lights/set` and `/api/lights/off`. Hidden when
   `settings.disableLeds`.
@@ -127,8 +127,9 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
 
 - Quick screen jump (Block Height, Time, Halving, Block Fee Rate, Sats per
   dollar, Ticker, Market Cap, Bitcoin Supply, Mining Pool Hashrate) — POST
-  `/api/show/screen?s=<id>`.
-- Per-currency jump (USD / EUR active here) — POST `/api/show/currency?c=USD`.
+  `/api/show/screen` with JSON body `{"s":<id>}`.
+- Per-currency jump (USD / EUR active here) — POST `/api/show/currency` with
+  JSON body `{"c":"USD"}`.
 - Live 7-panel preview rendered by `ClockDisplay` from the SSE `data[]` array
     - glyph hints in `status`.
 - Screen cycle pause/resume — POST `/api/action/pause` / `/api/action/timer_restart`.

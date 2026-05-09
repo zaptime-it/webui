@@ -259,23 +259,29 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Switch to a screen by index",
-				"description": "The firmware also registers the rewrite `/api/show/screen/{s}` \u2192 this URL. Prefer the\nquery-parameter form.\n",
+				"description": "POST body carries the selected screen id as JSON: `{ \"s\": <id> }`.\nThe firmware also accepts the legacy query form for backward compatibility.\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "s",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						},
-						"description": "Screen index (0 \u2026 numScreens-1)"
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["s"],
+								"properties": {
+									"s": {
+										"type": "integer",
+										"description": "Screen index (api id from `settings.screens[].id`)"
+									}
+								}
+							}
+						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -287,22 +293,28 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Show one character per display (legacy text mode)",
-				"description": "The firmware also registers rewrites `/api/show/text/{text}` and\n`/api/show/number/{number}` \u2192 this URL. Text is uppercased on the device.\n",
+				"description": "POST body carries text as JSON: `{ \"t\": \"HELLO\" }`.\nText is uppercased and split one character per panel on the device.\nLegacy query/rewritten forms are still accepted for compatibility.\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "t",
-						"required": true,
-						"schema": {
-							"type": "string"
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["t"],
+								"properties": {
+									"t": {
+										"type": "string"
+									}
+								}
+							}
 						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -314,22 +326,28 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Switch to an active fiat/crypto currency code",
-				"description": "The firmware also registers `/api/show/currency/{c}` \u2192 this URL.\nReturns 404 if the currency is not in `actCurrencies`.\n",
+				"description": "POST body carries the currency code as JSON: `{ \"c\": \"USD\" }`.\nReturns 404 if the currency is not in `actCurrencies`.\nLegacy query/rewritten forms are still accepted for compatibility.\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "c",
-						"required": true,
-						"schema": {
-							"type": "string"
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["c"],
+								"properties": {
+									"c": {
+										"type": "string"
+									}
+								}
+							}
 						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -473,23 +491,29 @@
 			"post": {
 				"tags": ["lights"],
 				"summary": "Set all LEDs to one RGB hex color",
-				"description": "The firmware also registers the rewrite `/api/lights/color/{color}` \u2192 this URL.\nUse six hex digits without `#`, or `off`.\n",
+				"description": "POST body carries color as JSON: `{ \"c\": \"FFCC00\" }` or `{ \"c\": \"off\" }`.\nLegacy query/rewritten forms are still accepted for compatibility.\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "c",
-						"required": true,
-						"schema": {
-							"type": "string",
-							"example": "FFCC00"
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["c"],
+								"properties": {
+									"c": {
+										"type": "string",
+										"example": "FFCC00"
+									}
+								}
+							}
 						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "Returns current LED array (same shape as GET /api/lights)",
@@ -834,18 +858,24 @@
 						"basicAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "b",
-						"required": true,
-						"schema": {
-							"type": "integer",
-							"minimum": 0,
-							"maximum": 65535
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["b"],
+								"properties": {
+									"b": {
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 65535
+									}
+								}
+							}
 						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "successful operation"
@@ -916,12 +946,29 @@
 			"post": {
 				"tags": ["diag"],
 				"summary": "Begin a leak-mode heap_trace window (dev builds only)",
-				"description": "Routes through `heap_trace_init_standalone` +\n`heap_trace_start(HEAP_TRACE_LEAKS)`. Endpoint is compiled out\nunless the firmware is built with\n`CONFIG_HEAP_TRACING_STANDALONE=y` \u2014 currently only the Rev A\nbuild ships it. On builds without the option the route returns\n404.\n\nCalling `start` while a window is already armed will reset the\ncapture buffer.\n",
+				"description": "Routes through `heap_trace_init_standalone` +\n`heap_trace_start(HEAP_TRACE_LEAKS)`. Endpoint is compiled out\nunless the firmware is built with\n`CONFIG_HEAP_TRACING_STANDALONE=y` \u2014 currently only the Rev A\nbuild ships it. On builds without the option the route returns\n404.\n\nCalling `start` while a window is already armed will reset the\ncapture buffer. Optional JSON body `{ \"cap\": N }` chooses the\nrecord capacity (1..4096).\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"cap": {
+										"type": "integer",
+										"minimum": 1,
+										"maximum": 4096
+									}
+								}
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
 						"description": "Trace started",
