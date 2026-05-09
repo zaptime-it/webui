@@ -17,6 +17,14 @@ export interface FramebufferPreviewFrame {
 	rawPixels: Uint8Array;
 }
 
+// Device inversion is a framebuffer-byte XOR before panel write. Mirror that
+// parity in WebUI by flipping each unpacked bit when invertedColor is set.
+export const framebufferBitToLuma = (bit: number, invertedColor: boolean): number => {
+	const normalized = bit & 1;
+	const effectiveBit = invertedColor ? normalized ^ 1 : normalized;
+	return effectiveBit === 1 ? 255 : 16;
+};
+
 const decoder = new TextDecoder();
 
 const readMagic = (buf: Uint8Array): string => decoder.decode(buf.subarray(0, 4));

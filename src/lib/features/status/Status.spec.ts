@@ -8,7 +8,7 @@ describe('Status', () => {
 		paraglideSetLocale('en', { reload: false });
 	});
 
-	test('renders the status card', () => {
+	test('renders status card with framebuffer preview', () => {
 		const host = document.createElement('div');
 		document.body.appendChild(host);
 		const instance = render(Status, { target: host });

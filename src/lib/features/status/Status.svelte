@@ -5,7 +5,6 @@
 	import { pauseTimer, timerRestart, dndEnable, dndDisable } from '$lib/api/client';
 	import { toUptimeString } from '$lib/util/format';
 
-	import ClockDisplay from '$lib/features/clock/ClockDisplay.svelte';
 	import FramebufferPreview from '$lib/features/status/FramebufferPreview.svelte';
 	import ScreenButtons from './ScreenButtons.svelte';
 	import CurrencyButtons from './CurrencyButtons.svelte';
@@ -16,7 +15,6 @@
 	const settings = $derived(settingsStore.data);
 	const status = $derived(statusStore.data);
 
-	const lightMode = $derived(!settings?.invertedColor);
 	const connected = $derived(statusStore.connected && !(status?.isFake ?? false));
 	const otaInProgress = $derived(statusStore.otaInProgress);
 
@@ -66,7 +64,7 @@
 			<hr class="border-base-300" />
 
 			{#if status?.data}
-				<section class={lightMode ? 'lightMode' : 'darkMode'} style="position: relative;">
+				<section style="position: relative;">
 					{#if !connected}
 						<div class="connection-lost-overlay" data-testid="connection-lost-overlay">
 							<div class="overlay-content">
@@ -80,13 +78,8 @@
 							</div>
 						</div>
 					{/if}
-					<ClockDisplay
-						status={status ?? {}}
-						verticalDesc={settings?.verticalDesc}
-						satsVariant={settings?.useSatsSymbol ? settings?.satsVariant : undefined}
-					/>
+					<FramebufferPreview />
 				</section>
-				<FramebufferPreview />
 
 				<div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
 					<div class="flex min-w-0 flex-col gap-1">
