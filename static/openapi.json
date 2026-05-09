@@ -1443,6 +1443,9 @@
 					"useBlkCountdown": {
 						"type": "boolean"
 					},
+					"useBtcSymbol": {
+						"type": "boolean"
+					},
 					"suffixPrice": {
 						"type": "boolean"
 					},

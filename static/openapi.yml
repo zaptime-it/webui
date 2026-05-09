@@ -852,6 +852,7 @@ components:
           description: True when the device has a non-empty ArduinoOTA password stored.
         useSatsSymbol: { type: boolean }
         useBlkCountdown: { type: boolean }
+        useBtcSymbol: { type: boolean }
         suffixPrice: { type: boolean }
         disableLeds: { type: boolean }
         mowMode: { type: boolean }
