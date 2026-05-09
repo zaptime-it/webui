@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { previewWsUrl } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
+	import { theme } from '$lib/stores/theme.svelte';
 	import {
 		decodeFramebufferPreviewPacket,
 		framebufferBitToLuma,
@@ -19,6 +20,18 @@
 	const PANEL_RADIUS_MM = 1.5;
 	const GOLD_RING_W_MM = 0.6;
 	const GOLD_RING_GAP_MM = 0.4;
+	const WORDMARK_CAP_MM = 7.5;
+	const CUTOUT_RADIUS_PX = 1;
+	const CUTOUT_OVERLAP_PX = 1;
+	const COMPOSITE_SSAA = 2;
+	const PANEL_CONTENT_UPSCALE = 2;
+	const PANEL_FACE_LIGHT = '#dadbde';
+	const PANEL_FACE_DARK = '#101010';
+	const CHROME_BOARD_LIGHT_TOP = '#101010';
+	const CHROME_BOARD_LIGHT_BOTTOM = '#070707';
+	const CHROME_BOARD_DARK_TOP = '#f7f8fa';
+	const CHROME_BOARD_DARK_BOTTOM = '#eceef2';
+	const CHROME_PANEL_DARK = '#f3f4f6';
 	const ASPECT_RATIO = (FRAME_W_MM + 2 * VIEWBOX_PAD_MM) / (FRAME_H_MM + 2 * VIEWBOX_PAD_MM);
 	const DEFAULT_PANEL_COUNT = 7;
 
@@ -30,10 +43,13 @@
 
 	let stageEl: HTMLDivElement | undefined;
 	let canvasEl: HTMLCanvasElement | undefined;
+	let compositeCanvas: HTMLCanvasElement | null = null;
+	let panelUpscaleCanvas: HTMLCanvasElement | null = null;
 	let fittedWidthPx = $state(0);
 	let fittedHeightPx = $state(0);
 	let panelRasterByIndex = $state<Record<number, HTMLCanvasElement>>({});
 	const invertedColor = $derived(Boolean(settingsStore.data?.invertedColor));
+	const darkThemeChrome = $derived(theme.effective === 'dark');
 	let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 	let reconnectAttempt = 0;
 	let tearingDown = false;
@@ -90,7 +106,7 @@
 		const orientedCtx = oriented.getContext('2d');
 		if (!orientedCtx) return null;
 		orientedCtx.imageSmoothingEnabled = false;
-		orientedCtx.fillStyle = '#dadbde';
+		orientedCtx.fillStyle = useInvertedColor ? PANEL_FACE_DARK : PANEL_FACE_LIGHT;
 		orientedCtx.fillRect(0, 0, targetW, targetH);
 		orientedCtx.save();
 		if (rotation === 90) {
@@ -108,9 +124,14 @@
 		return oriented;
 	};
 
-	const drawWordmark = (ctx: CanvasRenderingContext2D, midXPx: number, baselineYPx: number) => {
+	const drawWordmark = (
+		ctx: CanvasRenderingContext2D,
+		midXPx: number,
+		baselineYPx: number,
+		mmToPx: number
+	) => {
 		const text = 'BTClock';
-		const sizePx = Math.max(14, fittedHeightPx * 0.096);
+		const sizePx = WORDMARK_CAP_MM * mmToPx;
 		ctx.save();
 		ctx.font = `italic 500 ${sizePx}px "Ubuntu", "Antonio", sans-serif`;
 		ctx.textAlign = 'center';
@@ -123,19 +144,64 @@
 		ctx.restore();
 	};
 
+	const ensureCanvasSize = (
+		existing: HTMLCanvasElement | null,
+		width: number,
+		height: number
+	) => {
+		const canvas = existing ?? document.createElement('canvas');
+		if (canvas.width !== width) canvas.width = width;
+		if (canvas.height !== height) canvas.height = height;
+		return canvas;
+	};
+
+	const drawPanelRaster = (
+		ctx: CanvasRenderingContext2D,
+		raster: HTMLCanvasElement,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+		bg: string
+	) => {
+		const upW = Math.max(1, Math.round(w * PANEL_CONTENT_UPSCALE));
+		const upH = Math.max(1, Math.round(h * PANEL_CONTENT_UPSCALE));
+		panelUpscaleCanvas = ensureCanvasSize(panelUpscaleCanvas, upW, upH);
+		const upCtx = panelUpscaleCanvas.getContext('2d');
+		if (!upCtx) return;
+
+		upCtx.clearRect(0, 0, upW, upH);
+		upCtx.fillStyle = bg;
+		upCtx.fillRect(0, 0, upW, upH);
+		upCtx.imageSmoothingEnabled = false;
+		upCtx.drawImage(raster, 0, 0, upW, upH);
+
+		ctx.imageSmoothingEnabled = true;
+		ctx.imageSmoothingQuality = 'medium';
+		ctx.drawImage(panelUpscaleCanvas, x, y, w, h);
+	};
+
 	const redrawComposite = () => {
 		if (!canvasEl || fittedWidthPx <= 0 || fittedHeightPx <= 0) return;
 		const dpr = window.devicePixelRatio || 1;
 		canvasEl.width = Math.max(1, Math.round(fittedWidthPx * dpr));
 		canvasEl.height = Math.max(1, Math.round(fittedHeightPx * dpr));
-		const ctx = canvasEl.getContext('2d');
+		const displayCtx = canvasEl.getContext('2d');
+		if (!displayCtx) return;
+
+		const ssaa = fittedWidthPx < 1200 ? COMPOSITE_SSAA : 1;
+		const compositeW = Math.max(1, Math.round(fittedWidthPx * ssaa));
+		const compositeH = Math.max(1, Math.round(fittedHeightPx * ssaa));
+		compositeCanvas = ensureCanvasSize(compositeCanvas, compositeW, compositeH);
+		const ctx = compositeCanvas.getContext('2d');
 		if (!ctx) return;
 
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.clearRect(0, 0, compositeW, compositeH);
 		ctx.imageSmoothingEnabled = true;
-		ctx.clearRect(0, 0, fittedWidthPx, fittedHeightPx);
+		ctx.imageSmoothingQuality = 'high';
 
-		const mmToPx = fittedWidthPx / (FRAME_W_MM + 2 * VIEWBOX_PAD_MM);
+		const mmToPx = compositeW / (FRAME_W_MM + 2 * VIEWBOX_PAD_MM);
 		const mapMm = (valueMm: number) => (valueMm + VIEWBOX_PAD_MM) * mmToPx;
 
 		const pcbX = mapMm(0);
@@ -144,13 +210,22 @@
 		const pcbH = FRAME_H_MM * mmToPx;
 
 		const boardGrad = ctx.createLinearGradient(0, pcbY, 0, pcbY + pcbH);
-		boardGrad.addColorStop(0, '#101010');
-		boardGrad.addColorStop(1, '#070707');
+		boardGrad.addColorStop(0, darkThemeChrome ? CHROME_BOARD_DARK_TOP : CHROME_BOARD_LIGHT_TOP);
+		boardGrad.addColorStop(
+			1,
+			darkThemeChrome ? CHROME_BOARD_DARK_BOTTOM : CHROME_BOARD_LIGHT_BOTTOM
+		);
 		ctx.fillStyle = boardGrad;
 		ctx.fillRect(pcbX, pcbY, pcbW, pcbH);
 
 		const renderFrames = orderedFrames.length > 0 ? orderedFrames : [];
 		const panelCount = Math.max(renderFrames.length, DEFAULT_PANEL_COUNT);
+		const panelFace = invertedColor
+			? PANEL_FACE_DARK
+			: darkThemeChrome
+				? CHROME_PANEL_DARK
+				: PANEL_FACE_LIGHT;
+		const rasterBackdrop = invertedColor ? PANEL_FACE_DARK : PANEL_FACE_LIGHT;
 		for (let i = 0; i < panelCount; i++) {
 			const frame = renderFrames[i];
 			const raster = frame ? panelRasterByIndex[frame.panelIndex] : undefined;
@@ -176,22 +251,67 @@
 			ctx.roundRect(ringX, ringY, ringW, ringH, ringR);
 			ctx.stroke();
 
-			ctx.fillStyle = '#dadbde';
+			ctx.fillStyle = panelFace;
 			ctx.beginPath();
 			ctx.roundRect(panelX, panelY, panelW, panelH, panelR);
 			ctx.fill();
 
 			if (!raster) continue;
-			ctx.imageSmoothingEnabled = false;
 			const innerX = mapMm(xMm + PANEL_BEZEL_MM);
 			const innerY = mapMm(yMm + PANEL_BEZEL_MM);
 			const innerW = (PANEL_W_MM - 2 * PANEL_BEZEL_MM) * mmToPx;
 			const innerH = (PANEL_H_MM - 2 * PANEL_BEZEL_MM) * mmToPx;
-			ctx.drawImage(raster, innerX, innerY, innerW, innerH);
-			ctx.imageSmoothingEnabled = true;
+			const snappedInnerX = Math.round(innerX);
+			const snappedInnerY = Math.round(innerY);
+			const snappedInnerW = Math.max(1, Math.round(innerW));
+			const snappedInnerH = Math.max(1, Math.round(innerH));
+			ctx.save();
+			ctx.beginPath();
+			ctx.roundRect(
+				snappedInnerX,
+				snappedInnerY,
+				snappedInnerW,
+				snappedInnerH,
+				CUTOUT_RADIUS_PX
+			);
+			ctx.clip();
+			ctx.fillStyle = rasterBackdrop;
+			ctx.fillRect(snappedInnerX, snappedInnerY, snappedInnerW, snappedInnerH);
+			drawPanelRaster(
+				ctx,
+				raster,
+				snappedInnerX,
+				snappedInnerY,
+				snappedInnerW,
+				snappedInnerH,
+				rasterBackdrop
+			);
+			ctx.restore();
+			// Keep a tiny bezel overlap over panel content edges to hide
+			// interpolation halos while preserving rounded cutout corners.
+			// Draw this stroke fully INSIDE the panel content so it remains
+			// visible even when the outer half would blend into the bezel.
+			const overlapInset = CUTOUT_OVERLAP_PX;
+			ctx.strokeStyle = panelFace;
+			ctx.lineWidth = CUTOUT_OVERLAP_PX * 2;
+			ctx.beginPath();
+			ctx.roundRect(
+				snappedInnerX + overlapInset,
+				snappedInnerY + overlapInset,
+				snappedInnerW - overlapInset * 2,
+				snappedInnerH - overlapInset * 2,
+				CUTOUT_RADIUS_PX
+			);
+			ctx.stroke();
 		}
 
-		drawWordmark(ctx, mapMm(FRAME_W_MM / 2), mapMm(FRAME_H_MM - 7.375));
+		drawWordmark(ctx, mapMm(FRAME_W_MM / 2), mapMm(FRAME_H_MM - 7.375), mmToPx);
+
+		displayCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		displayCtx.clearRect(0, 0, fittedWidthPx, fittedHeightPx);
+		displayCtx.imageSmoothingEnabled = ssaa > 1;
+		displayCtx.imageSmoothingQuality = 'high';
+		displayCtx.drawImage(compositeCanvas, 0, 0, fittedWidthPx, fittedHeightPx);
 	};
 
 	const updateFit = () => {

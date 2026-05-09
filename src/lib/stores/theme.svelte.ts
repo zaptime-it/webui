@@ -4,7 +4,12 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
 
 const KEY = 'color-scheme';
 
-const prefersDark = () => browser && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const getColorSchemeMediaQuery = () =>
+	browser && typeof window.matchMedia === 'function'
+		? window.matchMedia('(prefers-color-scheme: dark)')
+		: null;
+
+const prefersDark = () => getColorSchemeMediaQuery()?.matches ?? false;
 
 const effective = (mode: ThemeMode) =>
 	mode === 'auto' ? (prefersDark() ? 'dark' : 'light') : mode;
@@ -25,9 +30,7 @@ const state = $state({ mode: read() });
 
 if (browser) {
 	apply(state.mode);
-	window
-		.matchMedia('(prefers-color-scheme: dark)')
-		.addEventListener('change', () => apply(state.mode));
+	getColorSchemeMediaQuery()?.addEventListener('change', () => apply(state.mode));
 }
 
 export const theme = {

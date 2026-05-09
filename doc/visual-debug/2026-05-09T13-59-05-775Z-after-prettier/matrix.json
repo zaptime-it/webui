@@ -1,0 +1,30 @@
+{
+	"baseUrl": "http://127.0.0.1:4174/",
+	"outDir": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier",
+	"results": [
+		{
+			"theme": "light",
+			"inverted": false,
+			"statusPath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-light_inverted-false__status-card.png",
+			"pagePath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-light_inverted-false__full-page.png"
+		},
+		{
+			"theme": "light",
+			"inverted": true,
+			"statusPath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-light_inverted-true__status-card.png",
+			"pagePath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-light_inverted-true__full-page.png"
+		},
+		{
+			"theme": "dark",
+			"inverted": false,
+			"statusPath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-dark_inverted-false__status-card.png",
+			"pagePath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-dark_inverted-false__full-page.png"
+		},
+		{
+			"theme": "dark",
+			"inverted": true,
+			"statusPath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-dark_inverted-true__status-card.png",
+			"pagePath": "/Users/padjuri/src/btclock_v4/data/doc/visual-debug/2026-05-09T13-59-05-775Z-after-prettier/theme-dark_inverted-true__full-page.png"
+		}
+	]
+}

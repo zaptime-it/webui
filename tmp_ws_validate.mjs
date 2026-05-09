@@ -10,31 +10,31 @@ const context = await browser.newContext({ viewport: { width: 1600, height: 1200
 const page = await context.newPage();
 
 const wsEvidence = {
-  opened: 0,
-  url: '',
-  textSent: 0,
-  textReceived: 0,
-  binaryReceived: 0,
-  lastText: '',
-  firstBinaryLen: 0
+	opened: 0,
+	url: '',
+	textSent: 0,
+	textReceived: 0,
+	binaryReceived: 0,
+	lastText: '',
+	firstBinaryLen: 0
 };
 
 page.on('websocket', (ws) => {
-  if (!ws.url().includes('/api/preview/ws')) return;
-  wsEvidence.opened += 1;
-  wsEvidence.url = ws.url();
-  ws.on('framesent', (ev) => {
-    if (typeof ev.payload === 'string') wsEvidence.textSent += 1;
-  });
-  ws.on('framereceived', (ev) => {
-    if (typeof ev.payload === 'string') {
-      wsEvidence.textReceived += 1;
-      wsEvidence.lastText = ev.payload;
-    } else {
-      wsEvidence.binaryReceived += 1;
-      if (!wsEvidence.firstBinaryLen) wsEvidence.firstBinaryLen = ev.payload.length;
-    }
-  });
+	if (!ws.url().includes('/api/preview/ws')) return;
+	wsEvidence.opened += 1;
+	wsEvidence.url = ws.url();
+	ws.on('framesent', (ev) => {
+		if (typeof ev.payload === 'string') wsEvidence.textSent += 1;
+	});
+	ws.on('framereceived', (ev) => {
+		if (typeof ev.payload === 'string') {
+			wsEvidence.textReceived += 1;
+			wsEvidence.lastText = ev.payload;
+		} else {
+			wsEvidence.binaryReceived += 1;
+			if (!wsEvidence.firstBinaryLen) wsEvidence.firstBinaryLen = ev.payload.length;
+		}
+	});
 });
 
 await page.goto('http://192.168.20.97/', { waitUntil: 'domcontentloaded', timeout: 20000 });
@@ -54,20 +54,24 @@ await firstScreenButton.click();
 await page.waitForTimeout(300);
 
 try {
-  execSync('curl -s -X POST http://192.168.20.97/api/full_refresh >/dev/null');
+	execSync('curl -s -X POST http://192.168.20.97/api/full_refresh >/dev/null');
 } catch {
-  // best effort
+	// best effort
 }
 
 const statsLocator = page.locator('section.preview .text-xs.text-base-content\\/70').nth(1);
 let canvasCount = 0;
 for (let i = 0; i < 30; i++) {
-  await page.waitForTimeout(400);
-  canvasCount = await page.locator('section.preview canvas').count();
-  const statsText = await statsLocator.innerText().catch(() => '');
-  if (wsEvidence.binaryReceived > 0 && canvasCount > 0 && /Last frame:\s*[1-9]/i.test(statsText)) {
-    break;
-  }
+	await page.waitForTimeout(400);
+	canvasCount = await page.locator('section.preview canvas').count();
+	const statsText = await statsLocator.innerText().catch(() => '');
+	if (
+		wsEvidence.binaryReceived > 0 &&
+		canvasCount > 0 &&
+		/Last frame:\s*[1-9]/i.test(statsText)
+	) {
+		break;
+	}
 }
 
 await page.screenshot({ path: shotFull, fullPage: true });
@@ -75,7 +79,10 @@ const firstPanel = page.locator('section.preview canvas').first();
 if ((await firstPanel.count()) > 0) await firstPanel.screenshot({ path: shotPanel });
 
 const statsText = await statsLocator.innerText().catch(() => '');
-const badge = await page.locator('section.preview .badge').innerText().catch(() => '');
+const badge = await page
+	.locator('section.preview .badge')
+	.innerText()
+	.catch(() => '');
 const gridCards = await page.locator('section.preview .grid > div').count();
 
 console.log('CLICKED: preview Connect button');
@@ -91,8 +98,8 @@ console.log('SCREENSHOT_PANEL:', shotPanel);
 await browser.close();
 
 const ok =
-  wsEvidence.opened > 0 &&
-  wsEvidence.binaryReceived > 0 &&
-  canvasCount > 0 &&
-  /Last frame:\s*[1-9]/i.test(statsText);
+	wsEvidence.opened > 0 &&
+	wsEvidence.binaryReceived > 0 &&
+	canvasCount > 0 &&
+	/Last frame:\s*[1-9]/i.test(statsText);
 if (!ok) process.exit(2);
