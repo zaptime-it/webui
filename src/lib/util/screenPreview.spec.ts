@@ -10,8 +10,8 @@ describe('previewSatsSymbol', () => {
 
 	test('with the symbol the slot is the Satoshi-font letter S, not the bitcoin glyph', () => {
 		// Why "S": the Satoshi Symbol webfont (src/app.css) substitutes the
-		// ASCII "S" with the sats sigil, the same trick ClockDisplay uses
-		// for the STS cell. Returning "₿" would render the bitcoin symbol,
+		// ASCII "S" with the sats sigil. Returning "₿" would render a
+		// different bitcoin glyph,
 		// which is what the previous version did and what we're fixing.
 		const out = previewSatsSymbol({ useSatsSymbol: true });
 		expect(out.symbol).toBe(SATS_SYMBOL_GLYPH);

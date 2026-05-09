@@ -75,7 +75,6 @@ src/lib/
 │   └── version.ts        ← semver compare for VersionCheck
 ├── locales/              ← Paraglide message JSON (en is the source of truth)
 └── features/             ← user-facing panels
-    ├── clock/            ← ClockDisplay (the 7-panel preview); icons/
     ├── control/          ← Control card (text input, LEDs, frontlight, system, OTA)
     │   ├── Control.svelte
     │   ├── LedColorPickers.svelte
@@ -130,8 +129,8 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
   `/api/show/screen` with JSON body `{"s":<id>}`.
 - Per-currency jump (USD / EUR active here) — POST `/api/show/currency` with
   JSON body `{"c":"USD"}`.
-- Live 7-panel preview rendered by `ClockDisplay` from the SSE `data[]` array
-    - glyph hints in `status`.
+- Live 7-panel framebuffer preview rendered by `FramebufferPreview` from
+  `/api/preview/ws`.
 - Screen cycle pause/resume — POST `/api/action/pause` / `/api/action/timer_restart`.
 - Do Not Disturb — POST `/api/dnd/enable` / `/api/dnd/disable`. Schedule
   shown when `dnd.dndTimeEnabled` is set.

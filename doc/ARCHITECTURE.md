@@ -173,7 +173,7 @@ flowchart LR
 
 	subgraph "src/lib/features"
 		direction TB
-		clock["clock/<br/>ClockDisplay"]
+		preview["status/<br/>FramebufferPreview"]
 		control["control/<br/>Control, LedColorPickers,<br/>FrontlightControls, SystemInfo"]
 		statusF["status/<br/>Status, ScreenButtons,<br/>CurrencyButtons,<br/>ResourceBars,<br/>ConnectionStatus"]
 		settings["settings/<br/>SettingsPanel +<br/>sections/*"]
@@ -189,7 +189,7 @@ flowchart LR
 	control --> Field
 	control --> SwitchField
 	statusF --> LedSwatch
-	statusF --> clock
+	statusF --> preview
 	firmware --> Field
 ```
 

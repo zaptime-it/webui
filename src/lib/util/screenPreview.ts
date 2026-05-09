@@ -13,7 +13,7 @@
  *
  *   - useSatsSymbol      : prefix the actual sats glyph (font-substituted
  *                          'S' from the Satoshi Symbol webfont — see
- *                          src/app.css and ClockDisplay.svelte's STS cell,
+ *                          src/app.css and the settings sats preview chip,
  *                          which both render the same way) vs no symbol
  *   - suffixPrice        : "57,798" vs "57.7k"
  *   - mowMode            : how digits collapse as the price grows
@@ -56,9 +56,8 @@ export interface ScreenPreviewFlags {
 /**
  * Glyph the firmware draws when `useSatsSymbol` is on. The Satoshi Symbol
  * webfont (src/app.css :@font-face 'Satoshi Symbol') remaps the ASCII
- * letter "S" to the sats sigil; ClockDisplay.svelte uses the exact same
- * trick (`<div class="digit sats">S</div>` for the STS cell). The
- * settings preview emits the same string and lets its caller apply the
+ * letter "S" to the sats sigil. The settings preview emits the same
+ * string and lets its caller apply the
  * font so the inline preview matches what shows up on the device — the
  * Bitcoin "₿" we used to print here is a different glyph entirely.
  */

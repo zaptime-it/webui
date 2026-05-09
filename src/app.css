@@ -18,14 +18,6 @@
 }
 
 @font-face {
-	font-family: 'Antonio';
-	font-style: normal;
-	font-weight: 400;
-	font-display: swap;
-	src: url('@fontsource/antonio/files/antonio-latin-400-normal.woff2') format('woff2');
-}
-
-@font-face {
 	font-family: 'Satoshi Symbol';
 	font-display: swap;
 	src: url('/fonts/Satoshi_Symbol.woff2') format('woff2');
@@ -44,7 +36,6 @@
 
 @theme {
 	--font-sans: 'Ubuntu', system-ui, sans-serif;
-	--font-display: 'Antonio', sans-serif;
 }
 
 :root {

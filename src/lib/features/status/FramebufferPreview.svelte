@@ -133,7 +133,7 @@
 		const text = 'BTClock';
 		const sizePx = WORDMARK_CAP_MM * mmToPx;
 		ctx.save();
-		ctx.font = `italic 500 ${sizePx}px "Ubuntu", "Antonio", sans-serif`;
+		ctx.font = `italic 500 ${sizePx}px "Ubuntu", sans-serif`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'alphabetic';
 		const grad = ctx.createLinearGradient(0, baselineYPx - sizePx, 0, baselineYPx);

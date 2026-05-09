@@ -52,7 +52,7 @@ pnpm doc:update-screenshots
 ## Key architectural choices
 
 - **Feature-based folders** — UI is organised under
-  `src/lib/features/{clock,control,status,firmware,settings,convert}` with
+  `src/lib/features/{control,status,firmware,settings,convert}` with
   colocated sub-components and spec tests. Generic primitives live in
   `src/lib/ui/`, data access in `src/lib/api/`, and global state in
   `src/lib/stores/` as Svelte 5 runes.
@@ -65,6 +65,6 @@ pnpm doc:update-screenshots
   compiled per-locale and tree-shaken by the Paraglide Vite plugin.
 - **Static output only** — `@sveltejs/adapter-static` with SSR disabled;
   the WebUI is always mounted on-device by the firmware.
-- **Minimal font footprint** — only the `latin-400` woff2 files for
-  Ubuntu and Antonio are shipped, keeping `build_gz/` well below the
+- **Minimal font footprint** — only the `latin-400` woff2 file for
+  Ubuntu (plus compact sats-symbol subsets) is shipped, keeping `build_gz/` well below the
   ~420 KB LittleFS partition.

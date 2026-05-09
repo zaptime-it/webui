@@ -29,7 +29,6 @@
 		"doc:update-screenshots": "playwright test -c playwright.doc-screenshot.config.ts"
 	},
 	"dependencies": {
-		"@fontsource/antonio": "^5.2.8",
 		"@fontsource/ubuntu": "^5.2.8",
 		"@inlang/paraglide-js": "^2.18.0",
 		"@noble/secp256k1": "^3.1.0",

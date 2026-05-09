@@ -250,19 +250,12 @@ test('parse all types of EPD content correctly', async ({ page }) => {
 
 	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
 	await page.waitForSelector('#timerStatusText:has-text("running")');
-	await page.waitForSelector('.btclock-wrapper > div > div:nth-child(1)');
+	await page.waitForSelector('.preview-stage canvas');
 
 	expect(statusJson.data[0]).toContain('/');
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(1)')).toBeTruthy();
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(1)')).toHaveClass(
-		/splitText/
-	);
+	await expect(page.locator('.preview-stage canvas')).toBeVisible();
 	expect(statusJson.data[1]).toHaveLength(1);
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(2)')).toHaveClass(/digit/);
 	expect(statusJson.data[2]).toHaveLength(3);
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(3)')).toHaveClass(
-		/mediumText/
-	);
 });
 
 test('should work with more than 7 screens', async ({ page }) => {
@@ -275,7 +268,7 @@ test('should work with more than 7 screens', async ({ page }) => {
 
 	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
 	await page.waitForSelector('#timerStatusText:has-text("running")');
-	await expect(page.locator('.btclock-wrapper > div > div:nth-child(9)')).toBeTruthy();
+	await expect(page.locator('.preview-stage canvas')).toBeVisible();
 
 	await expect(page.locator('#customText')).toHaveAttribute(
 		'maxlength',

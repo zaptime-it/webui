@@ -14,9 +14,6 @@ importers:
 
   .:
     dependencies:
-      '@fontsource/antonio':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@fontsource/ubuntu':
         specifier: ^5.2.8
         version: 5.2.8
@@ -420,9 +417,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@fontsource/antonio@5.2.8':
-    resolution: {integrity: sha512-kDt+PP5i0uj06l8mFfzozVbnYTAmHvedLEIOcT4TDUkBrY8R6N3Lvl2pU48SajpcVyc2xfi7zht0bnBUrVzvPQ==}
 
   '@fontsource/ubuntu@5.2.8':
     resolution: {integrity: sha512-esSJCpgigwWOm4Ug9f7AMozUyBq5Iobea5C9QYsl2OlCb62wZABBUbXahHLdFv5Ru4lJCD9tUX6xEAeLwUTNBg==}
@@ -2564,8 +2558,6 @@ snapshots:
   '@exodus/bytes@1.15.0(@noble/hashes@2.0.1)':
     optionalDependencies:
       '@noble/hashes': 2.0.1
-
-  '@fontsource/antonio@5.2.8': {}
 
   '@fontsource/ubuntu@5.2.8': {}
 
