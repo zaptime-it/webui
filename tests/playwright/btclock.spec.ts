@@ -258,6 +258,81 @@ test('parse all types of EPD content correctly', async ({ page }) => {
 	expect(statusJson.data[2]).toHaveLength(3);
 });
 
+test('GET /api/settings includes availableFonts rows with id and hasBtcSymbol', async ({
+	page
+}) => {
+	const resPromise = page.waitForResponse(
+		(res) => res.url().includes('/api/settings') && res.request().method() === 'GET'
+	);
+	await page.goto('/');
+	const res = await resPromise;
+	expect(res.ok()).toBe(true);
+	const body = (await res.json()) as {
+		availableFonts?: Array<{ id?: unknown; hasBtcSymbol?: unknown }>;
+	};
+	expect(Array.isArray(body.availableFonts)).toBe(true);
+	expect(body.availableFonts!.length).toBeGreaterThan(0);
+	for (const row of body.availableFonts!) {
+		expect(row).toEqual(
+			expect.objectContaining({
+				id: expect.any(String),
+				hasBtcSymbol: expect.any(Boolean)
+			})
+		);
+	}
+});
+
+test('₿ price marker radio is disabled when active font has hasBtcSymbol false', async ({
+	page
+}) => {
+	await page.goto('/');
+	await waitForReady(page);
+
+	const rg = page.getByTestId('price-marker-radiogroup');
+	await expect(rg).toBeVisible();
+	const btcRadio = rg.locator('input[name="priceMarker"]').nth(2);
+	await expect(btcRadio).toBeDisabled();
+});
+
+test('₿ price marker enables after selecting a font with hasBtcSymbol true', async ({ page }) => {
+	await page.goto('/');
+	await waitForReady(page);
+	await page.getByRole('button', { name: 'Show all' }).click();
+
+	await page.locator('#fontName').selectOption('oswald');
+
+	const rg = page.getByTestId('price-marker-radiogroup');
+	const btcRadio = rg.locator('input[name="priceMarker"]').nth(2);
+	await expect(btcRadio).toBeEnabled();
+	await rg
+		.locator('label')
+		.filter({ has: page.locator('.btc-marker') })
+		.click();
+	await expect(btcRadio).toBeChecked();
+});
+
+test('persisted ₿ price marker is coerced off when the active font lacks hasBtcSymbol', async ({
+	page
+}) => {
+	const prevMode = settingsJson.priceSymMode;
+	const prevFont = settingsJson.fontName;
+	settingsJson.priceSymMode = 2;
+	settingsJson.fontName = 'antonio';
+	try {
+		await page.goto('/');
+		await waitForReady(page);
+
+		const rg = page.getByTestId('price-marker-radiogroup');
+		const noneRadio = rg.locator('input[name="priceMarker"]').nth(0);
+		const btcRadio = rg.locator('input[name="priceMarker"]').nth(2);
+		await expect(noneRadio).toBeChecked();
+		await expect(btcRadio).toBeDisabled();
+	} finally {
+		settingsJson.priceSymMode = prevMode;
+		settingsJson.fontName = prevFont;
+	}
+});
+
 test('should work with more than 7 screens', async ({ page }) => {
 	statusJson.data[2] = '1';
 	statusJson.numScreens = 9;

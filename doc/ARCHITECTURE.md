@@ -38,6 +38,20 @@ Key points:
 - Compression has to land at `build_gz/www/` (the `www/` segment
   matches `kWebRootBase = "/lfs/www"` in firmware).
 
+### Firmware compatibility (`minFirmware`)
+
+- [`src/lib/manifest.json`](../src/lib/manifest.json) carries **`minFirmware`**
+  — the oldest firmware release this WebUI still expects to interoperate with
+  without incompatible `/api/settings` drift (semver string, e.g. `4.0.0-rc.7`).
+- Imported by [`src/lib/util/version.ts`](../src/lib/util/version.ts) for semver
+  comparisons (System Info banner when `gitRev` is strictly older).
+- **`gzip_build.py`** merges `commit`, `buildTime`, and `minFirmware` into
+  `build_gz/www/manifest.json` so `curl http://<device>/manifest.json` exposes
+  the same contract for tooling.
+- **Bump `minFirmware`** when GET/PATCH settings shapes or Valibot cold-start
+  requirements change incompatibly — coordinate with `docs/SETTINGS.md` and
+  the comment block at the top of `gzip_build.py`.
+
 ---
 
 ## 2. Runtime data flow
@@ -216,4 +230,5 @@ unless it's a primitive.
 | `src/lib/features/firmware/UploadForm.svelte`    | OTA upload + statusStore.beginOtaUpload                         |
 | `static/openapi.yml` / `static/openapi.json`     | OpenAPI spec; YAML is the source                                |
 | `scripts/generate-settings-meta.py`              | Codegen for `settings.generated.ts`                             |
-| `gzip_build.py`                                  | Post-build LittleFS staging                                     |
+| `gzip_build.py`                                  | Post-build LittleFS staging + `manifest.json` (`minFirmware`)   |
+| `src/lib/manifest.json`                          | Semver floor (`minFirmware`); bump with breaking settings/API   |

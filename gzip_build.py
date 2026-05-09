@@ -96,7 +96,17 @@ def webui_rev() -> str:
 # compatibility contract. Its `minFirmware` field is read at WebUI
 # build-time (src/lib/util/version.ts imports src/lib/manifest.json) AND
 # baked into the LittleFS image here so a `curl /manifest.json` against
-# the device exposes the same value for tooling. `commit` lets the
+# the device exposes the same value for tooling.
+#
+# Bump `minFirmware` in src/lib/manifest.json whenever GET/PATCH /api/settings
+# shapes change incompatibly with older firmware (field removals/renames that
+# this WebUI relies on, non-additive type changes). Examples: `priceSymMode`
+# replacing useSatsSymbol/useBtcSymbol; `availableFonts` as `{id, hasBtcSymbol}`
+# objects; dropping digitFontHasBitcoinSign. Forward-compatible firmware-only
+# additions do not require a bump. Cross-check docs/SETTINGS.md and the WebUI
+# Valibot schemas when unsure.
+#
+# `commit` lets the
 # firmware report `fsRev` in /api/settings independent of the firmware's
 # own version stamp — i.e. an OTA-flashed LittleFS image is reflected
 # immediately rather than tracking the firmware partition. The plain

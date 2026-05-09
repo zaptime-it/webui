@@ -29,11 +29,10 @@
 
 	const fontOptions: [string, string][] = $derived(
 		(() => {
-			const options: [string, string][] = (data.availableFonts ?? []).map((font) => [
-				((m as unknown as Record<string, (() => string) | undefined>)[
-					`fonts.${font}`
-				]?.() ?? formatFontLabel(font)) as string,
-				font
+			const options: [string, string][] = (data.availableFonts ?? []).map(({ id }) => [
+				((m as unknown as Record<string, (() => string) | undefined>)[`fonts.${id}`]?.() ??
+					formatFontLabel(id)) as string,
+				id
 			]);
 			return options.sort(([labelA], [labelB]) => labelA.localeCompare(labelB));
 		})()

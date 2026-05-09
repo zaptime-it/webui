@@ -4,7 +4,9 @@ import manifest from '$lib/manifest.json';
 // src/lib/manifest.json when the WebUI starts depending on a firmware
 // endpoint or settings field that didn't exist before. Forward-compatible
 // additions (firmware adds a new field the WebUI ignores) do NOT bump
-// this — only removals/renames that a released WebUI relies on. Used by
+// this — only removals/renames or incompatible JSON shape changes that a
+// released WebUI relies on (see gzip_build.py header for examples).
+// Used by
 // SystemInfo.svelte to render an incompatibility banner when running on
 // older firmware. The same value is also written into the LittleFS image
 // at build time (data/gzip_build.py → build_gz/www/manifest.json) so the

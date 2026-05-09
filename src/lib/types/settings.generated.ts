@@ -671,6 +671,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'priceSymMode',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 2,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'proxyBypass',
 		kind: 'string',
 		bootOnly: false,
@@ -821,32 +831,12 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
-		key: 'useBtcSymbol',
-		kind: 'boolean',
-		bootOnly: false,
-		minValue: 0,
-		maxValue: 0,
-		defaultBool: false,
-		defaultInt: 0,
-		defaultStr: ''
-	},
-	{
 		key: 'useMscwTime',
 		kind: 'boolean',
 		bootOnly: false,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: true,
-		defaultInt: 0,
-		defaultStr: ''
-	},
-	{
-		key: 'useSatsSymbol',
-		kind: 'boolean',
-		bootOnly: false,
-		minValue: 0,
-		maxValue: 0,
-		defaultBool: false,
 		defaultInt: 0,
 		defaultStr: ''
 	},
@@ -964,6 +954,7 @@ export const settingsFieldSchemas = {
 	poolLogosUrl: v.string(),
 	poolPollSec: v.pipe(v.number(), v.minValue(10), v.maxValue(3600)),
 	poolWorker: v.string(),
+	priceSymMode: v.pipe(v.number(), v.minValue(0), v.maxValue(2)),
 	proxyBypass: v.string(),
 	proxyEnabled: v.boolean(),
 	proxyHost: v.string(),
@@ -979,9 +970,7 @@ export const settingsFieldSchemas = {
 	supplyPercent: v.boolean(),
 	tzString: v.string(),
 	useBlkCountdown: v.boolean(),
-	useBtcSymbol: v.boolean(),
 	useMscwTime: v.boolean(),
-	useSatsSymbol: v.boolean(),
 	verticalDesc: v.boolean(),
 	wifiRebootMin: v.pipe(v.number(), v.minValue(0), v.maxValue(120)),
 	wpTimeout: v.pipe(v.number(), v.minValue(0), v.maxValue(3600))

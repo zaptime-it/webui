@@ -245,10 +245,7 @@
 				// Also try to scroll to the input if its id matches the field name.
 				queueMicrotask(() => {
 					const fid = parsed.field as string;
-					const scrollId =
-						fid === 'useSatsSymbol' || fid === 'useBtcSymbol'
-							? 'price-marker-radiogroup'
-							: fid;
+					const scrollId = fid === 'priceSymMode' ? 'price-marker-radiogroup' : fid;
 					const el = document.getElementById(scrollId);
 					if (el?.scrollIntoView)
 						el.scrollIntoView({ behavior: 'smooth', block: 'center' });

@@ -21,33 +21,37 @@
 
 	const data = $derived(settingsStore.data!);
 
+	/** From GET `availableFonts[]` for the active `fontName` — updates as soon as the font picker changes (no save/refetch). */
+	const btcMarkerSupported = $derived.by(() => {
+		const fid = data.fontName;
+		const hit = (data.availableFonts ?? []).find((f) => f.id === fid);
+		return hit?.hasBtcSymbol ?? true;
+	});
+
 	type MarkerMode = 'none' | 'sats' | 'btc';
 
 	const markerMode = $derived.by((): MarkerMode => {
-		if ('useBtcSymbol' in data && data.useBtcSymbol) return 'btc';
-		if (data.useSatsSymbol) return 'sats';
+		const m = data.priceSymMode ?? 0;
+		if (m === 2) return btcMarkerSupported ? 'btc' : 'none';
+		if (m === 1) return 'sats';
 		return 'none';
 	});
 
 	const applyMarkerMode = (mode: MarkerMode) => {
-		if (mode === 'none') {
-			data.useSatsSymbol = false;
-			if ('useBtcSymbol' in data) data.useBtcSymbol = false;
-			return;
-		}
-		if (mode === 'sats') {
-			data.useSatsSymbol = true;
-			if ('useBtcSymbol' in data) data.useBtcSymbol = false;
-			return;
-		}
-		data.useSatsSymbol = false;
-		if ('useBtcSymbol' in data) data.useBtcSymbol = true;
+		if (mode === 'none') data.priceSymMode = 0;
+		else if (mode === 'sats') data.priceSymMode = 1;
+		else data.priceSymMode = 2;
 	};
+
+	$effect(() => {
+		if ((data.priceSymMode ?? 0) === 2 && !btcMarkerSupported) {
+			data.priceSymMode = 0;
+		}
+	});
 
 	const markerPreview = $derived(
 		previewSatsSymbol({
-			useSatsSymbol: data?.useSatsSymbol,
-			useBtcSymbol: data?.useBtcSymbol
+			priceSymMode: data.priceSymMode
 		})
 	);
 	const suffixPricePreview = $derived(
@@ -138,6 +142,7 @@
 		data-testid="price-marker-radiogroup"
 		role="radiogroup"
 		aria-labelledby="price-marker-heading"
+		aria-describedby="price-marker-help"
 	>
 		<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
 			<span id="price-marker-heading" class="text-sm font-medium text-base-content/90"
@@ -155,6 +160,9 @@
 				{/if}{markerPreview.price}</code
 			>
 		</div>
+		<p id="price-marker-help" class="max-w-prose text-xs leading-snug text-base-content/65">
+			{m['section.settings.priceMarkerFontHelp']()}
+		</p>
 		<div class="join join-vertical w-full sm:join-horizontal sm:max-w-2xl">
 			<label
 				class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
@@ -182,26 +190,27 @@
 				<span class="sats-glyph text-base leading-none" aria-hidden="true">S</span>
 				<span class="sr-only">{m['section.settings.priceMarkerSatsAria']()}</span>
 			</label>
-			{#if 'useBtcSymbol' in data}
-				<label
-					class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
-					title={m['section.settings.priceMarkerBtcAria']()}
-				>
-					<input
-						type="radio"
-						name="priceMarker"
-						class="sr-only"
-						checked={markerMode === 'btc'}
-						onchange={() => applyMarkerMode('btc')}
-					/>
-					<span class="btc-marker text-base leading-none" aria-hidden="true">₿</span>
-					<span class="sr-only">{m['section.settings.priceMarkerBtcAria']()}</span>
-				</label>
-			{/if}
+			<label
+				class="marker-radio-label btn btn-sm join-item h-auto min-h-10 flex-1 gap-1.5 py-2 font-normal normal-case"
+				class:opacity-45={!btcMarkerSupported}
+				class:cursor-not-allowed={!btcMarkerSupported}
+				title={m['section.settings.priceMarkerBtcAria']()}
+			>
+				<input
+					type="radio"
+					name="priceMarker"
+					class="sr-only"
+					disabled={!btcMarkerSupported}
+					checked={markerMode === 'btc'}
+					onchange={() => applyMarkerMode('btc')}
+				/>
+				<span class="btc-marker text-base leading-none" aria-hidden="true">₿</span>
+				<span class="sr-only">{m['section.settings.priceMarkerBtcAria']()}</span>
+			</label>
 		</div>
 	</div>
 
-	{#if 'satsVariant' in data && data.useSatsSymbol}
+	{#if 'satsVariant' in data && (data.priceSymMode ?? 0) === 1}
 		<div class="mt-4" data-testid="sats-variant-picker">
 			<h5 class="font-semibold mb-1">{m['section.settings.satsVariant']()}</h5>
 			<small class="block mb-2 text-base-content/70"

@@ -1407,8 +1407,18 @@
 					},
 					"availableFonts": {
 						"type": "array",
+						"description": "Bundled digit fonts. Each entry's `hasBtcSymbol` reflects whether that\nfamily's subset maps U+20BF (\u20bf); the WebUI disables the \u20bf price-marker\noption when the active `fontName` row has `hasBtcSymbol: false`.\n",
 						"items": {
-							"type": "string"
+							"type": "object",
+							"required": ["id", "hasBtcSymbol"],
+							"properties": {
+								"id": {
+									"type": "string"
+								},
+								"hasBtcSymbol": {
+									"type": "boolean"
+								}
+							}
 						}
 					},
 					"ledTestOnPower": {
@@ -1437,13 +1447,13 @@
 						"readOnly": true,
 						"description": "True when the device has a non-empty ArduinoOTA password stored."
 					},
-					"useSatsSymbol": {
-						"type": "boolean"
+					"priceSymMode": {
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 2,
+						"description": "BTC price-row marker \u2014 0 none, 1 Satoshi Symbol glyph (PUA font),\n2 bitcoin sign \u20bf (digit font). Replaces legacy useSatsSymbol /\nuseBtcSymbol (single source of truth).\n"
 					},
 					"useBlkCountdown": {
-						"type": "boolean"
-					},
-					"useBtcSymbol": {
 						"type": "boolean"
 					},
 					"suffixPrice": {

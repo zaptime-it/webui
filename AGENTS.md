@@ -147,7 +147,7 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
 - Collapsible sections with global Show all / Hide all and a "Unsaved
   changes" badge driven by `settingsStore.isDirty`.
 - **Screen specific** — switches for `stealFocus`, `mcapBigChar`,
-  `useBlkCountdown`, `useSatsSymbol`, `useMscwTime`, `suffixPrice`,
+  `useBlkCountdown`, `priceSymMode`, `useMscwTime`, `suffixPrice`,
   `mowMode` (gated on `suffixPrice`), `suffixShareDot` (gated on
   `suffixPrice`), `verticalDesc`, `blockFeeDec`, `supplyPercent`. Then the
   draggable **Screens** list (per-screen enable + reorder) and, for
@@ -348,7 +348,7 @@ file a `bd` issue before starting one of the bigger items.
 - **Replace `colour input[type=color]`** for the LED indicators with a
   proper read-only swatch component. The native control still lets users
   click and open the OS colour picker even though we set `disabled`.
-- **Live preview of screen settings.** Toggling `useSatsSymbol` doesn't
+- **Live preview of screen settings.** Toggling `priceSymMode` doesn't
   show a preview until the device repaints. A small canvas-based
   preview (or just a representative emoji string) inside the switch row
   would tighten the feedback loop.

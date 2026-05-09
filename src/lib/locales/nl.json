@@ -21,6 +21,7 @@
 			"priceMarkerNone": "Geen",
 			"priceMarkerSatsAria": "Sats-symbool",
 			"priceMarkerBtcAria": "Bitcoin-teken (₿)",
+			"priceMarkerFontHelp": "Niet alle lettertypen bevatten het ₿-teken (U+20BF). Deze optie wordt uitgeschakeld als het gekozen lettertype het niet heeft.",
 			"satsVariant": "Sats-symbool variant",
 			"satsVariantHelp": "Kies welke van de 16 sats-glyphs het apparaat tekent op de prijsschermen.",
 			"digitFontPx": "Grootte grote cijfers",

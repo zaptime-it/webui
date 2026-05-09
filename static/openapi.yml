@@ -838,7 +838,16 @@ components:
         fontName: { type: string }
         availableFonts:
           type: array
-          items: { type: string }
+          description: |
+            Bundled digit fonts. Each entry's `hasBtcSymbol` reflects whether that
+            family's subset maps U+20BF (₿); the WebUI disables the ₿ price-marker
+            option when the active `fontName` row has `hasBtcSymbol: false`.
+          items:
+            type: object
+            required: [id, hasBtcSymbol]
+            properties:
+              id: { type: string }
+              hasBtcSymbol: { type: boolean }
         ledTestOnPower: { type: boolean }
         ledFlashOnUpd: { type: boolean }
         ledBrightness: { type: integer }
@@ -850,9 +859,15 @@ components:
           type: boolean
           readOnly: true
           description: True when the device has a non-empty ArduinoOTA password stored.
-        useSatsSymbol: { type: boolean }
+        priceSymMode:
+          type: integer
+          minimum: 0
+          maximum: 2
+          description: |
+            BTC price-row marker — 0 none, 1 Satoshi Symbol glyph (PUA font),
+            2 bitcoin sign ₿ (digit font). Replaces legacy useSatsSymbol /
+            useBtcSymbol (single source of truth).
         useBlkCountdown: { type: boolean }
-        useBtcSymbol: { type: boolean }
         suffixPrice: { type: boolean }
         disableLeds: { type: boolean }
         mowMode: { type: boolean }

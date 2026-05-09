@@ -34,6 +34,22 @@ export const dndSettingsSchema = v.object({
 	endMinute: v.number()
 });
 
+/** Each bundled digit-font choice — id is NVS `fontName`; hasBtcSymbol mirrors cmap U+20BF. */
+export const availableFontOptionSchema = v.object({
+	id: v.string(),
+	hasBtcSymbol: v.boolean()
+});
+
+export type AvailableFontOption = v.InferOutput<typeof availableFontOptionSchema>;
+
+/** v4 firmware emits objects; legacy fixtures may still use bare id strings. */
+export const availableFontsSchema = v.pipe(
+	v.array(v.union([v.string(), availableFontOptionSchema])),
+	v.transform((arr): AvailableFontOption[] =>
+		arr.map((x) => (typeof x === 'string' ? { id: x, hasBtcSymbol: true } : x))
+	)
+);
+
 export const screenSchema = v.object({
 	id: v.number(),
 	name: v.string(),
@@ -166,7 +182,7 @@ export const settingsSchema = v.looseObject({
 	timerSeconds: v.number(),
 	timerRunning: v.boolean(),
 	txPower: v.number(),
-	availableFonts: v.array(v.string()),
+	availableFonts: availableFontsSchema,
 	availablePools: v.array(v.string()),
 	availableCurrencies: v.array(v.string()),
 	hostname: v.string(),

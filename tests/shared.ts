@@ -85,7 +85,10 @@ export const statusJson = {
 export const settingsJson = {
 	actCurrencies: ['USD', 'EUR'],
 	availableCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD'],
-	availableFonts: ['antonio', 'oswald'],
+	availableFonts: [
+		{ id: 'antonio', hasBtcSymbol: false },
+		{ id: 'oswald', hasBtcSymbol: true }
+	],
 	availablePools: [
 		'ocean',
 		'noderunners',
@@ -220,8 +223,7 @@ export const settingsJson = {
 	// Below: fields the strict schema added after this fixture was first
 	// authored. Real devices always emit these; the fixture would loop
 	// on "Loading…" without them.
-	useSatsSymbol: false,
-	useBtcSymbol: false,
+	priceSymMode: 0,
 	useMscwTime: false,
 	useBlkCountdown: false,
 	inverseButtons: false,

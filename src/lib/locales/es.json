@@ -21,6 +21,7 @@
 			"priceMarkerNone": "Ninguno",
 			"priceMarkerSatsAria": "Símbolo sats",
 			"priceMarkerBtcAria": "Signo de bitcoin (₿)",
+			"priceMarkerFontHelp": "No todas las fuentes incluyen el signo de bitcoin (₿, U+20BF). Esa opción no está disponible si la fuente elegida no lo incluye.",
 			"satsVariant": "Variante del símbolo sats",
 			"satsVariantHelp": "Elige cuál de los 16 glifos sats dibuja el dispositivo en las pantallas de precio.",
 			"digitFontPx": "Tamaño de los dígitos grandes",

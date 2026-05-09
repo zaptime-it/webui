@@ -20,6 +20,7 @@
 			"priceMarkerNone": "None",
 			"priceMarkerSatsAria": "Sats symbol",
 			"priceMarkerBtcAria": "Bitcoin sign (₿)",
+			"priceMarkerFontHelp": "Not all fonts include the Bitcoin sign (₿, U+20BF). That option is unavailable when the selected font does not provide it.",
 			"satsVariant": "Sats symbol variant",
 			"satsVariantHelp": "Pick which of the 16 sats glyphs the device draws on the price screens.",
 			"digitFontPx": "Big digit size",

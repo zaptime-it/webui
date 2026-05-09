@@ -21,11 +21,13 @@ but absent from kFields, and squeezing the GET-only fields into the
 PATCH-table would conflate two different contracts.
 
 Usage:
-    python3 scripts/generate-settings-meta.py [--firmware ../btclock_v4]
+    python3 scripts/generate-settings-meta.py [--firmware ..]
 
-The default firmware path resolves to ../btclock_v4 relative to the
-WebUI repo. Override for monorepo layouts. CI calls this without args;
-local devs typically run it after pulling firmware schema changes.
+The default firmware directory is resolved automatically: if this WebUI
+checkout lives inside the firmware tree (`…/btclock_v4/data`), the parent
+folder is used; otherwise if a sibling `btclock_v4/` exists (classic
+side‑by‑side clone), that path is used. Pass `--firmware` explicitly when
+neither matches.
 """
 
 from __future__ import annotations
@@ -184,14 +186,25 @@ def emit(fields: list[dict]) -> str:
 # ---- Driver ----------------------------------------------------------------
 
 
+def default_firmware_root(webui_root: Path) -> Path:
+    parent = webui_root.parent
+    schema_rel = Path("components/settings/include/settings/schema.hpp")
+    if (parent / schema_rel).is_file():
+        return parent
+    sibling = parent / "btclock_v4"
+    if (sibling / schema_rel).is_file():
+        return sibling
+    return sibling
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     here = Path(__file__).resolve().parent.parent
     parser.add_argument(
         "--firmware",
         type=Path,
-        default=here.parent / "btclock_v4",
-        help="Path to the btclock firmware checkout (default: ../btclock_v4)",
+        default=default_firmware_root(here),
+        help="Firmware repo root (directory containing components/). Auto-detected when omitted.",
     )
     parser.add_argument(
         "--out",

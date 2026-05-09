@@ -55,6 +55,11 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain('data-testid="sats-marker-preview"');
 		expect(src).toContain('btc-marker');
 		expect(src).toContain("m['section.settings.priceMarkerHeading']()");
+		expect(src).toContain('btcMarkerSupported');
+		expect(src).toContain('hasBtcSymbol');
+		expect(src).toContain('disabled={!btcMarkerSupported}');
+		expect(src).toContain("m['section.settings.priceMarkerFontHelp']()");
+		expect(src).toContain('id="price-marker-help"');
 	});
 
 	test('ScreenSpecificSettings exposes the satsVariant picker, capability-gated', () => {
@@ -69,6 +74,7 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain('data-testid="sats-variant-picker"');
 		expect(src).toContain('name="satsVariant"');
 		expect(src).toContain('data.satsVariant = i');
+		expect(src).toContain('priceSymMode');
 		expect(src).toContain("m['section.settings.satsVariant']()");
 	});
 
