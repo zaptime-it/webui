@@ -22,6 +22,8 @@
 			"satsVariantHelp": "Elige cuál de los 16 glifos sats dibuja el dispositivo en las pantallas de precio.",
 			"digitFontPx": "Tamaño de los dígitos grandes",
 			"digitFontPxHelp": "Altura en píxeles de los dígitos grandes en las pantallas de datos. Por defecto 180. Menor = más espacio en blanco; mayor = llena el panel.",
+			"labelFitPct": "Ancho de relleno de etiquetas",
+			"labelFitPctHelp": "Cuánto ancho del panel de etiqueta puede usar el autoajuste (porcentaje). 100 % = ancho completo; valores menores dejan más margen lateral.",
 			"useMscwTime": "Usar Moscow Time",
 			"hideLeadZero": "Ocultar el cero inicial en las horas",
 			"bitaxePollSec": "Intervalo de sondeo Bitaxe (segundos)",

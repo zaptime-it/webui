@@ -22,6 +22,8 @@
 			"satsVariantHelp": "Wähle, welche der 16 Sats-Glyphen das Gerät auf den Preis-Bildschirmen zeichnet.",
 			"digitFontPx": "Große Zifferngröße",
 			"digitFontPxHelp": "Pixelhöhe der großen Ziffern auf Daten-Bildschirmen. Standard 180. Kleiner = mehr Weißraum; größer = füllt das Panel.",
+			"labelFitPct": "Label-Füllbreite",
+			"labelFitPctHelp": "Wie viel der Label-Breite der Auto-Fit-Text nutzen darf (Prozent). 100 % = volle Breite; kleinere Werte lassen mehr Rand.",
 			"useMscwTime": "Moscow Time verwenden",
 			"hideLeadZero": "Führende Null bei Stunden ausblenden",
 			"bitaxePollSec": "Bitaxe-Abfrageintervall (Sekunden)",

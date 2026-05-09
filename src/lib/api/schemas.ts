@@ -72,6 +72,7 @@ const {
 	poolPollSec: poolPollSecSchema,
 	satsVariant: satsVariantSchema,
 	digitFontPx: digitFontPxSchema,
+	labelFitPct: labelFitPctSchema,
 	decimalShareDot: decimalShareDotSchema,
 	miningPoolUser: miningPoolUserSchema,
 	// Proxy fields landed after the initial v4 release — pre-proxy
@@ -134,6 +135,8 @@ export const settingsSchema = v.looseObject({
 	satsVariant: v.optional(satsVariantSchema),
 	// digitFontPx is v4-only — older firmware doesn't emit it.
 	digitFontPx: v.optional(digitFontPxSchema),
+	// labelFitPct is v4-only — older firmware doesn't emit it.
+	labelFitPct: v.optional(labelFitPctSchema),
 	// decimalShareDot replaced suffixShareDot in firmware; older builds
 	// still emit suffixShareDot under the previous name.
 	decimalShareDot: v.optional(decimalShareDotSchema),

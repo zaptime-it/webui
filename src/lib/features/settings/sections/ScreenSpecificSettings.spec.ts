@@ -91,6 +91,15 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).not.toContain('@md:grid-cols-2');
 	});
 
+	test('DisplaySettings exposes labelFitPct percent slider', () => {
+		const src = read('DisplaySettings.svelte');
+		expect(src).toContain("'labelFitPct' in data");
+		expect(src).toContain('id="labelFitPct"');
+		expect(src).toContain('bind:value={data.labelFitPct}');
+		expect(src).toContain('valueSuffix="%"');
+		expect(src).toContain("m['section.settings.labelFitPct']()");
+	});
+
 	test('SystemSettings switch grid uses the viewport breakpoints', () => {
 		const src = read('SystemSettings.svelte');
 		expect(src).toContain(RESPONSIVE);

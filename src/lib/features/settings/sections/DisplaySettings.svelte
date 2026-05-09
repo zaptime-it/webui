@@ -95,6 +95,19 @@
 			/>
 		{/if}
 
+		{#if 'labelFitPct' in data}
+			<RangeField
+				id="labelFitPct"
+				label={m['section.settings.labelFitPct']()}
+				bind:value={data.labelFitPct}
+				min={25}
+				max={100}
+				step={5}
+				valueSuffix="%"
+				helpText={m['section.settings.labelFitPctHelp']()}
+			/>
+		{/if}
+
 		<NumberField
 			id="timePerScreen"
 			label={m['section.settings.timePerScreen']()}

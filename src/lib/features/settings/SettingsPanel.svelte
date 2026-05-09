@@ -39,6 +39,7 @@
 		nostr: 'extra',
 		fontName: 'display',
 		digitFontPx: 'display',
+		labelFitPct: 'display',
 		invertedColor: 'display',
 		flMaxBrightness: 'display',
 		dataSource: 'dataSource',

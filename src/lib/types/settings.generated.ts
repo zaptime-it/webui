@@ -391,6 +391,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'labelFitPct',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 25,
+		maxValue: 100,
+		defaultBool: false,
+		defaultInt: 100,
+		defaultStr: ''
+	},
+	{
 		key: 'ledBrightness',
 		kind: 'number',
 		bootOnly: false,
@@ -916,6 +926,7 @@ export const settingsFieldSchemas = {
 	httpAuthUser: v.string(),
 	inverseButtons: v.boolean(),
 	invertedColor: v.boolean(),
+	labelFitPct: v.pipe(v.number(), v.minValue(25), v.maxValue(100)),
 	ledBrightness: v.pipe(v.number(), v.minValue(0), v.maxValue(255)),
 	ledFlashOnUpd: v.boolean(),
 	ledFlashOnZap: v.boolean(),

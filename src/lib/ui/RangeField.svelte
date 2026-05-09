@@ -7,6 +7,7 @@
 		max?: number;
 		step?: number;
 		helpText?: string;
+		valueSuffix?: string;
 		disabled?: boolean;
 		onChange?: () => void;
 	}
@@ -19,6 +20,7 @@
 		max = 100,
 		step = 1,
 		helpText,
+		valueSuffix = '',
 		disabled = false,
 		onChange
 	}: Props = $props();
@@ -38,7 +40,7 @@
 			{disabled}
 			onchange={onChange}
 		/>
-		<div class="text-right text-xs mt-1 text-base-content/70">{value}</div>
+		<div class="text-right text-xs mt-1 text-base-content/70">{value}{valueSuffix}</div>
 		{#if helpText}
 			<p class="text-xs mt-1 text-base-content/70">{helpText}</p>
 		{/if}

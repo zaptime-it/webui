@@ -22,6 +22,8 @@
 			"satsVariantHelp": "Kies welke van de 16 sats-glyphs het apparaat tekent op de prijsschermen.",
 			"digitFontPx": "Grootte grote cijfers",
 			"digitFontPxHelp": "Pixelhoogte van de grote cijfers op datapagina's. Standaard 180. Lager = meer witruimte; hoger = vult het paneel.",
+			"labelFitPct": "Label-vulbreedte",
+			"labelFitPctHelp": "Hoeveel van de labelbreedte auto-fit tekst mag gebruiken (procent). 100% = volle breedte; lagere waarden geven meer zijmarge.",
 			"useMscwTime": "Moscow Time gebruiken",
 			"hideLeadZero": "Verberg voorloopnul bij uren",
 			"bitaxePollSec": "Bitaxe poll-interval (seconden)",
