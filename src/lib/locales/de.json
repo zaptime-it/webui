@@ -207,7 +207,8 @@
 		"sourceSerifBold": "Source Serif Bold",
 		"merriweatherBold": "Merriweather Bold",
 		"bitterBold": "Bitter Bold",
-		"atkinsonBold": "Atkinson Bold"
+		"atkinsonBold": "Atkinson Bold",
+		"openRunde": "Open Runde"
 	},
 	"restartRequired": "Neustart erforderlich",
 	"button": {
