@@ -196,7 +196,24 @@
 			"lostConnectionTitle": "Lost connection",
 			"lostConnectionBody": "Trying to reconnect…",
 			"otaInProgressTitle": "Updating firmware",
-			"otaInProgressBody": "Device will restart shortly."
+			"otaInProgressBody": "Device will restart shortly.",
+			"preview": {
+				"title": "Framebuffer preview",
+				"hint": "Live 1-bit panel snapshots over WebSocket.",
+				"connected": "WS connected",
+				"disconnected": "WS disconnected",
+				"connect": "Connect",
+				"disconnect": "Disconnect",
+				"start": "Start stream",
+				"stop": "Stop stream",
+				"streaming": "Streaming",
+				"lastFrame": "Last frame",
+				"lastTs": "Last timestamp",
+				"empty": "No panel frames received yet.",
+				"connectionError": "Preview WebSocket connection failed.",
+				"decodeError": "Preview frame decode failed.",
+				"connectFirst": "Connect preview WebSocket first."
+			}
 		},
 		"firmwareUpdater": {
 			"fileUploadFailed": "File upload failed. Make sure you have selected the correct file and try again.",

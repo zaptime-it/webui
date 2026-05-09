@@ -6,6 +6,7 @@
 	import { toUptimeString } from '$lib/util/format';
 
 	import ClockDisplay from '$lib/features/clock/ClockDisplay.svelte';
+	import FramebufferPreview from '$lib/features/status/FramebufferPreview.svelte';
 	import ScreenButtons from './ScreenButtons.svelte';
 	import CurrencyButtons from './CurrencyButtons.svelte';
 	import ResourceBars from './ResourceBars.svelte';
@@ -85,6 +86,7 @@
 						satsVariant={settings?.useSatsSymbol ? settings?.satsVariant : undefined}
 					/>
 				</section>
+				<FramebufferPreview />
 
 				<div class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
 					<div class="flex min-w-0 flex-col gap-1">

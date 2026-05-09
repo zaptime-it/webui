@@ -229,3 +229,14 @@ export const uploadWebUi = (file: File, onProgress?: UploadProgressHandler) =>
 	xhrUpload(url('/upload/webui'), file, onProgress);
 
 export const eventsUrl = (): string => url('/events');
+
+export const previewWsUrl = (): string => {
+	const path = url('/api/preview/ws');
+	if (path.startsWith('https://')) return `wss://${path.slice('https://'.length)}`;
+	if (path.startsWith('http://')) return `ws://${path.slice('http://'.length)}`;
+	if (typeof window !== 'undefined') {
+		const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		return `${proto}//${window.location.host}${path}`;
+	}
+	return path;
+};

@@ -160,7 +160,24 @@
 			"lostConnectionTitle": "Verbinding verloren",
 			"lostConnectionBody": "Bezig opnieuw verbinden…",
 			"otaInProgressTitle": "Firmware bijwerken",
-			"otaInProgressBody": "Apparaat herstart binnenkort."
+			"otaInProgressBody": "Apparaat herstart binnenkort.",
+			"preview": {
+				"title": "Framebuffer preview",
+				"hint": "Live 1-bit panel snapshots over WebSocket.",
+				"connected": "WS connected",
+				"disconnected": "WS disconnected",
+				"connect": "Connect",
+				"disconnect": "Disconnect",
+				"start": "Start stream",
+				"stop": "Stop stream",
+				"streaming": "Streaming",
+				"lastFrame": "Last frame",
+				"lastTs": "Last timestamp",
+				"empty": "No panel frames received yet.",
+				"connectionError": "Preview WebSocket connection failed.",
+				"decodeError": "Preview frame decode failed.",
+				"connectFirst": "Connect preview WebSocket first."
+			}
 		},
 		"firmwareUpdater": {
 			"fileUploadSuccess": "Bestand geüpload, apparaat herstart. WebUI opnieuw geladen over {countdown} seconden",
