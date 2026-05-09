@@ -146,7 +146,8 @@ export const getStatus = async (): Promise<Status> => {
 export const showText = (text: string): Promise<ApiResult> =>
 	postEnv('/api/show/text', { t: text });
 
-export const showScreen = (id: number): Promise<ApiResult> => postEnv('/api/show/screen', { s: id });
+export const showScreen = (id: number): Promise<ApiResult> =>
+	postEnv('/api/show/screen', { s: id });
 
 export const showCurrency = (code: string): Promise<ApiResult> =>
 	postEnv('/api/show/currency', { c: code });

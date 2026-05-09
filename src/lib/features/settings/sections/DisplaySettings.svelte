@@ -16,6 +16,12 @@
 
 	const data = $derived(settingsStore.data!);
 
+	const formatFontLabel = (fontId: string): string => {
+		// Firmware ids are stable camelCase tokens (e.g. sourceSerifBold).
+		// Turn them into readable fallback labels when no i18n key exists.
+		return fontId.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/^./, (m) => m.toUpperCase());
+	};
+
 	const textColorOptions: [string, number][] = $derived([
 		[`${m['colors.black']()} on ${m['colors.white']()}`, 0],
 		[`${m['colors.white']()} on ${m['colors.black']()}`, 1]
@@ -24,7 +30,7 @@
 	const fontOptions: [string, string][] = $derived(
 		(data.availableFonts ?? []).map((font) => [
 			((m as unknown as Record<string, (() => string) | undefined>)[`fonts.${font}`]?.() ??
-				font.charAt(0).toUpperCase() + font.slice(1)) as string,
+				formatFontLabel(font)) as string,
 			font
 		])
 	);
