@@ -214,6 +214,23 @@
 		"black": "Black",
 		"white": "White"
 	},
+	"fonts": {
+		"antonio": "Antonio",
+		"oswald": "Oswald",
+		"inter": "Inter",
+		"sourceSerif": "Source Serif",
+		"merriweather": "Merriweather",
+		"bitter": "Bitter",
+		"atkinson": "Atkinson",
+		"antonioSemiBold": "Antonio Semi Bold",
+		"antonioBold": "Antonio Bold",
+		"oswaldBold": "Oswald Bold",
+		"interBold": "Inter Bold",
+		"sourceSerifBold": "Source Serif Bold",
+		"merriweatherBold": "Merriweather Bold",
+		"bitterBold": "Bitter Bold",
+		"atkinsonBold": "Atkinson Bold"
+	},
 	"time": {
 		"minutes": "minutes",
 		"seconds": "seconds"
