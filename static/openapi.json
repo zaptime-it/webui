@@ -394,6 +394,7 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Set custom multi-line EPD content (JSON array)",
+				"description": "Each cell is normally rendered as text. Cells starting with `mdi:` (ASCII, case-insensitive) followed by a Material Design Icons kebab-case name from the firmware subset (same names as tools/fonts/regen_mdi.sh) paint that icon centered via the icon font instead of digit text. Unknown names leave the panel blank. A `/` in the icon token opts out so split-text cells keep working.",
 				"security": [
 					{
 						"basicAuth": []
@@ -1704,7 +1705,7 @@
 			},
 			"CustomText": {
 				"type": "array",
-				"description": "One string per screen; length must match device `numScreens` (commonly 7 or 8).",
+				"description": "One string per panel; length must match device `numScreens` (commonly 7 or 8). Use `mdi:<name>` for subset Material Design Icons (kebab-case), e.g. `mdi:wifi`, `mdi:bitcoin`, `mdi:clock-outline`.",
 				"minItems": 1,
 				"items": {
 					"type": "string"
