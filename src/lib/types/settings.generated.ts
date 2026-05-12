@@ -611,6 +611,46 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'nwcEnabled',
+		kind: 'boolean',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'nwcFlashOnPay',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'nwcRefreshSecs',
+		kind: 'number',
+		bootOnly: true,
+		minValue: 15,
+		maxValue: 3600,
+		defaultBool: false,
+		defaultInt: 60,
+		defaultStr: ''
+	},
+	{
+		key: 'nwcUri',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'otaEnabled',
 		kind: 'boolean',
 		bootOnly: true,
@@ -948,6 +988,10 @@ export const settingsFieldSchemas = {
 	nostrZapNotify: v.boolean(),
 	nostrZapPubkey: v.string(),
 	nostrZapPubkeys: v.string(),
+	nwcEnabled: v.boolean(),
+	nwcFlashOnPay: v.boolean(),
+	nwcRefreshSecs: v.pipe(v.number(), v.minValue(15), v.maxValue(3600)),
+	nwcUri: v.string(),
 	otaEnabled: v.boolean(),
 	otaPass: v.string(),
 	poolGlobalStats: v.boolean(),

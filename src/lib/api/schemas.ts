@@ -105,6 +105,15 @@ const {
 	// pattern as actCurrencies. Drop the auto-generated kString schema and
 	// re-declare as v.array(v.string()) below.
 	nostrZapPubkeys: _nostrZapPubkeys,
+	// NWC fields landed in firmware after the initial v4 release; mirror
+	// the proxy pattern — make every kField optional so pre-NWC builds
+	// (and v3) parse without it. nwcUri specifically is also suppressed
+	// in GET (the device deletes it and emits `nwcUriSet` / optionally
+	// `nwcUriMasked` instead — same shape as httpAuthPass / otaPass).
+	nwcUri: _nwcUri,
+	nwcEnabled: nwcEnabledSchema,
+	nwcFlashOnPay: nwcFlashOnPaySchema,
+	nwcRefreshSecs: nwcRefreshSecsSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
 void _nostrZapPubkeys;
@@ -115,6 +124,7 @@ void _dndEndMin;
 void _dndStartHour;
 void _dndStartMin;
 void _dndTimeEnabled;
+void _nwcUri;
 
 export const settingsSchema = v.looseObject({
 	...kFieldsHttp,
@@ -189,6 +199,17 @@ export const settingsSchema = v.looseObject({
 	ip: v.string(),
 	httpAuthPassSet: v.boolean(),
 	otaPassSet: v.boolean(),
+	// NWC pairing URI is PATCH-only — the firmware deletes the plaintext
+	// from GET responses. nwcUriSet companion mirrors httpAuthPassSet,
+	// nwcUriMasked carries a privacy-preserving render for the UI (only
+	// emitted when nwcUriSet is true). All optional so pre-NWC firmware
+	// builds (and v3) parse cleanly.
+	nwcUri: v.optional(v.string()),
+	nwcUriSet: v.optional(v.boolean()),
+	nwcUriMasked: v.optional(v.string()),
+	nwcEnabled: v.optional(nwcEnabledSchema),
+	nwcFlashOnPay: v.optional(nwcFlashOnPaySchema),
+	nwcRefreshSecs: v.optional(nwcRefreshSecsSchema),
 	// proxyPass is suppressed in GET (mirrors httpAuthPass / otaPass);
 	// the device emits this companion boolean instead. Optional so v3
 	// devices and pre-proxy v4 builds parse without it.

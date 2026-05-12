@@ -37,6 +37,7 @@
 		bitaxe: 'extra',
 		miningPool: 'extra',
 		nostr: 'extra',
+		nwc: 'extra',
 		fontName: 'display',
 		digitFontPx: 'display',
 		labelFitPct: 'display',
@@ -202,6 +203,13 @@
 			httpAuthPassSet: _haps,
 			otaPassSet: _ops,
 			proxyPassSet: _pps,
+			// NWC pairing URI is PATCH-only; the firmware emits
+			// `nwcUriSet` + `nwcUriMasked` on GET instead. Both are
+			// derived from the stored URI, never user-editable, so
+			// strip them from the PATCH body alongside the other *Set
+			// companions.
+			nwcUriSet: _nwcUriSet,
+			nwcUriMasked: _nwcUriMasked,
 			...rest
 		} = current;
 		void _gitRev;
@@ -210,6 +218,8 @@
 		void _haps;
 		void _ops;
 		void _pps;
+		void _nwcUriSet;
+		void _nwcUriMasked;
 
 		// 3.4.0 password handling: the GET response carries *Set booleans,
 		// not plaintext. Only patch httpAuthPass / otaPass / proxyPass if

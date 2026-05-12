@@ -121,6 +121,20 @@
 		}
 	};
 
+	// NWC pairing URI is PATCH-only — same shape as httpAuthPass: the
+	// firmware never emits the plaintext on GET, only `nwcUriSet` (bool)
+	// and optional `nwcUriMasked` (string). Bind `data.nwcUri` directly;
+	// SettingsPanel.handleSubmit drops the field when empty (mirrors the
+	// httpAuthPass / otaPass / proxyPass handling on the same path).
+	// Clear button writes '' explicitly so the firmware wipes the stored
+	// URI and the NwcConfig parser fails-soft on next boot.
+	const nwcUriSet = $derived(data.nwcUriSet === true);
+	const nwcUriMasked = $derived(data.nwcUriMasked ?? '');
+	const clearNwcUri = () => {
+		data.nwcUri = '';
+		data.nwcEnabled = false;
+	};
+
 	const testBitaxe = async () => {
 		try {
 			const info = await fetchBitaxeInfo(data.bitaxeHostname);
@@ -319,6 +333,69 @@
 							bind:value={data.poolPollSec}
 							min={10}
 							max={3600}
+						/>
+					{/if}
+				</div>
+			{/if}
+		</div>
+	{/if}
+
+	{#if 'nwcEnabled' in data}
+		<div class="mt-4">
+			<h5 class="font-semibold mb-2">{m['section.settings.nwcHeader']()}</h5>
+			<SwitchField
+				id="nwcEnabled"
+				bind:checked={data.nwcEnabled}
+				label={m['section.settings.nwcEnabled']()}
+			/>
+			{#if data.nwcEnabled || nwcUriSet}
+				<div class="mt-2 space-y-2">
+					<Field
+						id="nwcUri"
+						label={m['section.settings.nwcUri']()}
+						bind:value={data.nwcUri}
+						type="password"
+						placeholder={nwcUriSet ? '••••••••' : 'nostr+walletconnect://…'}
+						required={!nwcUriSet}
+						helpText={nwcUriSet
+							? m['section.settings.nwcUriHint']()
+							: m['section.settings.nwcUriPlaceholder']()}
+					>
+						{#snippet action()}
+							{#if nwcUriSet}
+								<button
+									type="button"
+									class="join-item btn btn-sm btn-error"
+									onclick={clearNwcUri}
+									data-testid="nwcUri-clear-btn"
+								>
+									{m['section.settings.nwcUriClear']()}
+								</button>
+							{/if}
+						{/snippet}
+					</Field>
+					{#if nwcUriSet && nwcUriMasked}
+						<div
+							class="text-xs opacity-70 font-mono break-all"
+							data-testid="nwcUri-masked"
+						>
+							{nwcUriMasked}
+						</div>
+					{/if}
+					{#if 'nwcRefreshSecs' in data}
+						<NumberField
+							id="nwcRefreshSecs"
+							label={m['section.settings.nwcRefreshSecs']()}
+							bind:value={data.nwcRefreshSecs}
+							min={15}
+							max={3600}
+						/>
+					{/if}
+					{#if 'nwcFlashOnPay' in data}
+						<SwitchField
+							id="nwcFlashOnPay"
+							bind:checked={data.nwcFlashOnPay}
+							label={m['section.settings.nwcFlashOnPay']()}
 						/>
 					{/if}
 				</div>
