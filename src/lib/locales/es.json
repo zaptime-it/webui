@@ -168,6 +168,7 @@
 			"wsDataConnection": "Conexión de fuente de datos BTClock",
 			"lightSensor": "Sensor de luz",
 			"nostrConnection": "Conexión de relé Nostr",
+			"nwcConnection": "Conexión de billetera NWC",
 			"doNotDisturb": "No molestar",
 			"timeBasedDnd": "Horario basado en el tiempo",
 			"lostConnectionTitle": "Conexión perdida",

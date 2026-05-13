@@ -59,6 +59,10 @@
 			{@render pill(m['section.status.wsDataConnection'](), status?.connectionStatus?.V2)}
 		{/if}
 	{/if}
+
+	{#if settings?.nwcEnabled}
+		{@render pill(m['section.status.nwcConnection'](), status?.connectionStatus?.nwc)}
+	{/if}
 </div>
 
 {#if settings?.fetchEurPrice}

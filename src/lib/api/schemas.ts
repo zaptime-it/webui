@@ -264,7 +264,12 @@ export const connectionStatusSchema = v.object({
 	// Firmware ≥ 4.0.0-rc.4 ships per-relay state as an array; pre-rc.4
 	// builds emitted a single boolean. Accept either so a fleet mid-upgrade
 	// keeps parsing.
-	nostr: v.optional(v.union([v.boolean(), v.array(nostrRelayStatusSchema)]))
+	nostr: v.optional(v.union([v.boolean(), v.array(nostrRelayStatusSchema)])),
+	// NWC (NIP-47) wallet service reachability. Only emitted on firmware
+	// builds where the boot path wired a probe; older firmware omits the
+	// field. true = handshake complete (NwcClient kReady), false = enabled
+	// but not yet ready / disabled / fatal.
+	nwc: v.optional(v.boolean())
 });
 
 export const statusSchema = v.looseObject({

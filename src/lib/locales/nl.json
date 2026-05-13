@@ -168,6 +168,7 @@
 			"wsDataConnection": "BTClock-gegevensbron verbinding",
 			"lightSensor": "Licht sensor",
 			"nostrConnection": "Nostr Relay-verbinding",
+			"nwcConnection": "NWC wallet-verbinding",
 			"doNotDisturb": "Niet storen",
 			"timeBasedDnd": "Op tijd gebaseerd schema",
 			"lostConnectionTitle": "Verbinding verloren",
