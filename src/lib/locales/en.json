@@ -98,6 +98,7 @@
 			"nwcUriHint": "URI is stored. Type a new one to replace it, or clear to wipe.",
 			"nwcUriClear": "Clear",
 			"nwcRefreshSecs": "Balance refresh interval (s)",
+			"nwcShowNotify": "Show payment notifications on screen",
 			"nwcFlashOnPay": "Flash LED + frontlight on payment notification",
 			"invalidNostrPubkey": "Invalid Nostr pubkey, note that your pubkey does NOT start with npub.",
 			"invalidNostrRelay": "Invalid Nostr relay, URL must start with wss://",

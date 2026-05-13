@@ -641,6 +641,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'nwcShowNotify',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'nwcUri',
 		kind: 'string',
 		bootOnly: true,
@@ -991,6 +1001,7 @@ export const settingsFieldSchemas = {
 	nwcEnabled: v.boolean(),
 	nwcFlashOnPay: v.boolean(),
 	nwcRefreshSecs: v.pipe(v.number(), v.minValue(15), v.maxValue(3600)),
+	nwcShowNotify: v.boolean(),
 	nwcUri: v.string(),
 	otaEnabled: v.boolean(),
 	otaPass: v.string(),

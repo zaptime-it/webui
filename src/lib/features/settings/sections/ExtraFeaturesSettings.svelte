@@ -391,6 +391,13 @@
 							max={3600}
 						/>
 					{/if}
+					{#if 'nwcShowNotify' in data}
+						<SwitchField
+							id="nwcShowNotify"
+							bind:checked={data.nwcShowNotify}
+							label={m['section.settings.nwcShowNotify']()}
+						/>
+					{/if}
 					{#if 'nwcFlashOnPay' in data}
 						<SwitchField
 							id="nwcFlashOnPay"

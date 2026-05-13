@@ -113,6 +113,7 @@ const {
 	nwcUri: _nwcUri,
 	nwcEnabled: nwcEnabledSchema,
 	nwcFlashOnPay: nwcFlashOnPaySchema,
+	nwcShowNotify: nwcShowNotifySchema,
 	nwcRefreshSecs: nwcRefreshSecsSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
@@ -209,6 +210,7 @@ export const settingsSchema = v.looseObject({
 	nwcUriMasked: v.optional(v.string()),
 	nwcEnabled: v.optional(nwcEnabledSchema),
 	nwcFlashOnPay: v.optional(nwcFlashOnPaySchema),
+	nwcShowNotify: v.optional(nwcShowNotifySchema),
 	nwcRefreshSecs: v.optional(nwcRefreshSecsSchema),
 	// proxyPass is suppressed in GET (mirrors httpAuthPass / otaPass);
 	// the device emits this companion boolean instead. Optional so v3

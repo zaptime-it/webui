@@ -136,6 +136,7 @@
 			"nwcUriHint": "URI is opgeslagen. Type een nieuwe om te vervangen, of wis met Wissen.",
 			"nwcUriClear": "Wissen",
 			"nwcRefreshSecs": "Saldo-ververs interval (s)",
+			"nwcShowNotify": "Betalingsmeldingen op het scherm tonen",
 			"nwcFlashOnPay": "LED + voorlicht laten flitsen bij betaling",
 			"invalidNostrRelay": "Ongeldige Nostr-relay, URL moet beginnen met wss://",
 			"thirdPartyExtrasWarning": "De externe gegevensbron (mempool.space/Kraken) is erg data-intensief; Bitaxe, mining-pool-statistieken of Nostr-zaps tegelijk inschakelen kan het apparaat laten vastlopen. Gebruik bij voorkeur de BTClock-bron of een aangepast endpoint — wil je toch extra's, schakel ze dan niet allemaal tegelijk in."
