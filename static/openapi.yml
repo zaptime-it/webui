@@ -669,6 +669,15 @@ components:
             field as a single boolean — clients should feature-detect
             on `Array.isArray()`.
           items: { '$ref': '#/components/schemas/NostrRelayStatus' }
+        nwc:
+          type: boolean
+          description: |
+            Live NIP-47 Nostr Wallet Connect state. `true` while
+            `settings.nwcEnabled` is on, the boot-wired NwcClient exists,
+            and the relay WebSocket has reached `kReady`. Suppressed
+            entirely on builds where NWC is not wired (the field is
+            absent, not `false`), so clients should feature-detect with
+            `'nwc' in connectionStatus`.
     NostrRelayStatus:
       type: object
       description: One relay's live WebSocket state (in `connectionStatus.nostr`).
@@ -842,6 +851,55 @@ components:
             pattern: '^[0-9a-f]{64}$'
         ledFlashOnZap: { type: boolean }
         scrnRestoreZap: { type: boolean }
+        nwcEnabled:
+          type: boolean
+          description: |
+            Master toggle for Nostr Wallet Connect (NIP-47). When
+            `true`, the firmware constructs a dedicated NwcClient at
+            boot and subscribes to `payment_received` /
+            `payment_sent` notifications from the paired wallet.
+            Boot-only — `PATCH` returns `rebootRequired: true`.
+        nwcRefreshSecs:
+          type: integer
+          minimum: 15
+          maximum: 3600
+          description: |
+            Cadence (seconds) for the periodic `get_balance` poll.
+            Short enough for a near-live balance, long enough to not
+            hammer the relay. Boot-only — the esp_timer is armed once
+            at boot.
+        nwcShowNotify:
+          type: boolean
+          description: |
+            When `true` (default), an incoming payment notification
+            pops the `RECV ↓` / `PAID ↑` on-screen overlay. When
+            `false`, the overlay is suppressed entirely and the LED
+            + frontlight pulse is bypassed, but the balance / snapshot
+            mirror still updates so the (opt-in) balance screen stays
+            current. Live — re-read per notification.
+        nwcFlashOnPay:
+          type: boolean
+          description: |
+            When the payment-notify overlay paints, also fire the
+            LED ring + frontlight pulse used by the Nostr-zap flash.
+            Subordinate to `nwcShowNotify`. Live.
+        nwcUriSet:
+          type: boolean
+          readOnly: true
+          description: |
+            `true` iff the device has a non-empty `nwcUri` stored.
+            The raw URI is never echoed on `GET` because it carries
+            the client secret — write a new value via `PATCH` with
+            `nwcUri`, or clear it by `PATCH`ing `nwcUri: ""`.
+        nwcUriMasked:
+          type: string
+          readOnly: true
+          description: |
+            Short fingerprint of the stored NWC pairing URI — wallet-
+            pubkey prefix + ellipsis-redacted `secret` and `lud16`,
+            e.g.
+            `nostr+walletconnect://51f1f43c…?relay=wss://relay.example.com&secret=…&lud16=sat…com`.
+            Emitted only when the stored URI parses cleanly.
         fontName: { type: string }
         availableFonts:
           type: array
@@ -953,6 +1011,19 @@ components:
               writeOnly: true
               description: |
                 Set an ArduinoOTA password (non-empty) or clear it (empty string). Omit to leave unchanged.
+            nwcUri:
+              type: string
+              writeOnly: true
+              description: |
+                Full `nostr+walletconnect://<wallet-pubkey>?relay=<wss>&secret=<hex>[&lud16=<addr>]`
+                pairing URI from the wallet. PATCH-only — the raw
+                value is never echoed on `GET`; `nwcUriSet` (bool) +
+                `nwcUriMasked` (string) represent it on read.
+
+                Reboot required — the NwcClient + dedicated relay
+                socket are wired once at boot. PATCH `""` to clear
+                the stored URI; pair this with `nwcEnabled: false` to
+                fully disable NWC at next boot.
     RgbColorValues:
       type: object
       properties:

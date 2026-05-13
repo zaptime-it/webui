@@ -1098,6 +1098,10 @@
 						"items": {
 							"$ref": "#/components/schemas/NostrRelayStatus"
 						}
+					},
+					"nwc": {
+						"type": "boolean",
+						"description": "Live NIP-47 Nostr Wallet Connect state. `true` while\n`settings.nwcEnabled` is on, the boot-wired NwcClient exists,\nand the relay WebSocket has reached `kReady`. Suppressed\nentirely on builds where NWC is not wired (the field is\nabsent, not `false`), so clients should feature-detect with\n`'nwc' in connectionStatus`.\n"
 					}
 				}
 			},
@@ -1403,6 +1407,34 @@
 					"scrnRestoreZap": {
 						"type": "boolean"
 					},
+					"nwcEnabled": {
+						"type": "boolean",
+						"description": "Master toggle for Nostr Wallet Connect (NIP-47). When\n`true`, the firmware constructs a dedicated NwcClient at\nboot and subscribes to `payment_received` /\n`payment_sent` notifications from the paired wallet.\nBoot-only — `PATCH` returns `rebootRequired: true`.\n"
+					},
+					"nwcRefreshSecs": {
+						"type": "integer",
+						"minimum": 15,
+						"maximum": 3600,
+						"description": "Cadence (seconds) for the periodic `get_balance` poll.\nShort enough for a near-live balance, long enough to not\nhammer the relay. Boot-only — the esp_timer is armed once\nat boot.\n"
+					},
+					"nwcShowNotify": {
+						"type": "boolean",
+						"description": "When `true` (default), an incoming payment notification\npops the `RECV ↓` / `PAID ↑` on-screen overlay. When\n`false`, the overlay is suppressed entirely and the LED\n+ frontlight pulse is bypassed, but the balance / snapshot\nmirror still updates so the (opt-in) balance screen stays\ncurrent. Live — re-read per notification.\n"
+					},
+					"nwcFlashOnPay": {
+						"type": "boolean",
+						"description": "When the payment-notify overlay paints, also fire the\nLED ring + frontlight pulse used by the Nostr-zap flash.\nSubordinate to `nwcShowNotify`. Live.\n"
+					},
+					"nwcUriSet": {
+						"type": "boolean",
+						"readOnly": true,
+						"description": "`true` iff the device has a non-empty `nwcUri` stored.\nThe raw URI is never echoed on `GET` because it carries\nthe client secret — write a new value via `PATCH` with\n`nwcUri`, or clear it by `PATCH`ing `nwcUri: \"\"`.\n"
+					},
+					"nwcUriMasked": {
+						"type": "string",
+						"readOnly": true,
+						"description": "Short fingerprint of the stored NWC pairing URI — wallet-\npubkey prefix + ellipsis-redacted `secret` and `lud16`,\ne.g.\n`nostr+walletconnect://51f1f43c…?relay=wss://relay.example.com&secret=…&lud16=sat…com`.\nEmitted only when the stored URI parses cleanly.\n"
+					},
 					"fontName": {
 						"type": "string"
 					},
@@ -1633,6 +1665,11 @@
 								"type": "string",
 								"writeOnly": true,
 								"description": "Set an ArduinoOTA password (non-empty) or clear it (empty string). Omit to leave unchanged.\n"
+							},
+							"nwcUri": {
+								"type": "string",
+								"writeOnly": true,
+								"description": "Full `nostr+walletconnect://<wallet-pubkey>?relay=<wss>&secret=<hex>[&lud16=<addr>]`\npairing URI from the wallet. PATCH-only \u2014 the raw\nvalue is never echoed on `GET`; `nwcUriSet` (bool) +\n`nwcUriMasked` (string) represent it on read.\n\nReboot required \u2014 the NwcClient + dedicated relay\nsocket are wired once at boot. PATCH `\"\"` to clear\nthe stored URI; pair this with `nwcEnabled: false` to\nfully disable NWC at next boot.\n"
 							}
 						}
 					}
