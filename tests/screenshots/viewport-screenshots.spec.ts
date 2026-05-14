@@ -40,8 +40,16 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
-	await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
-	await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+	// Sub-md viewports render a tabbed layout where only the active section
+	// (Control by default — see src/routes/+page.svelte) is `display: block`;
+	// the other two are CSS-hidden so their headings never satisfy
+	// `toBeVisible`. Skip those assertions on mobile.
+	const viewport = page.viewportSize();
+	const isMobile = (viewport?.width ?? 1280) < 768;
+	if (!isMobile) {
+		await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
+		await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+	}
 
 	if (await page.locator('#nav-language-dropdown').isVisible()) {
 		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();
@@ -117,8 +125,14 @@ test('capture screenshots across devices with bitaxe screens', async ({ page }, 
 	await page.goto('/');
 
 	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
-	await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
-	await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+	// Sub-md viewports only render the active section (Control by default);
+	// the other headings are CSS-hidden. See the matching guard above.
+	const viewport = page.viewportSize();
+	const isMobile = (viewport?.width ?? 1280) < 768;
+	if (!isMobile) {
+		await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
+		await expect(page.getByRole('heading', { name: translations.settings })).toBeVisible();
+	}
 
 	if (await page.locator('#nav-language-dropdown').isVisible()) {
 		await expect(page.getByRole('link', { name: translations.language })).toBeVisible();

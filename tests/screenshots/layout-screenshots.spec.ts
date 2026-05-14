@@ -23,7 +23,12 @@ test.describe('layout screenshots (dashboard)', () => {
 
 		await page.goto('/');
 		await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
-		await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
+		// Sub-md viewports render only the active section (Control by default);
+		// the Status card is CSS-hidden so its heading never becomes visible.
+		const viewport = page.viewportSize();
+		if ((viewport?.width ?? 1280) >= 768) {
+			await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
+		}
 		await waitForStatusConnected(page);
 		await shot(testInfo, page, 'layout-dashboard-light');
 	});
