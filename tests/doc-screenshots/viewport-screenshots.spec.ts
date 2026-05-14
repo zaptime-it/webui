@@ -3,10 +3,20 @@ import { test, expect } from '@playwright/test';
 import { initMock, settingsJson, statusJson } from '../shared';
 import { waitForStatusConnected } from '../wait-for-status-connected';
 import sharp from 'sharp';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 test.beforeEach(initMock);
 
-// Define the translations for the headings
+// Captured 2026-05-14 from btclock-b52800.local (REV_B_EPD_2_13, fw
+// 4.0.0-rc.11) via tools/capture_fb.mjs — replays in the doc screenshot
+// so FramebufferPreview shows the real BTC/USD ticker instead of empty
+// gold-ringed panels.
+const FB_FRAMES: { panelIndex: number; base64: string }[] = JSON.parse(
+	readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'framebuffer-frames.json'), 'utf8')
+);
+
 const headings = {
 	en: {
 		control: 'Control',
@@ -47,6 +57,106 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 		settingsJson.invertedColor = false;
 	}
 
+	// Match the live REV_B device: bump gitRev to satisfy MIN_FIRMWARE
+	// so SystemInfo's "firmware too old" banner stays hidden, and flip
+	// hwRev to REV_B_EPD_2_13 so the dev-doc screenshot reflects the
+	// hardware the WebUI is actually exercised against.
+	settingsJson.hwRev = 'REV_B_EPD_2_13';
+	settingsJson.gitRev = '4.0.0-rc.11';
+	settingsJson.fsRev = '4.0.0-rc.11';
+	settingsJson.gitTag = '4.0.0-rc.11';
+
+	// Inject the captured framebuffer packets into the page so the
+	// patched WebSocket below can replay them once the FramebufferPreview
+	// component connects to `/api/preview/ws`.
+	await page.addInitScript((frames) => {
+		(window as unknown as { __FB_PREVIEW_FRAMES__: typeof frames }).__FB_PREVIEW_FRAMES__ =
+			frames;
+	}, FB_FRAMES);
+
+	// Patch `window.WebSocket` so any connection to `/api/preview/ws`
+	// resolves locally and emits the captured BTFB frames. Mirrors the
+	// EventSource patch in `initMock` — same pattern (real EventTarget,
+	// microtask-deferred dispatch) avoids "Illegal invocation".
+	await page.addInitScript(() => {
+		const Native = window.WebSocket;
+		class PatchedWebSocket extends EventTarget {
+			static CONNECTING = 0;
+			static OPEN = 1;
+			static CLOSING = 2;
+			static CLOSED = 3;
+			CONNECTING = 0;
+			OPEN = 1;
+			CLOSING = 2;
+			CLOSED = 3;
+			url: string;
+			readyState: number = 0;
+			binaryType: BinaryType = 'arraybuffer';
+			protocol = '';
+			extensions = '';
+			bufferedAmount = 0;
+			onopen: ((this: WebSocket, ev: Event) => unknown) | null = null;
+			onmessage: ((this: WebSocket, ev: MessageEvent) => unknown) | null = null;
+			onerror: ((this: WebSocket, ev: Event) => unknown) | null = null;
+			onclose: ((this: WebSocket, ev: CloseEvent) => unknown) | null = null;
+			constructor(url: string | URL) {
+				super();
+				const href = typeof url === 'string' ? url : url.href;
+				this.url = href;
+				let pathname = href;
+				try {
+					pathname = new URL(href, window.location.origin).pathname;
+				} catch {
+					// Treat as path-only; the suffix check below covers it.
+				}
+				if (!pathname.endsWith('/api/preview/ws')) {
+					// Fall back to the native implementation for any other socket.
+					// Returning a new native instance from a constructor is allowed —
+					// callers receive `Native` directly.
+					return new Native(url) as unknown as PatchedWebSocket;
+				}
+				queueMicrotask(() => {
+					this.readyState = 1;
+					const openEv = new Event('open');
+					this.dispatchEvent(openEv);
+					if (typeof this.onopen === 'function')
+						this.onopen.call(this as unknown as WebSocket, openEv);
+					const streamingEv = new MessageEvent('message', {
+						data: JSON.stringify({ streaming: true })
+					});
+					this.dispatchEvent(streamingEv);
+					if (typeof this.onmessage === 'function')
+						this.onmessage.call(this as unknown as WebSocket, streamingEv);
+					const frames = (
+						window as unknown as {
+							__FB_PREVIEW_FRAMES__?: { panelIndex: number; base64: string }[];
+						}
+					).__FB_PREVIEW_FRAMES__;
+					if (!frames) return;
+					for (const frame of frames) {
+						const bin = atob(frame.base64);
+						const buf = new ArrayBuffer(bin.length);
+						const view = new Uint8Array(buf);
+						for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+						const ev = new MessageEvent('message', { data: buf });
+						this.dispatchEvent(ev);
+						if (typeof this.onmessage === 'function')
+							this.onmessage.call(this as unknown as WebSocket, ev);
+					}
+				});
+			}
+			send() {}
+			close() {
+				this.readyState = 3;
+				const ev = new CloseEvent('close');
+				this.dispatchEvent(ev);
+				if (typeof this.onclose === 'function')
+					this.onclose.call(this as unknown as WebSocket, ev);
+			}
+		}
+		window.WebSocket = PatchedWebSocket as unknown as typeof WebSocket;
+	});
+
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
 	await expect(page.getByRole('heading', { name: translations.status })).toBeVisible();
@@ -58,8 +168,42 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 
 	await waitForStatusConnected(page);
 
+	// Wait for the panel rasters to land on the canvas. FramebufferPreview
+	// applies frames inside an effect; without this wait the screenshot
+	// races the first redraw and panels still look empty even though
+	// the WS replay finished. We detect "frames painted" by sampling a
+	// row across the panel band: an empty canvas is uniform PCB chrome
+	// or uniform panel face, painted panels yield high luma variance.
+	await page.waitForFunction(() => {
+		const canvas = document.querySelector('.preview-canvas') as HTMLCanvasElement | null;
+		if (!canvas || canvas.width === 0 || canvas.height === 0) return false;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return false;
+		const row = ctx.getImageData(0, Math.floor(canvas.height * 0.4), canvas.width, 1).data;
+		let min = 255;
+		let max = 0;
+		for (let i = 0; i < row.length; i += 4) {
+			const v = row[i];
+			if (v < min) min = v;
+			if (v > max) max = v;
+		}
+		return max - min > 120;
+	});
+
+	// Clip to the actual content height — the doc-screenshot viewport
+	// is intentionally tall (so the sticky Save/Reset bar lands at its
+	// natural form bottom instead of pinning mid-document), but that
+	// leaves several hundred px of empty footer below the cards. Trim
+	// it by clipping to the last painted row + a small margin.
+	const viewport = page.viewportSize();
+	const viewportWidth = viewport?.width ?? 1280;
+	const contentHeight = await page.evaluate(() => {
+		const root = document.querySelector('.grid.grid-cols-1');
+		if (!root) return document.documentElement.scrollHeight;
+		return Math.ceil(root.getBoundingClientRect().bottom + 24);
+	});
 	const screenshot = await page.screenshot({
-		fullPage: true
+		clip: { x: 0, y: 0, width: viewportWidth, height: contentHeight }
 	});
 
 	await sharp(screenshot)
