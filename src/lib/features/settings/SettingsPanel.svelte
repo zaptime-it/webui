@@ -59,16 +59,24 @@
 		proxyBypass: 'proxy'
 	};
 
+	// Brand-form display labels, ordered to match the firmware's
+	// AvailablePoolNames() (main/io/mining_pool_selector.cpp) so the
+	// dropdown order is API-stable. A missing entry would fall back to
+	// the raw NVS id — pre-2026-05 four pools rendered that way.
 	const miningPoolMap = new Map<string, string>([
-		['noderunners', 'Noderunners.network'],
+		['ocean', 'Ocean'],
+		['noderunners', 'Noderunners'],
+		['satoshi_radio', 'Satoshi Radio'],
 		['braiins', 'Braiins Pool'],
-		['ocean', 'ocean.xyz'],
-		['satoshi_radio', 'Satoshi Radio pool'],
-		['public_pool', 'public-pool.io'],
+		['public_pool', 'Public Pool'],
+		['local_public_pool', 'Public Pool (local)'],
 		['blitzpool', 'Blitzpool'],
 		['ckpool', 'CKPool'],
 		['eu_ckpool', 'EU CKPool'],
-		['local_public_pool', 'Public Pool (local)']
+		['nerdminers_org', 'NerdMiner.org'],
+		['nerdminer_io', 'NerdMiner.io'],
+		['foundry_usa', 'Foundry USA'],
+		['viabtc', 'ViaBTC']
 	]);
 
 	type SectionKey =

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
-	import ChevronDown from 'lucide-svelte/icons/chevron-down';
+	import ChevronRight from '@lucide/svelte/icons/chevron-right';
+	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
 	interface Props {
 		header: string;

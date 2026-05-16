@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
-	import Eye from 'lucide-svelte/icons/eye';
-	import EyeOff from 'lucide-svelte/icons/eye-off';
+	import Eye from '@lucide/svelte/icons/eye';
+	import EyeOff from '@lucide/svelte/icons/eye-off';
 	import CollapseCard from '$lib/ui/CollapseCard.svelte';
 	import Field from '$lib/ui/Field.svelte';
 	import NumberField from '$lib/ui/NumberField.svelte';
