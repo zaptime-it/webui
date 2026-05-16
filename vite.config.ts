@@ -77,7 +77,18 @@ export default defineConfig({
 			$lib: path.resolve('./src/lib')
 		}
 	},
-	resolve: {
-		conditions: process.env.VITEST ? ['browser'] : []
-	}
+	// Only override resolve.conditions under Vitest. As of Vite 6 the field
+	// REPLACES the built-in defaults (`module`, `browser`,
+	// `development|production`) — even when set to `[]` — instead of
+	// extending them as in v5. Setting it unconditionally would also drop
+	// the `svelte` condition injected by @sveltejs/vite-plugin-svelte, which
+	// loads two distinct svelte runtimes and breaks getContext with
+	// `lifecycle_outside_component`. See sveltejs/svelte#16933.
+	...(process.env.VITEST
+		? {
+				resolve: {
+					conditions: ['browser']
+				}
+			}
+		: {})
 });
