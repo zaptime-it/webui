@@ -172,7 +172,12 @@
 	// Pools that expose a ckpool-style /api/v1/pool endpoint — the firmware
 	// knows this via MiningPoolInterface::supportsGlobalStats(). Kept in sync
 	// by convention: add a pool here if you add the override in firmware.
-	const poolsWithGlobalStats = new Set(['noderunners', 'satoshiradio']);
+	const poolsWithGlobalStats = new Set([
+		'noderunners',
+		'satoshiradio',
+		'blitzpool',
+		'public_pool'
+	]);
 	const supportsGlobalStats = $derived(poolsWithGlobalStats.has(data.miningPoolName));
 </script>
 

@@ -96,6 +96,7 @@ export const settingsJson = {
 		'braiins',
 		'public_pool',
 		'gobrrr_pool',
+		'blitzpool',
 		'ckpool',
 		'eu_ckpool'
 	],
