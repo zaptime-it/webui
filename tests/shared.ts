@@ -95,7 +95,6 @@ export const settingsJson = {
 		'satoshi_radio',
 		'braiins',
 		'public_pool',
-		'gobrrr_pool',
 		'blitzpool',
 		'ckpool',
 		'eu_ckpool'

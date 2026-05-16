@@ -65,7 +65,6 @@
 		['ocean', 'ocean.xyz'],
 		['satoshi_radio', 'Satoshi Radio pool'],
 		['public_pool', 'public-pool.io'],
-		['gobrrr_pool', 'Go Brrr pool'],
 		['blitzpool', 'Blitzpool'],
 		['ckpool', 'CKPool'],
 		['eu_ckpool', 'EU CKPool'],
