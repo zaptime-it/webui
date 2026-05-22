@@ -74,88 +74,9 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 			frames;
 	}, FB_FRAMES);
 
-	// Patch `window.WebSocket` so any connection to `/api/preview/ws`
-	// resolves locally and emits the captured BTFB frames. Mirrors the
-	// EventSource patch in `initMock` — same pattern (real EventTarget,
-	// microtask-deferred dispatch) avoids "Illegal invocation".
-	await page.addInitScript(() => {
-		const Native = window.WebSocket;
-		class PatchedWebSocket extends EventTarget {
-			static CONNECTING = 0;
-			static OPEN = 1;
-			static CLOSING = 2;
-			static CLOSED = 3;
-			CONNECTING = 0;
-			OPEN = 1;
-			CLOSING = 2;
-			CLOSED = 3;
-			url: string;
-			readyState: number = 0;
-			binaryType: BinaryType = 'arraybuffer';
-			protocol = '';
-			extensions = '';
-			bufferedAmount = 0;
-			onopen: ((this: WebSocket, ev: Event) => unknown) | null = null;
-			onmessage: ((this: WebSocket, ev: MessageEvent) => unknown) | null = null;
-			onerror: ((this: WebSocket, ev: Event) => unknown) | null = null;
-			onclose: ((this: WebSocket, ev: CloseEvent) => unknown) | null = null;
-			constructor(url: string | URL) {
-				super();
-				const href = typeof url === 'string' ? url : url.href;
-				this.url = href;
-				let pathname = href;
-				try {
-					pathname = new URL(href, window.location.origin).pathname;
-				} catch {
-					// Treat as path-only; the suffix check below covers it.
-				}
-				if (!pathname.endsWith('/api/preview/ws')) {
-					// Fall back to the native implementation for any other socket.
-					// Returning a new native instance from a constructor is allowed —
-					// callers receive `Native` directly.
-					return new Native(url) as unknown as PatchedWebSocket;
-				}
-				queueMicrotask(() => {
-					this.readyState = 1;
-					const openEv = new Event('open');
-					this.dispatchEvent(openEv);
-					if (typeof this.onopen === 'function')
-						this.onopen.call(this as unknown as WebSocket, openEv);
-					const streamingEv = new MessageEvent('message', {
-						data: JSON.stringify({ streaming: true })
-					});
-					this.dispatchEvent(streamingEv);
-					if (typeof this.onmessage === 'function')
-						this.onmessage.call(this as unknown as WebSocket, streamingEv);
-					const frames = (
-						window as unknown as {
-							__FB_PREVIEW_FRAMES__?: { panelIndex: number; base64: string }[];
-						}
-					).__FB_PREVIEW_FRAMES__;
-					if (!frames) return;
-					for (const frame of frames) {
-						const bin = atob(frame.base64);
-						const buf = new ArrayBuffer(bin.length);
-						const view = new Uint8Array(buf);
-						for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
-						const ev = new MessageEvent('message', { data: buf });
-						this.dispatchEvent(ev);
-						if (typeof this.onmessage === 'function')
-							this.onmessage.call(this as unknown as WebSocket, ev);
-					}
-				});
-			}
-			send() {}
-			close() {
-				this.readyState = 3;
-				const ev = new CloseEvent('close');
-				this.dispatchEvent(ev);
-				if (typeof this.onclose === 'function')
-					this.onclose.call(this as unknown as WebSocket, ev);
-			}
-		}
-		window.WebSocket = PatchedWebSocket as unknown as typeof WebSocket;
-	});
+	// `initMock` already installs a `window.WebSocket` patch that intercepts
+	// `/api/preview/ws`; it picks up the `__FB_PREVIEW_FRAMES__` set above
+	// and replays them, so no extra patching is needed here.
 
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: translations.control })).toBeVisible();
