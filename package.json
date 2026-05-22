@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@11.0.8",
+	"packageManager": "pnpm@11.2.2",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -30,11 +30,11 @@
 	},
 	"dependencies": {
 		"@fontsource/ubuntu": "^5.2.8",
-		"@inlang/paraglide-js": "^2.18.0",
+		"@inlang/paraglide-js": "^2.18.1",
 		"@lucide/svelte": "^1.16.0",
 		"@noble/secp256k1": "^3.1.0",
 		"msgpack-es": "^0.0.5",
-		"nostr-tools": "^2.23.3",
+		"nostr-tools": "^2.23.5",
 		"patch-package": "^8.0.1",
 		"svelte-dnd-action": "^0.9.69",
 		"valibot": "^1.4.0"
@@ -48,9 +48,9 @@
 		"@tailwindcss/vite": "4.3.0",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/svelte": "^5.3.1",
-		"@types/node": "^25.8.0",
+		"@types/node": "^25.9.1",
 		"@types/swagger-ui": "^5.32.0",
-		"daisyui": "^5.5.19",
+		"daisyui": "^5.5.20",
 		"esbuild": "^0.28.0",
 		"eslint": "^10.4.0",
 		"eslint-config-prettier": "^10.1.8",
@@ -58,17 +58,17 @@
 		"globals": "^17.6.0",
 		"jsdom": "^29.1.1",
 		"prettier": "^3.8.3",
-		"prettier-plugin-svelte": "^3.5.2",
+		"prettier-plugin-svelte": "^4.0.1",
 		"rollup-plugin-visualizer": "^7.0.1",
 		"sharp": "^0.34.5",
-		"svelte": "^5.55.7",
+		"svelte": "^5.55.9",
 		"svelte-check": "^4.4.8",
 		"svelte-eslint-parser": "^1.6.1",
 		"tailwindcss": "4.3.0",
 		"tslib": "^2.8.1",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.59.3",
-		"vite": "^8.0.13",
-		"vitest": "^4.1.6"
+		"typescript-eslint": "^8.59.4",
+		"vite": "^8.0.14",
+		"vitest": "^4.1.7"
 	}
 }
