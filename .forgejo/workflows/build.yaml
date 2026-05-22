@@ -50,10 +50,13 @@ jobs:
           cache: pnpm
       - uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/pip
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pio-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Get current date
         id: dateAndTime
         run: echo "dateAndTime=$(date +'%Y-%m-%d-%H:%M')" >> $GITHUB_OUTPUT
@@ -71,9 +74,11 @@ jobs:
         run: pnpm check
       - name: Run vitest tests
         run: pnpm test:unit run
-      - name: Install Playwright Browsers
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+      - name: Install Playwright system deps
+        run: pnpm exec playwright install-deps chromium
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
       - name: Run Playwright tests
         run: pnpm test:integration
       - name: Build WebUI
