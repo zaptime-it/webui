@@ -198,6 +198,10 @@ export const settingsSchema = v.looseObject({
 	availableCurrencies: v.array(v.string()),
 	hostname: v.string(),
 	ip: v.string(),
+	// MAC of the active Wi-Fi STA interface (colon-separated, lowercase
+	// hex). Added in 4.0.0-rc.14; optional so older firmware that doesn't
+	// emit the key still parses.
+	wifiMac: v.optional(v.string()),
 	httpAuthPassSet: v.boolean(),
 	otaPassSet: v.boolean(),
 	// NWC pairing URI is PATCH-only — the firmware deletes the plaintext

@@ -127,6 +127,7 @@ export const settingsJson = {
 	hwRev: 'REV_A_EPD_2_13',
 	invertedColor: false,
 	ip: '192.168.20.231',
+	wifiMac: '98:88:e0:d6:0b:14',
 	isFake: false,
 	isLoaded: true,
 	lastBuildTime: Math.round(new Date().getTime() / 1000),

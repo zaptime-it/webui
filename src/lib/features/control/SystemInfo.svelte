@@ -39,6 +39,10 @@
 		<dd><Skeleton value={buildTimeStr} checkValue={data?.lastBuildTime} /></dd>
 		<dt>IP</dt>
 		<dd class="mono"><Skeleton value={data?.ip ?? ''} /></dd>
+		{#if data?.wifiMac}
+			<dt>MAC</dt>
+			<dd class="mono">{data.wifiMac}</dd>
+		{/if}
 		<dt>HW revision</dt>
 		<dd><Skeleton value={data?.hwRev ?? ''} /></dd>
 		<dt>{m['section.control.fwCommit']()}</dt>

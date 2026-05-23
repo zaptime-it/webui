@@ -947,6 +947,10 @@ components:
         hostnamePrefix: { type: string }
         hostname: { type: string }
         ip: { type: string }
+        wifiMac:
+          type: string
+          readOnly: true
+          description: MAC address of the active Wi-Fi STA interface (colon-separated, lowercase hex). Added in firmware 4.0.0-rc.14.
         txPower: { type: integer }
         gitReleaseUrl: { type: string }
         bitaxeEnabled: { type: boolean }
