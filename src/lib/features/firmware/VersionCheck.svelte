@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Hourglass from 'lucide-svelte/icons/hourglass';
+	import Hourglass from '@lucide/svelte/icons/hourglass';
 	import * as m from '$lib/paraglide/messages';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { statusStore } from '$lib/stores/status.svelte';
