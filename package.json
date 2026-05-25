@@ -37,13 +37,13 @@
 		"nostr-tools": "^2.23.5",
 		"patch-package": "^8.0.1",
 		"svelte-dnd-action": "^0.9.69",
-		"valibot": "^1.4.0"
+		"valibot": "^1.4.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@playwright/test": "^1.60.0",
 		"@sveltejs/adapter-static": "^3.0.10",
-		"@sveltejs/kit": "^2.60.1",
+		"@sveltejs/kit": "^2.61.1",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@tailwindcss/vite": "4.3.0",
 		"@testing-library/jest-dom": "^6.9.1",
