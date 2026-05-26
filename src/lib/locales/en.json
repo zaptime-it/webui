@@ -293,5 +293,10 @@
 		"tooltip": "Values > -67 dBm are considered good. > -30 dBm is amazing"
 	},
 	"warning": "Warning",
-	"auto-detect": "Auto-detect"
+	"auto-detect": "Auto-detect",
+	"schemaMismatch": {
+		"title": "WebUI and firmware versions do not match",
+		"body": "The WebUI could not parse the data sent by the device. Your firmware version is likely out of sync with this WebUI. Re-flash the firmware via the web flasher to restore a working build.",
+		"action": "Open web flasher"
+	}
 }

@@ -258,5 +258,10 @@
 		"tooltip": "Werte > -67 dBm gelten als gut. > -30 dBm ist erstaunlich"
 	},
 	"warning": "Achtung",
-	"auto-detect": "Automatische Erkennung"
+	"auto-detect": "Automatische Erkennung",
+	"schemaMismatch": {
+		"title": "WebUI- und Firmware-Version passen nicht zusammen",
+		"body": "Die WebUI konnte die vom Gerät gesendeten Daten nicht verarbeiten. Vermutlich ist die Firmware nicht mit dieser WebUI synchron. Flashe die Firmware über den Web-Flasher neu, um eine funktionierende Version wiederherzustellen.",
+		"action": "Web-Flasher öffnen"
+	}
 }

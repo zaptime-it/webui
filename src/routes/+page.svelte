@@ -1,10 +1,13 @@
 <script lang="ts">
+	import * as m from '$lib/paraglide/messages';
 	import Control from '$lib/features/control/Control.svelte';
 	import Status from '$lib/features/status/Status.svelte';
 	import SettingsPanel from '$lib/features/settings/SettingsPanel.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { statusStore } from '$lib/stores/status.svelte';
 	import { activeSection, type SectionId } from '$lib/stores/activeSection.svelte';
+
+	const WEB_FLASHER_URL = 'https://web-flasher-v4.btclock.dev/';
 
 	// Tailwind's `md` breakpoint. Keep this in sync with the navbar, which
 	// hides/shows the section tab bar at the same width (`md:hidden`).
@@ -99,6 +102,27 @@
 <svelte:head>
 	<title>BTClock</title>
 </svelte:head>
+
+{#if settingsStore.hasSchemaMismatch}
+	<div
+		role="alert"
+		class="alert alert-error mb-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center"
+		data-testid="schema-mismatch-banner"
+	>
+		<div class="grow">
+			<strong>{m['schemaMismatch.title']()}</strong>
+			<p class="text-sm">{m['schemaMismatch.body']()}</p>
+		</div>
+		<a
+			href={WEB_FLASHER_URL}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="btn btn-sm btn-neutral"
+		>
+			{m['schemaMismatch.action']()}
+		</a>
+	</div>
+{/if}
 
 <div class="grid w-full grid-cols-1 gap-4 md:gap-5 lg:grid-cols-12">
 	<section

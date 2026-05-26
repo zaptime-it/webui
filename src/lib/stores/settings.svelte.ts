@@ -12,6 +12,7 @@
  * summary, which both need to know exactly *which* fields changed.
  */
 
+import { isValiError } from 'valibot';
 import { getSettings, patchSettings } from '$lib/api/client';
 import type { ApiResult, SettingsErrorBody } from '$lib/api/client';
 import type { Settings, SettingsState } from '$lib/types/settings';
@@ -32,11 +33,18 @@ const state = $state<{
 	// clear it because the earlier boot-only change is still pending.
 	// Cleared on restartClock() success, dismiss, or full page reload.
 	hasPendingReboot: boolean;
+	// Set when load() failed because the device's /api/settings payload
+	// did not match the Valibot schema (firmware emits a field shape the
+	// WebUI build doesn't recognise, or omits a required field). Signals
+	// a firmware/WebUI version skew — surfacing a hint to re-flash via
+	// the web flasher is more useful than the indefinite "Loading…".
+	hasSchemaMismatch: boolean;
 }>({
 	value: { status: 'loading' },
 	pristine: null,
 	hasRemoteDrift: false,
-	hasPendingReboot: false
+	hasPendingReboot: false,
+	hasSchemaMismatch: false
 });
 
 const derived = $derived.by(() => state.value);
@@ -158,6 +166,9 @@ export const settingsStore = {
 	clearPendingReboot() {
 		state.hasPendingReboot = false;
 	},
+	get hasSchemaMismatch(): boolean {
+		return state.hasSchemaMismatch;
+	},
 	async load(): Promise<void> {
 		try {
 			const raw = await getSettings();
@@ -165,11 +176,17 @@ export const settingsStore = {
 			state.value = { status: 'ready', data };
 			state.pristine = buildPristine(data);
 			state.hasRemoteDrift = false;
+			state.hasSchemaMismatch = false;
 		} catch (err) {
 			console.error('[settingsStore] failed to load /api/settings:', err);
 			state.value = { status: 'error', error: (err as Error).message };
 			state.pristine = null;
 			state.hasRemoteDrift = false;
+			// A Valibot parse failure means the device responded with JSON
+			// that doesn't fit the schema — almost always a firmware/WebUI
+			// version skew. Plain network/HTTP errors land here too but
+			// don't carry that signal, so leave the flag false for them.
+			state.hasSchemaMismatch = isValiError(err);
 		}
 	},
 	async save(patch: Partial<Settings>): Promise<ApiResult<SettingsErrorBody>> {

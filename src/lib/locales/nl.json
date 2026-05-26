@@ -257,5 +257,10 @@
 		"tooltip": "Waarden > -67 dBm zijn goed. > -30 dBm is verbazingwekkend"
 	},
 	"warning": "Waarschuwing",
-	"auto-detect": "Automatische detectie"
+	"auto-detect": "Automatische detectie",
+	"schemaMismatch": {
+		"title": "WebUI- en firmwareversies komen niet overeen",
+		"body": "De WebUI kon de gegevens van het apparaat niet verwerken. Waarschijnlijk loopt je firmware uit de pas met deze WebUI. Flash de firmware opnieuw via de web flasher om een werkende build terug te krijgen.",
+		"action": "Open web flasher"
+	}
 }

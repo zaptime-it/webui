@@ -257,5 +257,10 @@
 		"tooltip": "Se consideran buenos valores > -67 dBm. > -30 dBm es increíble"
 	},
 	"warning": "Aviso",
-	"auto-detect": "Detección automática"
+	"auto-detect": "Detección automática",
+	"schemaMismatch": {
+		"title": "Las versiones de la WebUI y del firmware no coinciden",
+		"body": "La WebUI no pudo procesar los datos enviados por el dispositivo. Probablemente tu firmware no está sincronizado con esta WebUI. Vuelve a flashear el firmware mediante el web flasher para restaurar una versión que funcione.",
+		"action": "Abrir web flasher"
+	}
 }

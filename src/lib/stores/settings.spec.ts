@@ -148,6 +148,64 @@ describe('settingsStore.isDirty', () => {
 		expect(store.isReady).toBe(false);
 		expect(store.isDirty).toBe(false);
 	});
+
+	test('hasSchemaMismatch flips on Valibot parse failure, not on network errors', async () => {
+		// Routes the banner that asks users to re-flash via the web flasher.
+		// A plain network error must NOT trigger it — that would point the
+		// user at the wrong remediation when the device is just unreachable.
+		const { ValiError } = await import('valibot');
+		// Minimal ValiError shape — we only assert isValiError() recognises it.
+		const issue = {
+			kind: 'schema',
+			type: 'object',
+			input: undefined,
+			expected: 'Object',
+			received: 'undefined',
+			message: 'Invalid type'
+		};
+		// Cast through unknown — the issue tuple type is a deeply
+		// parameterised generic; we only need isValiError() to recognise
+		// the instance, not the full type fidelity.
+		getSettingsMock.mockRejectedValueOnce(
+			new (ValiError as unknown as new (issues: unknown[]) => Error)([issue])
+		);
+		const store = await loadStore();
+		await store.load();
+		expect(store.isReady).toBe(false);
+		expect(store.hasSchemaMismatch).toBe(true);
+	});
+
+	test('hasSchemaMismatch stays false on plain network errors', async () => {
+		getSettingsMock.mockRejectedValueOnce(new Error('network'));
+		const store = await loadStore();
+		await store.load();
+		expect(store.isReady).toBe(false);
+		expect(store.hasSchemaMismatch).toBe(false);
+	});
+
+	test('hasSchemaMismatch clears on a subsequent successful load', async () => {
+		const { ValiError } = await import('valibot');
+		const issue = {
+			kind: 'schema',
+			type: 'object',
+			input: undefined,
+			expected: 'Object',
+			received: 'undefined',
+			message: 'Invalid type'
+		};
+		// Cast through unknown — the issue tuple type is a deeply
+		// parameterised generic; we only need isValiError() to recognise
+		// the instance, not the full type fidelity.
+		getSettingsMock.mockRejectedValueOnce(
+			new (ValiError as unknown as new (issues: unknown[]) => Error)([issue])
+		);
+		const store = await loadStore();
+		await store.load();
+		expect(store.hasSchemaMismatch).toBe(true);
+		getSettingsMock.mockResolvedValueOnce(sampleSettings());
+		await store.load();
+		expect(store.hasSchemaMismatch).toBe(false);
+	});
 });
 
 describe('settingsStore.dirtyKeys (per-field)', () => {

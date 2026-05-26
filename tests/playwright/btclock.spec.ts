@@ -333,6 +333,30 @@ test('persisted ₿ price marker is coerced off when the active font lacks hasBt
 	}
 });
 
+test('schema-mismatch banner renders when /api/settings violates the Valibot shape', async ({
+	page
+}) => {
+	// Re-route /api/settings to a payload missing required fields (no `dnd`,
+	// no `screens`) — Valibot's parseSettings rejects this and the settings
+	// store sets hasSchemaMismatch. The banner steers the user to re-flash
+	// instead of leaving the UI stuck on an indefinite "Loading…".
+	await page.route('*/**/api/settings', async (route) => {
+		if (route.request().method() === 'PATCH') {
+			await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/json' } });
+			return;
+		}
+		await route.fulfill({ json: { numScreens: 7 } });
+	});
+
+	await page.goto('/');
+	const banner = page.getByTestId('schema-mismatch-banner');
+	await expect(banner).toBeVisible();
+	await expect(banner.getByRole('link', { name: 'Open web flasher' })).toHaveAttribute(
+		'href',
+		'https://web-flasher-v4.btclock.dev/'
+	);
+});
+
 test('should work with more than 7 screens', async ({ page }) => {
 	statusJson.data[2] = '1';
 	statusJson.numScreens = 9;
