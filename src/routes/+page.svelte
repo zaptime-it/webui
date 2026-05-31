@@ -124,10 +124,10 @@
 	</div>
 {/if}
 
-<div class="grid w-full grid-cols-1 gap-4 md:gap-5 lg:grid-cols-12">
+<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
 	<section
 		id="control"
-		class="section-anchor mobile-tab-section min-w-0 accent-control lg:col-span-4"
+		class="section-anchor mobile-tab-section min-w-0 accent-control md:col-span-6 lg:col-span-4"
 		class:mobile-active={section === 'control'}
 		aria-hidden={isMobile && section !== 'control' ? 'true' : undefined}
 	>
@@ -135,7 +135,7 @@
 	</section>
 	<section
 		id="status"
-		class="section-anchor mobile-tab-section min-w-0 accent-status lg:col-span-4"
+		class="section-anchor mobile-tab-section min-w-0 accent-status md:col-span-6 lg:col-span-4"
 		class:mobile-active={section === 'status'}
 		aria-hidden={isMobile && section !== 'status' ? 'true' : undefined}
 	>
@@ -143,7 +143,7 @@
 	</section>
 	<section
 		id="settings"
-		class="section-anchor mobile-tab-section min-w-0 accent-settings lg:col-span-4"
+		class="section-anchor mobile-tab-section min-w-0 accent-settings md:col-span-12 lg:col-span-4"
 		class:mobile-active={section === 'settings'}
 		aria-hidden={isMobile && section !== 'settings' ? 'true' : undefined}
 	>
