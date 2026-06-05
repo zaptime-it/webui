@@ -18,8 +18,11 @@ export const baseURL = 'http://127.0.0.1:4173';
 
 export const baseConfig = {
 	webServer: {
+		// `pnpm exec vite preview` (not `pnpm run preview -- …`): pnpm forwards
+		// the `--` separator literally, which vite preview chokes on, so call
+		// the binary directly and pass the flags straight through.
 		command:
-			'npm run build:test && npm run preview -- --host 127.0.0.1 --port 4173 --strictPort',
+			'pnpm run build:test && pnpm exec vite preview --host 127.0.0.1 --port 4173 --strictPort',
 		url: `${baseURL}/`,
 		reuseExistingServer: !process.env.CI,
 		env: { PUBLIC_BASE_URL: '' }
