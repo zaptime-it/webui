@@ -13,6 +13,13 @@ export default defineConfig({
 		sveltekit()
 	],
 	build: {
-		minify: 'esbuild'
+		// No minify override → uses rolldown-vite's default oxc minifier
+		// (faster, smaller here, and not deprecated like minify:'esbuild').
+		// Silence rolldown's PLUGIN_TIMINGS check — this is the build the
+		// Playwright webServer runs, so it's where the warning showed up.
+		// See vite.config.ts for the rationale.
+		rolldownOptions: {
+			checks: { pluginTimings: false }
+		}
 	}
 });

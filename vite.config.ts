@@ -55,16 +55,22 @@ export default defineConfig({
 		}
 	],
 	build: {
-		minify: 'esbuild',
-		cssCodeSplit: false,
+		// No `minify` override → rolldown-vite's default oxc minifier, which
+		// is faster, ~9 KB smaller (gzipped) here than the old esbuild path,
+		// and not deprecated like `minify: 'esbuild'`.
 		chunkSizeWarningLimit: 550,
-		rollupOptions: {
-			output: {
-				entryFileNames: `[hash][extname]`,
-				chunkFileNames: `[hash][extname]`,
-				assetFileNames: `[hash][extname]`,
-				preserveModules: false
-			}
+		// No rollupOptions.output here on purpose: SvelteKit's
+		// `bundleStrategy: 'single'` (svelte.config.js) owns cssCodeSplit and
+		// the entry/chunk/asset file names, and the LittleFS filename
+		// shortening lives in patches/@sveltejs__kit@2.63.0.patch. Anything set
+		// here is overridden by SvelteKit (it logs a "will be overridden"
+		// notice either way), so it would be dead config.
+		rolldownOptions: {
+			// Vite 8 runs on rolldown. Its PLUGIN_TIMINGS check warns whenever
+			// JS plugins outweigh the (tiny) Rust link stage by >100x — which a
+			// small SvelteKit app always trips, and which isn't actionable (the
+			// dominant plugin, vite-plugin-sveltekit-guard, is internal).
+			checks: { pluginTimings: false }
 		}
 	},
 	test: {
