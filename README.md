@@ -18,10 +18,11 @@ pnpm install           # applies the SvelteKit filename-shortening patch via pnp
 pnpm dev               # start the dev server (http://localhost:5173)
 ```
 
-Set `PUBLIC_BASE_URL` in `.env` to the address of a real BTClock to have
-the dev server proxy API requests to it (defaults to
-`http://192.168.20.97`). For a same-origin build that the firmware serves
-from LittleFS, set it to an empty string at build time.
+Set `PUBLIC_BASE_URL` in `.env` to the address of a real BTClock (e.g.
+`http://btclock-d60b14.local`) so the dev server talks to it. When unset
+it falls back to an empty string — i.e. same-origin requests — which is
+also what a build the firmware serves from LittleFS wants, so leave it
+empty at build time.
 
 ## Production build
 

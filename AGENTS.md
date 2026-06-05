@@ -66,6 +66,7 @@ src/lib/
 ├── ui/                   ← generic primitives (no business logic)
 │   ├── Field.svelte / NumberField / SelectField / SwitchField / RangeField / ColorField
 │   ├── CollapseCard.svelte
+│   ├── LedSwatch.svelte     ← read-only LED colour swatch (replaces the old disabled input[type=color])
 │   ├── LanguageMenu.svelte / ThemeToggle.svelte / Toasts.svelte / Skeleton.svelte
 │   └── FieldActionHarness.svelte ← test harness for the action snippet
 ├── util/
@@ -87,12 +88,16 @@ src/lib/
     ├── settings/
     │   ├── SettingsPanel.svelte  ← form root; show/hide all + dirty badge
     │   └── sections/
-    │       ├── ScreenSpecificSettings.svelte ← screen-toggles + composes the two rotation lists below
-    │       ├── ScreenRotationList.svelte     ← drag/drop screen reorder + per-screen enable
-    │       ├── CurrencyRotationList.svelte   ← drag/drop currency reorder
+    │       ├── ScreenSpecificSettings.svelte ← screen-toggles + composes the rotation sections below
+    │       ├── ScreenRotationSection.svelte   ← collapse wrapper around the screen list
+    │       ├── ScreenRotationList.svelte      ← drag/drop screen reorder + per-screen enable
+    │       ├── CurrencyRotationSection.svelte ← collapse wrapper around the currency list
+    │       ├── CurrencyRotationList.svelte    ← drag/drop currency reorder
     │       ├── DisplaySettings.svelte
     │       ├── DataSourceSettings.svelte
-    │       ├── ExtraFeaturesSettings.svelte (DND, Bitaxe, mining-pool, Nostr zap notify)
+    │       ├── ExtraFeaturesSettings.svelte (DND, Bitaxe, mining-pool, Nostr zap notify, NWC)
+    │       ├── NostrRelayList.svelte          ← add/remove Nostr relay chips (used by ExtraFeatures)
+    │       ├── ProxySettings.svelte           ← own collapse section: outbound SOCKS/HTTP proxy
     │       ├── SystemSettings.svelte
     │       └── TimezoneSelector.svelte
     ├── firmware/         ← FirmwareUpdater + UploadForm + VersionCheck
@@ -148,13 +153,14 @@ settings) with the Convert + API pages routed under `/convert` and `/api`.
   changes" badge driven by `settingsStore.isDirty`.
 - **Screen specific** — switches for `stealFocus`, `mcapBigChar`,
   `useBlkCountdown`, `priceSymMode`, `useMscwTime`, `suffixPrice`,
-  `mowMode` (gated on `suffixPrice`), `suffixShareDot` (gated on
-  `suffixPrice`), `verticalDesc`, `blockFeeDec`, `supplyPercent`. Then the
+  `mowMode` (gated on `suffixPrice`, with a hint when disabled),
+  `decimalShareDot`, `verticalDesc`, `blockFeeDec`, `supplyPercent`. Then the
   draggable **Screens** list (per-screen enable + reorder) and, for
   appropriate data sources, the **Currencies** list with the
   `restartRequired` hint.
 - **Display**, **Data source**, **Extra features** (DND time window, Bitaxe,
-  mining-pool selection w/ test buttons, Nostr zap notify), **System**.
+  mining-pool selection w/ test buttons, Nostr zap notify + relay list,
+  Nostr Wallet Connect), **Proxy** (outbound SOCKS/HTTP), **System**.
 
 The "Mow Suffix Mode" copy in the screenshot is intentional — `mowMode` is
 the price-suffix style that "mows down" digits as the price grows; verified
@@ -280,86 +286,44 @@ on mount → statusStore.load() (snapshot) + statusStore.connect() (SSE)
 Constructive suggestions, ordered by yield-vs-effort. None are blocking;
 file a `bd` issue before starting one of the bigger items.
 
-### Low-hanging
+> **Already shipped — don't re-propose these.** The original list called
+> for: surfacing the firmware's `field:reason` on save failure (now
+> `parseSettingsError` + scroll-into-view), a parsed `ApiResult` envelope
+> instead of a raw `Response`, exponential SSE reconnect backoff capped at
+> 30 s (`sse.ts`), named RSSI mapping constants (`RSSI_FLOOR_DBM` /
+> `RSSI_CEILING_DBM`), cold-start Valibot validation in
+> `getSettings`/`getStatus`, an OTA-aware "Updating firmware…" overlay
+> (`statusStore.otaInProgress`), optimistic pause/DND toggles
+> (`applyOptimistic`), `Ctrl/Cmd+S` save, a mobile tab/stacked layout, the
+> form-level validation summary, generated field schemas
+> (`settings.generated.ts` from the firmware `kFields` table), the read-only
+> `LedSwatch`, lazy-loaded `/convert`, and a semver-based firmware-mismatch
+> banner (`util/version.ts`). All are done — verify in code before assuming
+> any are still open.
 
-- **Toast on save failure shows raw HTTP status only** — `${res.status}: ${res.statusText}`
-  isn't actionable. The firmware returns a JSON body with `{ error, field }`
-  on validation failures; surface `field` so the user knows which field was
-  rejected, and scroll the corresponding `Field` into view.
-- **`patchSettings` is fire-and-forget on errors.** `client.ts` returns the
-  raw `Response` so the store can't distinguish "device 4xx-rejected the
-  body" from "network blip". Wrap responses in
-  `{ ok, status, body }` and parse the body once.
-- **No retry on `/events` timeout.** `sse.ts` reconnects on `error` (1 s)
-  and `closing` (5 s) but doesn't back off. On a flaky AP this hammers the
-  device with reconnects. Exponential backoff capped at, say, 30 s.
-- **`statusStore.rssiPercent` clamps below 2 %.** The `Math.min(Math.max(2 *
-(rssi + 100), 0), 100)` floor at 0 then clamps at 100; the `2 *` factor
-  is a magic number — pull it into a named constant or move to a
-  documented mapping (`-100 dBm → 0 %`, `-50 dBm → 100 %`).
-- **Schema validation isn't called.** `parseSettings`/`parseStatus` exist
-  but `client.ts` returns unvalidated JSON. Wire them into the cold-start
-  path (the SSE hot path is fine to skip — frames are too frequent).
-- **Lost-connection overlay is the only feedback during OTA.** While
-  `/upload/firmware` runs, the device can't reply to anything else. The
-  overlay says "Trying to reconnect..." which is misleading. Detect "OTA
-  in progress" (we just kicked one off in `UploadForm`) and show
-  "Updating firmware — device will restart shortly" instead.
-
-### Medium
+### Still open
 
 - **Settings dirty diff is JSON-stringify based.** Cheap on a ~100-field
-  object today, but if `availableFonts` or `availableCurrencies` start
-  growing this becomes a hotspot. Switch to a per-field diff that tracks
-  `dirtyKeys: Set<keyof Settings>`; that also unlocks per-field warnings
-  ("this field requires restart").
-- **No optimistic UI for control actions.** Clicking "Pause" calls
-  `/api/action/pause` then waits for the next SSE frame to flip the
-  button. If WiFi is slow the button feels broken. Optimistically flip
-  `status.timerRunning` and reconcile on the next frame; if the API call
-  fails, snap back and toast.
+  object today, but if `availableFonts` / `availableCurrencies` grow this
+  becomes a hotspot. A per-field `dirtyKeys: Set<keyof Settings>` would also
+  unlock per-field "requires restart" warnings.
 - **Form save replaces the whole baseline on success.** If two browsers
-  edit different sections and one saves, the other clobbers — there's
-  no version field. The firmware is single-user in practice; not urgent
-  but worth a `bd` issue to track.
-- **No keyboard shortcut to save.** `Ctrl/Cmd+S` should submit the dirty
-  form. Tiny QoL win; `data-testid` already makes it test-able.
-- **Tabs vs. cards.** Three side-by-side cards are great on desktop but
-  the mobile layout stacks them vertically in a single long page. A
-  bottom-tabbed layout would cut scroll on phones.
-- **Dark mode contrast on disabled switches.** DaisyUI's default disabled
-  state is barely visible on the dark theme; bump opacity or use a
-  custom `disabled:opacity-60` rule.
-- **`SwitchField` gating is implicit.** "Mow Suffix Mode" and "Suffix
-  share dot" both `disabled={!data.suffixPrice}`, but the disabled state
-  doesn't explain _why_. Add a tooltip or helper text.
-
-### Larger / requires alignment
-
-- **Form-level validation summary.** Today each `Field` shows its own
-  invalid state (e.g. `nostrZapPubkey`). For a long form, an
-  inline summary at the top of `SettingsPanel` listing every invalid
-  field with anchor links would help users find errors after a save
-  attempt.
-- **Reduce bundle size by lazy-loading the Convert page.** It pulls
-  `useExchangeRates` + currency map + extra fonts; on a fresh load over
-  the AP the user usually wants the dashboard, not the converter.
-  SvelteKit's route splits help but verify with `vite build --report`.
-- **Replace `colour input[type=color]`** for the LED indicators with a
-  proper read-only swatch component. The native control still lets users
-  click and open the OS colour picker even though we set `disabled`.
-- **Live preview of screen settings.** Toggling `priceSymMode` doesn't
-  show a preview until the device repaints. A small canvas-based
-  preview (or just a representative emoji string) inside the switch row
-  would tighten the feedback loop.
-- **WebUI/firmware version mismatch warning is binary.** The yellow
-  warning fires whenever the commits differ — even by one tiny WebUI
-  patch. Compare _semver_ (the firmware tag) instead of the commit, or
-  at least let users dismiss the warning per-session.
-- **API typings drift from firmware.** `Settings` is hand-maintained.
-  Generating it from the firmware's `kFields` table (or vice versa)
-  would close a real gap — today an agent adding a field has to remember
-  to update both.
+  edit different sections and one saves, the other clobbers — there's no
+  version field. The firmware is single-user in practice; not urgent, but
+  worth a `bd` issue to track.
+- **Disabled-switch affordance is uneven.** `mowMode` now shows a hint when
+  gated off, but other capability-gated controls still grey out without
+  saying why, and DaisyUI's disabled state is faint on the dark theme. Add
+  hints + a consistent `disabled:` opacity bump.
+- **Live preview of screen settings.** Toggling `priceSymMode` only updates
+  once the device repaints into the `/api/preview/ws` framebuffer. A local
+  canvas / representative preview inside the switch row would tighten the
+  loop for fields the firmware doesn't echo immediately.
+- **Finish firmware-typings generation.** `settings.generated.ts` covers the
+  `kFields` schema, but `Settings` / `Status` still hand-maintain the
+  read-only, computed, and divergent-shape fields in `schemas.ts`.
+  Generating (or cross-checking) those against the firmware would close the
+  last drift gap.
 
 ---
 
@@ -372,6 +336,10 @@ file a `bd` issue before starting one of the bigger items.
 - Firmware-side handler registration:
   [../components/webserver/control_server.cpp](../components/webserver/control_server.cpp).
 - Field schema (firmware): [../components/settings/include/settings/schema.hpp](../components/settings/include/settings/schema.hpp).
+- Generated field schemas (WebUI): [src/lib/types/settings.generated.ts](src/lib/types/settings.generated.ts)
+  — Valibot per-field schemas + bounds derived from the firmware `schema.hpp`
+  above. Regenerate with `pnpm generate:settings-meta`; `pnpm check:settings-meta`
+  guards against drift.
 - Mock fixtures for tests: [src/mocks/](src/mocks/).
 - Locales: [src/lib/locales/](src/lib/locales/) — `en.json` is the source;
   others may lag behind.
