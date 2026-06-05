@@ -374,3 +374,87 @@ test('should work with more than 7 screens', async ({ page }) => {
 		statusJson.numScreens.toString()
 	);
 });
+
+/** Route /api/settings so GET returns the fixture and PATCH returns a
+ *  scripted firmware response. Mirrors the real firmware: a validation
+ *  failure is `400 {"error":"<field>:<reason>"}` (application/json) and a
+ *  boot-only change is `200 {"rebootRequired":true}`. */
+const routeSettingsPatch = async (page: Page, patchResponse: { status: number; body?: object }) => {
+	await page.route('*/**/api/settings', async (route) => {
+		if (route.request().method() === 'PATCH') {
+			await route.fulfill({
+				status: patchResponse.status,
+				contentType: 'application/json',
+				body: JSON.stringify(patchResponse.body ?? {})
+			});
+			return;
+		}
+		await route.fulfill({ json: settingsJson });
+	});
+};
+
+/** Dirty one always-valid number field so the Save button (disabled while
+ *  pristine) becomes clickable. Requires "Show all" to have expanded the
+ *  cards first. */
+const makeFormDirty = async (page: Page) => {
+	await page.getByRole('button', { name: 'Show all' }).click();
+	await page.fill('#fullRefreshMin', '45');
+};
+
+test('PATCH 400 surfaces the firmware <field>:<reason> error to the user', async ({ page }) => {
+	// The whole reason parseSettingsError + the JSON error envelope exist:
+	// the firmware rejected the body and the UI must name the offending field
+	// rather than swallow it. Existing e2e only ever sees a 200 PATCH.
+	await routeSettingsPatch(page, { status: 400, body: { error: 'fontName:unknown' } });
+
+	await page.goto('/');
+	await waitForReady(page);
+	await makeFormDirty(page);
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
+
+	// Toast title is `${field}: ${reason}`.
+	await expect(page.getByText('fontName: unknown')).toBeVisible();
+	// The display section that owns fontName is opened, so its select mounts.
+	await expect(page.locator('#fontName')).toBeVisible();
+});
+
+test('PATCH 400 with the inverted range:<field> form is parsed correctly', async ({ page }) => {
+	// Numeric out-of-range uses the inverted shape `range:<field>`;
+	// parseSettingsError must split it into field=fullRefreshMin, reason=range.
+	await routeSettingsPatch(page, { status: 400, body: { error: 'range:fullRefreshMin' } });
+
+	await page.goto('/');
+	await waitForReady(page);
+	await makeFormDirty(page);
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
+
+	await expect(page.getByText('fullRefreshMin: range')).toBeVisible();
+});
+
+test('PATCH 200 {rebootRequired:true} shows the pending-reboot banner', async ({ page }) => {
+	await routeSettingsPatch(page, { status: 200, body: { rebootRequired: true } });
+
+	await page.goto('/');
+	await waitForReady(page);
+	await makeFormDirty(page);
+	await page.getByRole('button', { name: 'Save', exact: true }).click();
+
+	const banner = page.getByTestId('pending-reboot-banner');
+	await expect(banner).toBeVisible();
+
+	// Dismiss clears it without rebooting.
+	await banner.getByRole('button', { name: /dismiss/i }).click();
+	await expect(banner).toBeHidden();
+});
+
+test('the DND toggle posts to the /api/dnd state-change endpoint', async ({ page }) => {
+	await page.goto('/');
+	await waitForReady(page);
+
+	const dndRequest = page.waitForRequest(
+		(req) => /\/api\/dnd\/(enable|disable)$/.test(req.url()) && req.method() === 'POST'
+	);
+	await page.locator('#dndStatusText').click();
+	const req = await dndRequest;
+	expect(req.method()).toBe('POST');
+});
