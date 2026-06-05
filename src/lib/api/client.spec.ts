@@ -500,10 +500,12 @@ describe('previewWsUrl scheme conversion (absolute PUBLIC_BASE_URL)', () => {
 });
 
 /**
- * uploadFirmware / uploadWebUi stream a multipart body via XMLHttpRequest so
+ * uploadFirmware / uploadWebUi stream the raw file body via XMLHttpRequest so
  * the caller can render an upload progress bar (fetch has no upload-progress
- * event). A fake XHR captures the request shape and lets us drive the
- * load / error / progress callbacks the firmware's upload handler would.
+ * event). The body is sent as a raw octet-stream — NOT multipart/form-data —
+ * because the firmware's /upload handlers write the request body straight to
+ * flash without parsing a multipart envelope. A fake XHR captures the request
+ * shape and lets us drive the load / error / progress callbacks.
  */
 describe('xhrUpload (uploadFirmware / uploadWebUi)', () => {
 	class FakeUpload {
@@ -516,12 +518,16 @@ describe('xhrUpload (uploadFirmware / uploadWebUi)', () => {
 		sent: unknown = null;
 		status = 0;
 		responseText = '';
+		headers: Record<string, string> = {};
 		upload = new FakeUpload();
 		onload: (() => void) | null = null;
 		onerror: (() => void) | null = null;
 		open(method: string, url: string) {
 			this.method = method;
 			this.url = url;
+		}
+		setRequestHeader(name: string, value: string) {
+			this.headers[name] = value;
 		}
 		send(body: unknown) {
 			this.sent = body;
@@ -539,22 +545,30 @@ describe('xhrUpload (uploadFirmware / uploadWebUi)', () => {
 		(globalThis as unknown as { XMLHttpRequest: unknown }).XMLHttpRequest = OriginalXHR;
 	});
 
-	test('POSTs a multipart FormData to /upload/firmware and resolves on 200', async () => {
-		const p = uploadFirmware(new File(['fw'], 'firmware.bin'));
+	test('POSTs the raw file as an octet-stream to /upload/firmware and resolves on 200', async () => {
+		const file = new File(['fw'], 'firmware.bin');
+		const p = uploadFirmware(file);
 		const xhr = FakeXHR.instances[0]!;
 		expect(xhr.method).toBe('POST');
 		expect(xhr.url).toBe(apiUrl('/upload/firmware'));
-		expect(xhr.sent).toBeInstanceOf(FormData);
+		// Raw file body — NOT a multipart FormData envelope, which the
+		// firmware's raw-streaming /upload handler cannot parse.
+		expect(xhr.sent).toBe(file);
+		expect(xhr.sent).not.toBeInstanceOf(FormData);
+		expect(xhr.headers['Content-Type']).toBe('application/octet-stream');
 		xhr.status = 200;
 		xhr.responseText = 'OK';
 		xhr.onload!();
 		await expect(p).resolves.toBeUndefined();
 	});
 
-	test('uploadWebUi targets /upload/webui', async () => {
-		const p = uploadWebUi(new File(['ui'], 'webui.bin'));
+	test('uploadWebUi targets /upload/webui with the raw file body', async () => {
+		const file = new File(['ui'], 'webui.bin');
+		const p = uploadWebUi(file);
 		const xhr = FakeXHR.instances[0]!;
 		expect(xhr.url).toBe(apiUrl('/upload/webui'));
+		expect(xhr.sent).toBe(file);
+		expect(xhr.headers['Content-Type']).toBe('application/octet-stream');
 		xhr.status = 200;
 		xhr.responseText = '';
 		xhr.onload!();

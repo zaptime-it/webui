@@ -462,3 +462,82 @@ test('the DND toggle posts to the /api/dnd state-change endpoint', async ({ page
 	const req = await dndRequest;
 	expect(req.method()).toBe('POST');
 });
+
+/**
+ * End-to-end regression guard for the firmware/WebUI uploaders. The device's
+ * `/upload/{firmware,webui}` handlers stream the raw request body straight to
+ * flash — they do NOT parse multipart/form-data. A FormData envelope would
+ *   (a) inflate Content-Length past the partition size (storage images are
+ *       sized to the exact partition, tripping a 413 size gate), and
+ *   (b) write the `--boundary` preamble into flash, corrupting the image.
+ * So the uploader must POST the file as a raw octet-stream. These tests drive
+ * the real file-input → button flow and assert the captured request shape:
+ * method, Content-Type, and — crucially — that the body is the verbatim file
+ * bytes, NOT a multipart wrapper.
+ */
+for (const variant of [
+	{
+		label: 'firmware',
+		endpoint: 'upload/firmware',
+		inputId: '#firmwareFile',
+		button: 'Update firmware',
+		fileName: 'btclock_rev_a_2_13.bin',
+		// First byte mimics the ESP app image magic (0xE9); esp_ota_write
+		// rejects anything else, which is exactly what a multipart preamble
+		// (leading `--`) would produce on the device.
+		bytes: [0xe9, 0x06, 0x02, 0x21, 0xde, 0xad, 0xbe, 0xef]
+	},
+	{
+		label: 'webui',
+		endpoint: 'upload/webui',
+		inputId: '#webuiFile',
+		button: 'Update WebUI',
+		fileName: 'littlefs_rev_a.bin',
+		bytes: [0x6c, 0x69, 0x74, 0x74, 0x6c, 0x65, 0x66, 0x73]
+	}
+]) {
+	test(`${variant.label} upload POSTs the raw .bin as an octet-stream (no multipart envelope)`, async ({
+		page
+	}) => {
+		const fileBytes = Buffer.from(variant.bytes);
+		let captured: {
+			method: string;
+			contentType: string | undefined;
+			body: Buffer | null;
+		} | null = null;
+
+		await page.route(`*/**/${variant.endpoint}`, async (route) => {
+			const req = route.request();
+			captured = {
+				method: req.method(),
+				contentType: req.headers()['content-type'],
+				body: req.postDataBuffer()
+			};
+			await route.fulfill({ status: 200, body: 'OK' });
+		});
+
+		await page.goto('/');
+		await waitForReady(page);
+
+		await page.setInputFiles(variant.inputId, {
+			name: variant.fileName,
+			mimeType: 'application/octet-stream',
+			buffer: fileBytes
+		});
+		await page.getByRole('button', { name: variant.button }).click();
+
+		// The success alert only renders after the XHR resolves 200, which
+		// proves the request was sent and the handler ran.
+		await expect(page.locator('.firmwareUploadStatusAlert.alert-success')).toBeVisible();
+
+		expect(captured).not.toBeNull();
+		expect(captured!.method).toBe('POST');
+		// The critical assertion: a raw octet-stream body, never multipart.
+		expect(captured!.contentType).toBe('application/octet-stream');
+		expect(captured!.contentType).not.toContain('multipart');
+		// The body is the verbatim file — no boundary, no Content-Disposition
+		// preamble. Byte-exact equality is what catches an accidental FormData.
+		expect(captured!.body).not.toBeNull();
+		expect(Buffer.from(captured!.body!)).toEqual(fileBytes);
+	});
+}

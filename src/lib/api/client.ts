@@ -205,10 +205,17 @@ export type UploadProgressHandler = (progress: number) => void;
 
 const xhrUpload = (endpoint: string, file: File, onProgress?: UploadProgressHandler) =>
 	new Promise<void>((resolve, reject) => {
-		const form = new FormData();
-		form.append('file', file);
 		const xhr = new XMLHttpRequest();
 		xhr.open('POST', endpoint);
+		// The /upload/{firmware,webui} handlers stream the raw request body
+		// straight to flash — they do NOT parse multipart/form-data. A
+		// FormData envelope (a) inflates Content-Length past the partition
+		// size (storage images are sized to the exact partition, so the
+		// multipart overhead trips the 413 size gate) and (b) would write the
+		// `--boundary` preamble into flash, corrupting the image. Send the
+		// file as a raw octet-stream so Content-Length == the image size and
+		// the bytes land verbatim.
+		xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 		xhr.upload.onprogress = (e: ProgressEvent) => {
 			if (e.lengthComputable && onProgress) {
 				onProgress(Math.round((e.loaded * 100) / e.total));
@@ -219,7 +226,7 @@ const xhrUpload = (endpoint: string, file: File, onProgress?: UploadProgressHand
 			else reject(new Error(`Upload failed: ${xhr.status} ${xhr.responseText}`));
 		};
 		xhr.onerror = () => reject(new Error('Upload network error'));
-		xhr.send(form);
+		xhr.send(file);
 	});
 
 export const uploadFirmware = (file: File, onProgress?: UploadProgressHandler) =>
