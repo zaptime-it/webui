@@ -16,6 +16,15 @@
 		return map;
 	});
 
+	// Present the languages in a predictable order: alphabetically by the name
+	// shown to the user, using locale-aware collation for the current UI
+	// language (so e.g. accented/CJK names sort correctly). Falls back to the
+	// raw registration order only if two names compare equal.
+	const sortedLocales = $derived.by(() => {
+		const collator = new Intl.Collator(current);
+		return [...locales].sort((a, b) => collator.compare(names[a] ?? a, names[b] ?? b));
+	});
+
 	let open = $state(false);
 
 	const pick = (locale: string) => () => {
@@ -49,9 +58,9 @@
 	{#if open}
 		<ul
 			role="listbox"
-			class="menu dropdown-content bg-base-100 rounded-box shadow z-[1000] w-48 p-2 mt-2"
+			class="menu dropdown-content bg-base-100 rounded-box shadow z-[1000] w-48 p-2 mt-2 max-h-[70vh] flex-nowrap overflow-y-auto"
 		>
-			{#each locales as locale (locale)}
+			{#each sortedLocales as locale (locale)}
 				<li>
 					<button
 						type="button"

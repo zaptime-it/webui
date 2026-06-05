@@ -45,6 +45,11 @@ describe('i18n locale store', () => {
 		expect(getFlagEmoji('ru')).toBe('🇷🇺');
 		expect(getFlagEmoji('zh')).toBe('🇨🇳');
 		expect(getFlagEmoji('ja')).toBe('🇯🇵');
+		expect(getFlagEmoji('it')).toBe('🇮🇹');
+		expect(getFlagEmoji('pl')).toBe('🇵🇱');
+		expect(getFlagEmoji('tr')).toBe('🇹🇷');
+		expect(getFlagEmoji('cs')).toBe('🇨🇿');
+		expect(getFlagEmoji('da')).toBe('🇩🇰');
 	});
 
 	test('getFlagEmoji falls back to the English flag for unknown codes', () => {

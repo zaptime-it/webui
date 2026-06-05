@@ -50,6 +50,24 @@ pnpm test:screenshots       # device/locale screenshot suite
 pnpm doc:update-screenshots
 ```
 
+## Languages
+
+The WebUI ships **15 translations**. Message catalogs live in
+`src/lib/locales/<code>.json` and are compiled by Paraglide. The language
+picker lists them sorted alphabetically by their localized name; Arabic is
+rendered right-to-left (`<html dir="rtl">`), with technical identifiers
+(IP/MAC/hostname, version and commit) kept left-to-right.
+
+🇬🇧 English (`en`) · 🇳🇱 Nederlands (`nl`) · 🇩🇪 Deutsch (`de`) ·
+🇪🇸 Español (`es`) · 🇫🇷 Français (`fr`) · 🇮🇹 Italiano (`it`) ·
+🇵🇹 Português (`pt`) · 🇵🇱 Polski (`pl`) · 🇨🇿 Čeština (`cs`) ·
+🇩🇰 Dansk (`da`) · 🇹🇷 Türkçe (`tr`) · 🇷🇺 Русский (`ru`) ·
+🇸🇦 العربية (`ar`) · 🇨🇳 中文 (`zh`) · 🇯🇵 日本語 (`ja`)
+
+To add a locale: copy `src/lib/locales/en.json` and translate the values,
+add the tag to `project.inlang/settings.json`, and register the locale +
+flag in `src/lib/i18n.svelte.ts`.
+
 ## Key architectural choices
 
 - **Feature-based folders** — UI is organised under
@@ -63,7 +81,8 @@ pnpm doc:update-screenshots
 - **Valibot schemas** — Runtime validation for every inbound API payload
   lives in `src/lib/api/schemas.ts`, protecting the UI from firmware drift.
 - **Paraglide JS v2** — Message catalogs in `src/lib/locales/` are
-  compiled per-locale and tree-shaken by the Paraglide Vite plugin.
+  compiled per-locale and tree-shaken by the Paraglide Vite plugin. See
+  [Languages](#languages) for the 15 shipped locales.
 - **Static output only** — `@sveltejs/adapter-static` with SSR disabled;
   the WebUI is always mounted on-device by the firmware.
 - **Minimal font footprint** — only the `latin-400` woff2 file for

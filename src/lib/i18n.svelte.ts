@@ -6,7 +6,22 @@ import {
 	isLocale
 } from '$lib/paraglide/runtime';
 
-export type SupportedLocale = 'en' | 'nl' | 'es' | 'de' | 'fr' | 'ar' | 'pt' | 'ru' | 'zh' | 'ja';
+export type SupportedLocale =
+	| 'en'
+	| 'nl'
+	| 'es'
+	| 'de'
+	| 'fr'
+	| 'ar'
+	| 'pt'
+	| 'ru'
+	| 'zh'
+	| 'ja'
+	| 'it'
+	| 'pl'
+	| 'tr'
+	| 'cs'
+	| 'da';
 export const supportedLocales: readonly SupportedLocale[] = [
 	'en',
 	'nl',
@@ -17,7 +32,12 @@ export const supportedLocales: readonly SupportedLocale[] = [
 	'pt',
 	'ru',
 	'zh',
-	'ja'
+	'ja',
+	'it',
+	'pl',
+	'tr',
+	'cs',
+	'da'
 ];
 
 export { locales };
@@ -93,7 +113,12 @@ const flagMap: Record<string, string> = {
 	pt: '🇵🇹',
 	ru: '🇷🇺',
 	zh: '🇨🇳',
-	ja: '🇯🇵'
+	ja: '🇯🇵',
+	it: '🇮🇹',
+	pl: '🇵🇱',
+	tr: '🇹🇷',
+	cs: '🇨🇿',
+	da: '🇩🇰'
 };
 export const getFlagEmoji = (code: string): string =>
 	flagMap[code.toLowerCase()] ?? flagMap.en ?? '';
