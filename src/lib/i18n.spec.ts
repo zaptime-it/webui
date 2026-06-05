@@ -6,7 +6,7 @@
  * translated strings after `setLocale(...)`.
  */
 import { describe, test, expect, beforeEach } from 'vitest';
-import { currentLocale, setLocale, getLocale, getFlagEmoji } from './i18n.svelte';
+import { currentLocale, setLocale, getLocale, getFlagEmoji, isRtl } from './i18n.svelte';
 
 describe('i18n locale store', () => {
 	beforeEach(() => {
@@ -24,6 +24,10 @@ describe('i18n locale store', () => {
 		expect(currentLocale.value).toBe('de');
 		setLocale('es');
 		expect(currentLocale.value).toBe('es');
+		setLocale('fr');
+		expect(currentLocale.value).toBe('fr');
+		setLocale('ru');
+		expect(currentLocale.value).toBe('ru');
 	});
 
 	test('getFlagEmoji maps supported locales to flags', () => {
@@ -31,9 +35,21 @@ describe('i18n locale store', () => {
 		expect(getFlagEmoji('nl')).toBe('🇳🇱');
 		expect(getFlagEmoji('es')).toBe('🇪🇸');
 		expect(getFlagEmoji('de')).toBe('🇩🇪');
+		expect(getFlagEmoji('fr')).toBe('🇫🇷');
+		expect(getFlagEmoji('ar')).toBe('🇸🇦');
+		expect(getFlagEmoji('pt')).toBe('🇵🇹');
+		expect(getFlagEmoji('ru')).toBe('🇷🇺');
 	});
 
 	test('getFlagEmoji falls back to the English flag for unknown codes', () => {
-		expect(getFlagEmoji('fr')).toBe('🇬🇧');
+		expect(getFlagEmoji('zz')).toBe('🇬🇧');
+	});
+
+	test('isRtl is true only for right-to-left locales', () => {
+		expect(isRtl('ar')).toBe(true);
+		expect(isRtl('AR')).toBe(true);
+		expect(isRtl('en')).toBe(false);
+		expect(isRtl('fr')).toBe(false);
+		expect(isRtl('ru')).toBe(false);
 	});
 });

@@ -40,7 +40,7 @@
 			{disabled}
 			onchange={onChange}
 		/>
-		<div class="text-right text-xs mt-1 text-base-content/70">{value}{valueSuffix}</div>
+		<div class="text-end text-xs mt-1 text-base-content/70">{value}{valueSuffix}</div>
 		{#if helpText}
 			<p class="text-xs mt-1 text-base-content/70">{helpText}</p>
 		{/if}

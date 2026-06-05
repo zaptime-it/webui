@@ -43,8 +43,12 @@
 		<div class="sticky top-0 z-50 bg-base-100 shadow-sm">
 			<div class="navbar">
 				<div class="navbar-start">
-					<a class="btn btn-ghost text-xl navbar-brand hidden md:inline-flex" href="/"
-						>₿TClock</a
+					<!-- Brand is a Latin wordmark led by the Bitcoin sign (₿); force LTR
+					     so the bidi algorithm doesn't reorder it to "TClock₿" under RTL. -->
+					<a
+						class="btn btn-ghost text-xl navbar-brand hidden md:inline-flex"
+						href="/"
+						dir="ltr">₿TClock</a
 					>
 					{#if isHome}
 						<nav

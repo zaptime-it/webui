@@ -74,7 +74,7 @@
 			>
 				{s.name}
 				{#if CURRENCY_SPECIFIC_IDS.has(s.id) && activeCurrencyCount > 1}
-					<span class="badge badge-ghost badge-xs ml-1 align-middle">
+					<span class="badge badge-ghost badge-xs ms-1 align-middle">
 						× {activeCurrencyCount}
 						{m['section.settings.perCurrency']()}
 					</span>

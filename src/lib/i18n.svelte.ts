@@ -6,10 +6,36 @@ import {
 	isLocale
 } from '$lib/paraglide/runtime';
 
-export type SupportedLocale = 'en' | 'nl' | 'es' | 'de';
-export const supportedLocales: readonly SupportedLocale[] = ['en', 'nl', 'es', 'de'];
+export type SupportedLocale = 'en' | 'nl' | 'es' | 'de' | 'fr' | 'ar' | 'pt' | 'ru';
+export const supportedLocales: readonly SupportedLocale[] = [
+	'en',
+	'nl',
+	'es',
+	'de',
+	'fr',
+	'ar',
+	'pt',
+	'ru'
+];
 
 export { locales };
+
+/** Locales written right-to-left. Drives the `dir` attribute on <html>. */
+const rtlLocales: readonly SupportedLocale[] = ['ar'];
+export const isRtl = (locale: string): boolean =>
+	rtlLocales.includes(locale.toLowerCase() as SupportedLocale);
+
+/**
+ * Reflect the active locale onto the document root so the browser applies the
+ * correct text direction (RTL for Arabic) and `lang` for a11y / hyphenation.
+ * No-op on the server; the initial render uses the static `lang="en"` in
+ * app.html and is corrected on hydration by `initLocale`.
+ */
+const applyDocumentLocale = (locale: SupportedLocale) => {
+	if (!browser) return;
+	document.documentElement.lang = locale;
+	document.documentElement.dir = isRtl(locale) ? 'rtl' : 'ltr';
+};
 
 /**
  * Reactive mirror of Paraglide's current locale. Paraglide's own `getLocale()`
@@ -34,6 +60,7 @@ export const initLocale = () => {
 	if (stored && isLocale(stored)) {
 		paraglideSetLocale(stored as SupportedLocale, { reload: false });
 		localeState.value = stored as SupportedLocale;
+		applyDocumentLocale(stored as SupportedLocale);
 		return;
 	}
 	const fromBrowser = (window.navigator.language.split('-')[0] ?? '').toLowerCase();
@@ -42,16 +69,27 @@ export const initLocale = () => {
 		: 'en';
 	paraglideSetLocale(locale, { reload: false });
 	localeState.value = locale;
+	applyDocumentLocale(locale);
 };
 
 export const setLocale = (locale: SupportedLocale) => {
 	paraglideSetLocale(locale, { reload: false });
 	localeState.value = locale;
+	applyDocumentLocale(locale);
 	if (browser) localStorage.setItem('locale', locale);
 };
 
 export const getLocale = (): SupportedLocale => localeState.value;
 
-const flagMap: Record<string, string> = { en: '🇬🇧', nl: '🇳🇱', es: '🇪🇸', de: '🇩🇪' };
+const flagMap: Record<string, string> = {
+	en: '🇬🇧',
+	nl: '🇳🇱',
+	es: '🇪🇸',
+	de: '🇩🇪',
+	fr: '🇫🇷',
+	ar: '🇸🇦',
+	pt: '🇵🇹',
+	ru: '🇷🇺'
+};
 export const getFlagEmoji = (code: string): string =>
 	flagMap[code.toLowerCase()] ?? flagMap.en ?? '';

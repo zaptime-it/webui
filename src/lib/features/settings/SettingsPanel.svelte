@@ -287,7 +287,7 @@
 				{m['section.settings.title']()}
 				{#if settingsStore.isDirty}
 					<span
-						class="badge badge-warning badge-sm ml-2 align-middle whitespace-nowrap"
+						class="badge badge-warning badge-sm ms-2 align-middle whitespace-nowrap"
 						data-testid="settings-dirty-badge"
 						role="status"
 					>
@@ -319,7 +319,7 @@
 					data-testid="validation-summary"
 				>
 					<strong>{m['section.settings.validationSummary']()}</strong>
-					<ul class="list-disc pl-5 text-sm">
+					<ul class="list-disc ps-5 text-sm">
 						{#each validationErrors as err (err.id)}
 							<li>
 								<a

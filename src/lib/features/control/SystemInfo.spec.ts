@@ -37,8 +37,18 @@ describe('SystemInfo: fw-too-old banner', () => {
 	test('banner copy is parameterised with min + current version', () => {
 		// Without the params the user has no way to know what to update to.
 		expect(src).toMatch(/section\.control\.fwTooOld/);
-		expect(src).toMatch(/min:\s*MIN_FIRMWARE/);
-		expect(src).toMatch(/current:\s*data\?\.gitRev/);
+		expect(src).toMatch(/min:\s*ltrIsolate\(MIN_FIRMWARE\)/);
+		expect(src).toMatch(/current:\s*ltrIsolate\(data\?\.gitRev/);
+	});
+
+	test('embedded LTR version/commit values are bidi-isolated for RTL locales', () => {
+		// Interpolating a version number or commit SHA straight into the
+		// translated (potentially Arabic) warning lets the bidi algorithm
+		// reorder its digits/punctuation. Wrapping the value in U+2066…U+2069
+		// (LRI…PDI) keeps it left-to-right inside the RTL sentence.
+		expect(src).toContain('0x2066');
+		expect(src).toContain('0x2069');
+		expect(src).toMatch(/ltrIsolate\s*=/);
 	});
 
 	test('no sessionStorage / dismissal logic remains', () => {

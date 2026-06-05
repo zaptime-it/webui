@@ -15,7 +15,7 @@
 	{#each toast.items as t (t.id)}
 		<button
 			type="button"
-			class="alert {variant(t.kind)} shadow cursor-pointer pr-8 text-left"
+			class="alert {variant(t.kind)} shadow cursor-pointer pe-8 text-start"
 			onclick={() => toast.dismiss(t.id)}
 		>
 			<div>

@@ -157,9 +157,12 @@
 		background: color-mix(in oklab, var(--color-base-200) 85%, transparent);
 		color: var(--color-base-content);
 		border: 1px solid var(--color-base-300);
-		border-right: 0;
-		border-top-left-radius: 0.75rem;
-		border-bottom-left-radius: 0.75rem;
+		/* Logical props so the joined prefix/input group flips under RTL:
+		   the prefix rounds on its leading (outer) edge and drops the border
+		   facing the input. */
+		border-inline-end: 0;
+		border-start-start-radius: 0.75rem;
+		border-end-start-radius: 0.75rem;
 	}
 	.cur-code.sats {
 		font-family: 'Satoshi Symbol', sans-serif;
@@ -169,8 +172,8 @@
 	.cur-input {
 		flex: 1 1 auto;
 		min-width: 0;
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
+		border-start-start-radius: 0;
+		border-end-start-radius: 0;
 	}
 
 	.conn-pill {

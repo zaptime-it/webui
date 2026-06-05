@@ -5,6 +5,16 @@
 	import { compareVersions, MIN_FIRMWARE } from '$lib/util/version';
 
 	const data = $derived(settingsStore.data);
+
+	// Wrap an LTR technical string (version number, commit SHA) in bidi
+	// isolates so it keeps its natural left-to-right order when interpolated
+	// into an RTL sentence (e.g. the Arabic "firmware too old" warning),
+	// instead of letting the bidi algorithm reorder its digits/punctuation.
+	// Built via fromCharCode so the control chars never appear literally in
+	// source (which would trip svelte-check's bidirectional-character lint).
+	const LRI = String.fromCharCode(0x2066); // LEFT-TO-RIGHT ISOLATE
+	const PDI = String.fromCharCode(0x2069); // POP DIRECTIONAL ISOLATE
+	const ltrIsolate = (s: string): string => `${LRI}${s}${PDI}`;
 	const buildTimeStr = $derived.by(() => {
 		const t = data?.lastBuildTime;
 		if (!t) return '';
@@ -56,8 +66,8 @@
 		<div class="alert alert-warning text-sm" data-testid="fw-too-old-banner">
 			<span
 				>⚠️ <strong>{m['warning']()}</strong>: {m['section.control.fwTooOld']({
-					min: MIN_FIRMWARE,
-					current: data?.gitRev ?? '?'
+					min: ltrIsolate(MIN_FIRMWARE),
+					current: ltrIsolate(data?.gitRev ?? '?')
 				})}</span
 			>
 		</div>
@@ -84,6 +94,16 @@
 		margin: 0;
 		font-size: 0.875rem;
 		word-break: break-all;
+		/* IP/MAC addresses, commit hashes, hostnames and localized timestamps
+		   are LTR technical identifiers. Force LTR so the bidi algorithm does
+		   not reorder their digits/punctuation under RTL locales (e.g. Arabic
+		   turning "6/5/2026, 8:09 PM" into "PM 8:09 ,6/5/2026"). */
+		direction: ltr;
+	}
+	/* Under RTL the value column sits on the left; align values to their
+	   (logical) end so they stay adjacent to the Arabic label gutter. */
+	:global([dir='rtl']) .system-info dd {
+		text-align: end;
 	}
 	.system-info dd.mono {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

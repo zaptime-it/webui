@@ -103,15 +103,20 @@
 </div>
 
 <style>
-	/* Each sub-section gets a thin left bar in a distinct DaisyUI semantic
+	/* Each sub-section gets a thin leading bar in a distinct DaisyUI semantic
 	   color so rows are visually separated without heavy horizontal rules.
-	   Color is picked via `data-accent` so the HTML stays declarative. */
+	   Color is picked via `data-accent` so the HTML stays declarative.
+	   Uses logical properties (inline-start / *-start-* radii) so the bar
+	   and rounding flip to the right edge under RTL locales (e.g. Arabic). */
 	.control-row {
 		position: relative;
-		padding-left: 0.75rem;
-		border-left: 3px solid
+		padding-inline-start: 0.75rem;
+		border-inline-start: 3px solid
 			color-mix(in oklab, var(--control-row-color, var(--color-primary)) 45%, transparent);
-		border-radius: 0 0.25rem 0.25rem 0;
+		border-start-start-radius: 0;
+		border-start-end-radius: 0.25rem;
+		border-end-end-radius: 0.25rem;
+		border-end-start-radius: 0;
 	}
 	.control-row + .control-row {
 		margin-top: 1rem;

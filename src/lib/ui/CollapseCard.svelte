@@ -22,7 +22,7 @@
 <div>
 	<button
 		type="button"
-		class="flex items-center gap-1 text-lg font-semibold w-full text-left mb-2"
+		class="flex items-center gap-1 text-lg font-semibold w-full text-start mb-2"
 		onclick={toggle}
 	>
 		{#if isOpen}

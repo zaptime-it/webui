@@ -37,7 +37,7 @@
 			<input
 				{id}
 				type="number"
-				class="input input-bordered input-{size} join-item w-full text-right"
+				class="input input-bordered input-{size} join-item w-full text-end"
 				bind:value
 				{min}
 				{max}
