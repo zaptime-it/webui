@@ -538,17 +538,20 @@ paths:
         Event stream for live status updates. The firmware emits three
         kinds of frames over the wire:
 
-        - `event: welcome` — sent once on connect; payload is the
-          stringified IP address of the client.
+        - `event: welcome` — sent once on connect; the payload is the
+          JSON object `{}`. (Pre-4.0 firmware put the client's IP address
+          string here instead.)
         - `event: status` — payload JSON matches `GET /api/status`
-          (shares `buildStatusJson()`). One frame is pushed on every
+          (shares `BuildStatusJson()`). One frame is pushed on every
           state change (block height update, screen rotation, LED
           colour change, DND transition, etc.).
         - `data: closing` (no `event:` prefix, default `message`
-          listener) — sent immediately before the firmware closes the
-          connection cleanly (e.g. when the LFS image is being swapped
-          during an OTA finalisation). Clients should reconnect after
-          a short delay; this is a graceful handoff, not a failure.
+          listener) — a graceful-shutdown handoff sent immediately before
+          the firmware closes the connection cleanly (e.g. when the LFS
+          image is being swapped during an OTA finalisation). Current
+          firmware no longer emits this frame, but the WebUI still listens
+          for it defensively; clients should reconnect after a short delay
+          rather than treat it as a failure.
 
         Reconnect strategy: 1 s on first `error`, doubling to a 30 s
         cap (see `src/lib/api/sse.ts::computeBackoffMs` in the WebUI),
@@ -646,6 +649,174 @@ paths:
                             Stack frames of the allocation, deepest first.
                             Length up to `CONFIG_HEAP_TRACING_STACK_DEPTH`.
         '404': { description: Endpoint not compiled in (CONFIG_HEAP_TRACING_STANDALONE=n) }
+  '/api/preview/ws':
+    get:
+      tags: [system]
+      summary: WebSocket framebuffer-preview stream
+      description: |
+        WebSocket endpoint (HTTP GET upgrade) that mirrors the EPD panel
+        framebuffers to the WebUI live preview. Auth is the same Basic-auth
+        gate as the REST routes. After the upgrade the firmware sends:
+
+        - a text frame `{"streaming":true}` / `{"streaming":false}` ack
+          whenever the client toggles streaming, and
+        - binary `BTFB` framebuffer packets, one per panel, on every panel
+          repaint.
+
+        Only registered on builds compiled with `CONFIG_HTTPD_WS_SUPPORT`.
+      security: [{ basicAuth: [] }]
+      responses:
+        '101': { description: Switching Protocols — WebSocket established }
+        '401': { description: Authentication required }
+  '/api/factory_reset':
+    post:
+      tags: [system]
+      summary: Erase NVS and reboot to factory defaults
+      description: |
+        Destructive — wipes all stored settings. Requires an explicit
+        confirmation token in the JSON body so a stray POST (curl typo,
+        CSRF, a LAN probe) can't wipe the device. The response is flushed
+        before the reboot.
+      security: [{ basicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirm]
+              properties:
+                confirm:
+                  type: string
+                  enum: [ERASE]
+                  description: Must be the literal string `ERASE`.
+      responses:
+        '200':
+          description: Factory reset scheduled; device reboots shortly after.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg: { type: string, example: factory reset scheduled }
+        '400':
+          description: Missing or wrong confirmation token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, example: confirmation required }
+        '503':
+          description: Factory-reset handler not wired on this build.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, example: factory reset not wired }
+  '/api/action/simulate_zap':
+    post:
+      tags: [diag]
+      summary: Simulate an incoming Nostr zap (dev/QA)
+      description: |
+        Fires the zap-received pipeline (on-screen overlay + LED/frontlight
+        flash) with a synthetic amount. The body is optional; a missing,
+        oversized, or malformed body silently falls back to the defaults
+        (`amount_sats: 21000`, `message: "test zap"`) — the simulator is a
+        dev/QA tool, not an input-validation surface. Returns 500 when the
+        simulator hook isn't wired on this build.
+      security: [{ basicAuth: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount_sats:
+                  type: integer
+                  format: int64
+                  description: Zap amount in sats (clamped to >= 0).
+                  example: 21000
+                message:
+                  type: string
+                  description: Zap comment (truncated to 256 chars).
+                  example: test zap
+      responses:
+        '200': { description: Zap simulated }
+        '500': { description: Simulator hook not wired on this build }
+  '/api/action/clear_pool_logos':
+    post:
+      tags: [system]
+      summary: Clear cached mining-pool logos
+      description: |
+        Best-effort clear of the on-device pool-logo cache, then re-enqueues
+        a fetch for the currently active pool so the cache repopulates
+        without a pool switch or reboot. Never errors.
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: Cache cleared; reports how many entries were removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  removed: { type: integer, example: 3 }
+  '/api/coredump':
+    get:
+      tags: [diag]
+      summary: Download the panic coredump (ELF)
+      description: |
+        Streams the previous run's panic backtrace as a raw ELF so it can be
+        piped straight into espcoredump.py:
+        `curl http://<ip>/api/coredump > dump.elf`. Returns 404 when the
+        coredump partition is empty (the common case after a clean boot).
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: Coredump ELF byte stream.
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        '404':
+          description: No coredump present.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, example: no coredump present }
+    delete:
+      tags: [diag]
+      summary: Erase the stored coredump
+      description: |
+        Clears the coredump partition so the next panic isn't ignored
+        because a stale dump occupies the slot. Idempotent — returns 204
+        even when the partition was already empty.
+      security: [{ basicAuth: [] }]
+      responses:
+        '204': { description: Coredump erased (or already empty) }
+        '500': { description: Erase failed }
+  '/api/diag/heap':
+    get:
+      tags: [diag]
+      summary: Per-capability heap snapshot
+      description: |
+        Breaks the live heap out per allocator capability pool
+        (`internal`, `internal_dma`, `spiram`, `default`). Unlike
+        `/api/system_status` this exposes `free_blocks` / `allocated_blocks`
+        per pool, which is what distinguishes fragmentation (largest free
+        block collapsed while total free is healthy) from genuine
+        exhaustion.
+      security: [{ basicAuth: [] }]
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema: { '$ref': '#/components/schemas/DiagHeap' }
 components:
   securitySchemes:
     basicAuth:
@@ -718,6 +889,18 @@ components:
         espUptime: { type: integer, format: int64 }
         espFreeHeap: { type: integer }
         espHeapSize: { type: integer }
+        espMinFreeHeap:
+          type: integer
+          description: Lifetime-minimum free bytes in INTERNAL SRAM since boot.
+        espLargestFreeBlock:
+          type: integer
+          description: Largest single contiguous free block (bytes) in INTERNAL+DMA SRAM.
+        espFreePsram:
+          type: integer
+          description: Free PSRAM bytes (0 when PSRAM is absent or uninitialised).
+        espPsramSize:
+          type: integer
+          description: Total PSRAM bytes (0 when PSRAM is absent).
         connectionStatus: { '$ref': '#/components/schemas/ConnectionStatus' }
         rssi: { type: integer }
         currency: { type: string }
@@ -752,12 +935,52 @@ components:
       properties:
         espFreeHeap: { type: integer }
         espHeapSize: { type: integer }
+        espMinFreeHeap:
+          type: integer
+          description: Lifetime-minimum free bytes in INTERNAL SRAM since boot.
+        espLargestFreeBlock:
+          type: integer
+          description: Largest single contiguous free block (bytes) in INTERNAL+DMA SRAM.
         espFreePsram: { type: integer }
         espPsramSize: { type: integer }
         fsUsedBytes: { type: integer, format: int64 }
         fsTotalBytes: { type: integer, format: int64 }
         rssi: { type: integer }
         txPower: { type: integer }
+        queueDrops:
+          type: object
+          description: |
+            Monotonic per-queue drop counters since boot. A non-zero value
+            flags a wedged consumer (or a sustained burst that exceeded the
+            queue depth) — useful for triaging "buttons feel unresponsive" /
+            "frontlight stuck" reports without serial access.
+          properties:
+            buttons: { type: integer }
+            led: { type: integer }
+            frontlight: { type: integer }
+    DiagHeapPool:
+      type: object
+      description: One allocator-capability pool's live `multi_heap_info_t`.
+      properties:
+        total_free_bytes: { type: integer }
+        total_allocated_bytes: { type: integer }
+        largest_free_block: { type: integer }
+        minimum_free_bytes: { type: integer }
+        allocated_blocks: { type: integer }
+        free_blocks: { type: integer }
+        total_blocks: { type: integer }
+    DiagHeap:
+      type: object
+      description: Response of `GET /api/diag/heap`.
+      properties:
+        espUptime: { type: integer, format: int64 }
+        caps:
+          type: object
+          properties:
+            internal: { '$ref': '#/components/schemas/DiagHeapPool' }
+            internal_dma: { '$ref': '#/components/schemas/DiagHeapPool' }
+            spiram: { '$ref': '#/components/schemas/DiagHeapPool' }
+            default: { '$ref': '#/components/schemas/DiagHeapPool' }
     Screen:
       type: object
       properties:

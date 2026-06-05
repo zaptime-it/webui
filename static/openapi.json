@@ -394,7 +394,7 @@
 			"post": {
 				"tags": ["screens"],
 				"summary": "Set custom multi-line EPD content (JSON array)",
-				"description": "Each cell is normally rendered as text. Cells starting with `mdi:` (ASCII, case-insensitive) followed by a Material Design Icons kebab-case name from the firmware subset (same names as tools/fonts/regen_mdi.sh) paint that icon centered via the icon font instead of digit text. Unknown names leave the panel blank. A `/` in the icon token opts out so split-text cells keep working.",
+				"description": "Each cell is normally rendered as text. Cells starting with `mdi:` (ASCII,\ncase-insensitive) followed by a Material Design Icons **kebab-case** name\nfrom the firmware subset (same names as `tools/fonts/regen_mdi.sh`) paint\nthat icon centered via the icon font instead of digit text. Unknown names\nleave the panel blank. A `/` in the icon token opts out so split-text\ncells keep working.\n",
 				"security": [
 					{
 						"basicAuth": []
@@ -930,7 +930,7 @@
 			"get": {
 				"tags": ["system"],
 				"summary": "Server-Sent Events stream of status updates",
-				"description": "Event stream for live status updates. The firmware emits three\nkinds of frames over the wire:\n\n- `event: welcome` \u2014 sent once on connect; payload is the\n  stringified IP address of the client.\n- `event: status` \u2014 payload JSON matches `GET /api/status`\n  (shares `buildStatusJson()`). One frame is pushed on every\n  state change (block height update, screen rotation, LED\n  colour change, DND transition, etc.).\n- `data: closing` (no `event:` prefix, default `message`\n  listener) \u2014 sent immediately before the firmware closes the\n  connection cleanly (e.g. when the LFS image is being swapped\n  during an OTA finalisation). Clients should reconnect after\n  a short delay; this is a graceful handoff, not a failure.\n\nReconnect strategy: 1 s on first `error`, doubling to a 30 s\ncap (see `src/lib/api/sse.ts::computeBackoffMs` in the WebUI),\nand 5 s after a `closing` message. The \"lost connection\"\noverlay reads its label from `statusStore.otaInProgress` so\nusers see \"Updating firmware\u2026\" during an OTA reconnect.\n",
+				"description": "Event stream for live status updates. The firmware emits three\nkinds of frames over the wire:\n\n- `event: welcome` \u2014 sent once on connect; the payload is the\n  JSON object `{}`. (Pre-4.0 firmware put the client's IP address\n  string here instead.)\n- `event: status` \u2014 payload JSON matches `GET /api/status`\n  (shares `BuildStatusJson()`). One frame is pushed on every\n  state change (block height update, screen rotation, LED\n  colour change, DND transition, etc.).\n- `data: closing` (no `event:` prefix, default `message`\n  listener) \u2014 a graceful-shutdown handoff sent immediately before\n  the firmware closes the connection cleanly (e.g. when the LFS\n  image is being swapped during an OTA finalisation). Current\n  firmware no longer emits this frame, but the WebUI still listens\n  for it defensively; clients should reconnect after a short delay\n  rather than treat it as a failure.\n\nReconnect strategy: 1 s on first `error`, doubling to a 30 s\ncap (see `src/lib/api/sse.ts::computeBackoffMs` in the WebUI),\nand 5 s after a `closing` message. The \"lost connection\"\noverlay reads its label from `statusStore.otaInProgress` so\nusers see \"Updating firmware\u2026\" during an OTA reconnect.\n",
 				"security": [
 					{
 						"basicAuth": []
@@ -1070,6 +1070,262 @@
 					}
 				}
 			}
+		},
+		"/api/preview/ws": {
+			"get": {
+				"tags": ["system"],
+				"summary": "WebSocket framebuffer-preview stream",
+				"description": "WebSocket endpoint (HTTP GET upgrade) that mirrors the EPD panel\nframebuffers to the WebUI live preview. Auth is the same Basic-auth\ngate as the REST routes. After the upgrade the firmware sends:\n\n- a text frame `{\"streaming\":true}` / `{\"streaming\":false}` ack\n  whenever the client toggles streaming, and\n- binary `BTFB` framebuffer packets, one per panel, on every panel\n  repaint.\n\nOnly registered on builds compiled with `CONFIG_HTTPD_WS_SUPPORT`.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"responses": {
+					"101": {
+						"description": "Switching Protocols \u2014 WebSocket established"
+					},
+					"401": {
+						"description": "Authentication required"
+					}
+				}
+			}
+		},
+		"/api/factory_reset": {
+			"post": {
+				"tags": ["system"],
+				"summary": "Erase NVS and reboot to factory defaults",
+				"description": "Destructive \u2014 wipes all stored settings. Requires an explicit\nconfirmation token in the JSON body so a stray POST (curl typo,\nCSRF, a LAN probe) can't wipe the device. The response is flushed\nbefore the reboot.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["confirm"],
+								"properties": {
+									"confirm": {
+										"type": "string",
+										"enum": ["ERASE"],
+										"description": "Must be the literal string `ERASE`."
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Factory reset scheduled; device reboots shortly after.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"msg": {
+											"type": "string",
+											"example": "factory reset scheduled"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing or wrong confirmation token.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"error": {
+											"type": "string",
+											"example": "confirmation required"
+										}
+									}
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Factory-reset handler not wired on this build.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"error": {
+											"type": "string",
+											"example": "factory reset not wired"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/action/simulate_zap": {
+			"post": {
+				"tags": ["diag"],
+				"summary": "Simulate an incoming Nostr zap (dev/QA)",
+				"description": "Fires the zap-received pipeline (on-screen overlay + LED/frontlight\nflash) with a synthetic amount. The body is optional; a missing,\noversized, or malformed body silently falls back to the defaults\n(`amount_sats: 21000`, `message: \"test zap\"`) \u2014 the simulator is a\ndev/QA tool, not an input-validation surface. Returns 500 when the\nsimulator hook isn't wired on this build.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"amount_sats": {
+										"type": "integer",
+										"format": "int64",
+										"description": "Zap amount in sats (clamped to >= 0).",
+										"example": 21000
+									},
+									"message": {
+										"type": "string",
+										"description": "Zap comment (truncated to 256 chars).",
+										"example": "test zap"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Zap simulated"
+					},
+					"500": {
+						"description": "Simulator hook not wired on this build"
+					}
+				}
+			}
+		},
+		"/api/action/clear_pool_logos": {
+			"post": {
+				"tags": ["system"],
+				"summary": "Clear cached mining-pool logos",
+				"description": "Best-effort clear of the on-device pool-logo cache, then re-enqueues\na fetch for the currently active pool so the cache repopulates\nwithout a pool switch or reboot. Never errors.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Cache cleared; reports how many entries were removed.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"removed": {
+											"type": "integer",
+											"example": 3
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/coredump": {
+			"get": {
+				"tags": ["diag"],
+				"summary": "Download the panic coredump (ELF)",
+				"description": "Streams the previous run's panic backtrace as a raw ELF so it can be\npiped straight into espcoredump.py:\n`curl http://<ip>/api/coredump > dump.elf`. Returns 404 when the\ncoredump partition is empty (the common case after a clean boot).\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Coredump ELF byte stream.",
+						"content": {
+							"application/octet-stream": {
+								"schema": {
+									"type": "string",
+									"format": "binary"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "No coredump present.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"error": {
+											"type": "string",
+											"example": "no coredump present"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["diag"],
+				"summary": "Erase the stored coredump",
+				"description": "Clears the coredump partition so the next panic isn't ignored\nbecause a stale dump occupies the slot. Idempotent \u2014 returns 204\neven when the partition was already empty.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Coredump erased (or already empty)"
+					},
+					"500": {
+						"description": "Erase failed"
+					}
+				}
+			}
+		},
+		"/api/diag/heap": {
+			"get": {
+				"tags": ["diag"],
+				"summary": "Per-capability heap snapshot",
+				"description": "Breaks the live heap out per allocator capability pool\n(`internal`, `internal_dma`, `spiram`, `default`). Unlike\n`/api/system_status` this exposes `free_blocks` / `allocated_blocks`\nper pool, which is what distinguishes fragmentation (largest free\nblock collapsed while total free is healthy) from genuine\nexhaustion.\n",
+				"security": [
+					{
+						"basicAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DiagHeap"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -1190,6 +1446,22 @@
 					"espHeapSize": {
 						"type": "integer"
 					},
+					"espMinFreeHeap": {
+						"type": "integer",
+						"description": "Lifetime-minimum free bytes in INTERNAL SRAM since boot."
+					},
+					"espLargestFreeBlock": {
+						"type": "integer",
+						"description": "Largest single contiguous free block (bytes) in INTERNAL+DMA SRAM."
+					},
+					"espFreePsram": {
+						"type": "integer",
+						"description": "Free PSRAM bytes (0 when PSRAM is absent or uninitialised)."
+					},
+					"espPsramSize": {
+						"type": "integer",
+						"description": "Total PSRAM bytes (0 when PSRAM is absent)."
+					},
 					"connectionStatus": {
 						"$ref": "#/components/schemas/ConnectionStatus"
 					},
@@ -1254,6 +1526,14 @@
 					"espHeapSize": {
 						"type": "integer"
 					},
+					"espMinFreeHeap": {
+						"type": "integer",
+						"description": "Lifetime-minimum free bytes in INTERNAL SRAM since boot."
+					},
+					"espLargestFreeBlock": {
+						"type": "integer",
+						"description": "Largest single contiguous free block (bytes) in INTERNAL+DMA SRAM."
+					},
 					"espFreePsram": {
 						"type": "integer"
 					},
@@ -1273,6 +1553,75 @@
 					},
 					"txPower": {
 						"type": "integer"
+					},
+					"queueDrops": {
+						"type": "object",
+						"description": "Monotonic per-queue drop counters since boot. A non-zero value\nflags a wedged consumer (or a sustained burst that exceeded the\nqueue depth) \u2014 useful for triaging \"buttons feel unresponsive\" /\n\"frontlight stuck\" reports without serial access.\n",
+						"properties": {
+							"buttons": {
+								"type": "integer"
+							},
+							"led": {
+								"type": "integer"
+							},
+							"frontlight": {
+								"type": "integer"
+							}
+						}
+					}
+				}
+			},
+			"DiagHeapPool": {
+				"type": "object",
+				"description": "One allocator-capability pool's live `multi_heap_info_t`.",
+				"properties": {
+					"total_free_bytes": {
+						"type": "integer"
+					},
+					"total_allocated_bytes": {
+						"type": "integer"
+					},
+					"largest_free_block": {
+						"type": "integer"
+					},
+					"minimum_free_bytes": {
+						"type": "integer"
+					},
+					"allocated_blocks": {
+						"type": "integer"
+					},
+					"free_blocks": {
+						"type": "integer"
+					},
+					"total_blocks": {
+						"type": "integer"
+					}
+				}
+			},
+			"DiagHeap": {
+				"type": "object",
+				"description": "Response of `GET /api/diag/heap`.",
+				"properties": {
+					"espUptime": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"caps": {
+						"type": "object",
+						"properties": {
+							"internal": {
+								"$ref": "#/components/schemas/DiagHeapPool"
+							},
+							"internal_dma": {
+								"$ref": "#/components/schemas/DiagHeapPool"
+							},
+							"spiram": {
+								"$ref": "#/components/schemas/DiagHeapPool"
+							},
+							"default": {
+								"$ref": "#/components/schemas/DiagHeapPool"
+							}
+						}
 					}
 				}
 			},
@@ -1409,17 +1758,17 @@
 					},
 					"nwcEnabled": {
 						"type": "boolean",
-						"description": "Master toggle for Nostr Wallet Connect (NIP-47). When\n`true`, the firmware constructs a dedicated NwcClient at\nboot and subscribes to `payment_received` /\n`payment_sent` notifications from the paired wallet.\nBoot-only — `PATCH` returns `rebootRequired: true`.\n"
+						"description": "Master toggle for Nostr Wallet Connect (NIP-47). When\n`true`, the firmware constructs a dedicated NwcClient at\nboot and subscribes to `payment_received` /\n`payment_sent` notifications from the paired wallet.\nBoot-only \u2014 `PATCH` returns `rebootRequired: true`.\n"
 					},
 					"nwcRefreshSecs": {
 						"type": "integer",
 						"minimum": 15,
 						"maximum": 3600,
-						"description": "Cadence (seconds) for the periodic `get_balance` poll.\nShort enough for a near-live balance, long enough to not\nhammer the relay. Boot-only — the esp_timer is armed once\nat boot.\n"
+						"description": "Cadence (seconds) for the periodic `get_balance` poll.\nShort enough for a near-live balance, long enough to not\nhammer the relay. Boot-only \u2014 the esp_timer is armed once\nat boot.\n"
 					},
 					"nwcShowNotify": {
 						"type": "boolean",
-						"description": "When `true` (default), an incoming payment notification\npops the `RECV ↓` / `PAID ↑` on-screen overlay. When\n`false`, the overlay is suppressed entirely and the LED\n+ frontlight pulse is bypassed, but the balance / snapshot\nmirror still updates so the (opt-in) balance screen stays\ncurrent. Live — re-read per notification.\n"
+						"description": "When `true` (default), an incoming payment notification\npops the `RECV \u2193` / `PAID \u2191` on-screen overlay. When\n`false`, the overlay is suppressed entirely and the LED\n+ frontlight pulse is bypassed, but the balance / snapshot\nmirror still updates so the (opt-in) balance screen stays\ncurrent. Live \u2014 re-read per notification.\n"
 					},
 					"nwcFlashOnPay": {
 						"type": "boolean",
@@ -1428,12 +1777,12 @@
 					"nwcUriSet": {
 						"type": "boolean",
 						"readOnly": true,
-						"description": "`true` iff the device has a non-empty `nwcUri` stored.\nThe raw URI is never echoed on `GET` because it carries\nthe client secret — write a new value via `PATCH` with\n`nwcUri`, or clear it by `PATCH`ing `nwcUri: \"\"`.\n"
+						"description": "`true` iff the device has a non-empty `nwcUri` stored.\nThe raw URI is never echoed on `GET` because it carries\nthe client secret \u2014 write a new value via `PATCH` with\n`nwcUri`, or clear it by `PATCH`ing `nwcUri: \"\"`.\n"
 					},
 					"nwcUriMasked": {
 						"type": "string",
 						"readOnly": true,
-						"description": "Short fingerprint of the stored NWC pairing URI — wallet-\npubkey prefix + ellipsis-redacted `secret` and `lud16`,\ne.g.\n`nostr+walletconnect://51f1f43c…?relay=wss://relay.example.com&secret=…&lud16=sat…com`.\nEmitted only when the stored URI parses cleanly.\n"
+						"description": "Short fingerprint of the stored NWC pairing URI \u2014 wallet-\npubkey prefix + ellipsis-redacted `secret` and `lud16`,\ne.g.\n`nostr+walletconnect://51f1f43c\u2026?relay=wss://relay.example.com&secret=\u2026&lud16=sat\u2026com`.\nEmitted only when the stored URI parses cleanly.\n"
 					},
 					"fontName": {
 						"type": "string"
@@ -1530,6 +1879,11 @@
 					},
 					"ip": {
 						"type": "string"
+					},
+					"wifiMac": {
+						"type": "string",
+						"readOnly": true,
+						"description": "MAC address of the active Wi-Fi STA interface (colon-separated, lowercase hex). Added in firmware 4.0.0-rc.14."
 					},
 					"txPower": {
 						"type": "integer"
@@ -1742,7 +2096,7 @@
 			},
 			"CustomText": {
 				"type": "array",
-				"description": "One string per panel; length must match device `numScreens` (commonly 7 or 8). Use `mdi:<name>` for subset Material Design Icons (kebab-case), e.g. `mdi:wifi`, `mdi:bitcoin`, `mdi:clock-outline`.",
+				"description": "One string per panel; length must match device `numScreens` (commonly 7 or 8). Use `mdi:<name>` for subset Material Design Icons (kebab-case), e.g. `mdi:wifi`, `mdi:bitcoin`, `mdi:clock-outline`.\n",
 				"minItems": 1,
 				"items": {
 					"type": "string"
