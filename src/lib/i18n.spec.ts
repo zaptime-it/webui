@@ -28,6 +28,10 @@ describe('i18n locale store', () => {
 		expect(currentLocale.value).toBe('fr');
 		setLocale('ru');
 		expect(currentLocale.value).toBe('ru');
+		setLocale('zh');
+		expect(currentLocale.value).toBe('zh');
+		setLocale('ja');
+		expect(currentLocale.value).toBe('ja');
 	});
 
 	test('getFlagEmoji maps supported locales to flags', () => {
@@ -39,6 +43,8 @@ describe('i18n locale store', () => {
 		expect(getFlagEmoji('ar')).toBe('🇸🇦');
 		expect(getFlagEmoji('pt')).toBe('🇵🇹');
 		expect(getFlagEmoji('ru')).toBe('🇷🇺');
+		expect(getFlagEmoji('zh')).toBe('🇨🇳');
+		expect(getFlagEmoji('ja')).toBe('🇯🇵');
 	});
 
 	test('getFlagEmoji falls back to the English flag for unknown codes', () => {
