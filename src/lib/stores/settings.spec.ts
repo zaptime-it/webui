@@ -7,7 +7,7 @@
  * dirty-lost-on-reset) is the kind of UX regression that slips past
  * casual manual QA — the indicator still renders, it just lies.
  */
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Settings } from './../types/settings';
 
 const sampleSettings = (): Settings =>
@@ -49,10 +49,20 @@ const loadStore = async () => {
 };
 
 describe('settingsStore.isDirty', () => {
+	let consoleErr: ReturnType<typeof vi.spyOn>;
+
 	beforeEach(() => {
 		vi.resetModules();
 		getSettingsMock.mockReset();
 		patchSettingsMock.mockReset();
+		// load() logs failures via console.error by design; several tests in
+		// this block deliberately reject the fetch (network error, ValiError),
+		// so silence the expected noise to keep the run output clean.
+		consoleErr = vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		consoleErr.mockRestore();
 	});
 
 	test('starts clean before any load', async () => {
