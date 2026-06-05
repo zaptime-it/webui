@@ -1,16 +1,4 @@
-interface Page {
-	route: (url: string, handler: (route: Route) => Promise<void>) => Promise<void>;
-	addInitScript: (fn: () => void) => Promise<void>;
-}
-
-interface Route {
-	fulfill: (response: {
-		json?: typeof statusJson | typeof settingsJson | typeof latestReleaseFake;
-		status?: number;
-		headers?: Record<string, string>;
-		body?: ReadableStream;
-	}) => Promise<void>;
-}
+import type { Page } from '@playwright/test';
 
 const MEMPOOL_TIP_HEIGHT = 'https://mempool.dbtc.link/api/blocks/tip/height';
 
