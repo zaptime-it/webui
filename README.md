@@ -14,7 +14,7 @@ This project is managed with [pnpm](https://pnpm.io). Install it with
 `corepack enable pnpm` or `npm i -g pnpm` if you don't have it yet.
 
 ```bash
-pnpm install           # runs patch-package for the SvelteKit filename shortening patch
+pnpm install           # applies the SvelteKit filename-shortening patch via pnpm patchedDependencies
 pnpm dev               # start the dev server (http://localhost:5173)
 ```
 
