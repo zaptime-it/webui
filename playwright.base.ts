@@ -27,5 +27,9 @@ export const baseConfig = {
 		reuseExistingServer: !process.env.CI,
 		env: { PUBLIC_BASE_URL: '' }
 	},
+	// CI runners are slower and noisier; one retry absorbs the occasional
+	// hydration/network hiccup without masking a genuinely broken test
+	// (a test that fails twice still fails the run). Local runs never retry.
+	retries: process.env.CI ? 1 : 0,
 	use: { baseURL }
-} satisfies Pick<PlaywrightTestConfig, 'webServer' | 'use'>;
+} satisfies Pick<PlaywrightTestConfig, 'webServer' | 'use' | 'retries'>;

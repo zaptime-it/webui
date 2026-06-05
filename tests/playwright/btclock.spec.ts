@@ -17,14 +17,18 @@ test.beforeEach(initMock);
  *  a screen button (rendered via Status → ScreenButtons, proving the
  *  `/api/settings` fetch has succeeded) instead. */
 const waitForReady = async (page: Page) => {
-	await expect(page.getByRole('button', { name: 'Show all' })).toBeVisible();
+	// Generous timeouts throughout: hydration + the initial /api/settings and
+	// /api/status fetches can lag on a loaded CI runner, and the default 5 s
+	// expect timeout was tight enough to flake on the Block Height button.
+	await expect(page.getByRole('button', { name: 'Show all' })).toBeVisible({ timeout: 15_000 });
 	// Block Height is always present in the mocked settings fixture.
-	await expect(page.getByRole('button', { name: 'Block Height' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Block Height' })).toBeVisible({
+		timeout: 15_000
+	});
 	// The SettingsPanel renders its form (and therefore the Save button)
-	// once `settingsStore.isReady === true`. A generous timeout here
-	// because the reactive graph in SettingsPanel has sometimes been
-	// observed to lag behind Status by ~1-2 seconds after the mocked
-	// settings response resolves.
+	// once `settingsStore.isReady === true`. The reactive graph in
+	// SettingsPanel has sometimes been observed to lag behind Status by
+	// ~1-2 seconds after the mocked settings response resolves.
 	await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeVisible({
 		timeout: 15_000
 	});

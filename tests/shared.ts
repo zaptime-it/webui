@@ -5,7 +5,9 @@ const MEMPOOL_TIP_HEIGHT = 'https://mempool.dbtc.link/api/blocks/tip/height';
 /** Plain digits from mempool tip height → clock `data` row for Block Height screen */
 export const fetchLatestBlockHeight = async (): Promise<string[]> => {
 	try {
-		const response = await fetch(MEMPOOL_TIP_HEIGHT);
+		// Fail fast: CI runners have no outbound network, so without a timeout
+		// this hangs until ETIMEDOUT (tens of seconds) before falling back.
+		const response = await fetch(MEMPOOL_TIP_HEIGHT, { signal: AbortSignal.timeout(2500) });
 		if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		const raw = (await response.text()).trim();
 		if (!/^\d+$/.test(raw)) throw new Error('non-numeric height');
@@ -19,7 +21,8 @@ export const fetchLatestBlockHeight = async (): Promise<string[]> => {
 export const fetchLatestRelease = async () => {
 	try {
 		const response = await fetch(
-			'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest'
+			'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest',
+			{ signal: AbortSignal.timeout(2500) }
 		);
 		if (!response.ok) throw new Error('Failed to fetch latest release');
 		const data = await response.json();
@@ -297,10 +300,20 @@ export const latestReleaseFake = {
 	}
 };
 
+// Cache the two external lookups across the per-test `beforeEach` so a CI
+// runner with no outbound network pays the (now fail-fast) timeout at most
+// once per worker instead of on every test. Locally, with network, this still
+// surfaces the real block height / release the first time.
+let blockHeightCache: string[] | undefined;
+let latestReleaseCache: typeof latestReleaseFake | undefined;
+
 export const initMock = async ({ page }: { page: Page }) => {
-	// Update status with latest block height
-	statusJson.data = await fetchLatestBlockHeight();
-	const latestRelease = await fetchLatestRelease();
+	// Update status with latest block height. Fresh copy per test because some
+	// specs splice statusJson.data in place.
+	if (!blockHeightCache) blockHeightCache = await fetchLatestBlockHeight();
+	statusJson.data = [...blockHeightCache];
+	if (!latestReleaseCache) latestReleaseCache = await fetchLatestRelease();
+	const latestRelease = latestReleaseCache;
 
 	// Chromium + Playwright’s fulfilled `text/event-stream` body does not reliably
 	// drive `EventSource` (open / custom `status` events). The real firmware sends
