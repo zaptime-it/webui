@@ -871,6 +871,16 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: 'Europe/Amsterdam'
 	},
 	{
+		key: 'usDebtBigChar',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'useBlkCountdown',
 		kind: 'boolean',
 		bootOnly: false,
@@ -1024,6 +1034,7 @@ export const settingsFieldSchemas = {
 	suffixPrice: v.boolean(),
 	supplyPercent: v.boolean(),
 	tzString: v.string(),
+	usDebtBigChar: v.boolean(),
 	useBlkCountdown: v.boolean(),
 	useMscwTime: v.boolean(),
 	verticalDesc: v.boolean(),

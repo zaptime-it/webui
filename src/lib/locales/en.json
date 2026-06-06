@@ -15,6 +15,7 @@
 			"hostnamePrefix": "Hostname prefix",
 			"StealFocusOnNewBlock": "Steal focus on new block",
 			"useBigCharsMcap": "Use big characters for market cap",
+			"useBigCharsUsDebt": "Use big characters for US national debt",
 			"useBlkCountdown": "Blocks countdown for halving",
 			"priceMarkerHeading": "Symbol for satoshi price display",
 			"priceMarkerNone": "None",

@@ -1141,6 +1141,7 @@ components:
         ledBrightness: { type: integer }
         stealFocus: { type: boolean }
         mcapBigChar: { type: boolean }
+        usDebtBigChar: { type: boolean }
         mdnsEnabled: { type: boolean }
         otaEnabled: { type: boolean }
         otaPassSet:

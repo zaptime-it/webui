@@ -1818,6 +1818,9 @@
 					"mcapBigChar": {
 						"type": "boolean"
 					},
+					"usDebtBigChar": {
+						"type": "boolean"
+					},
 					"mdnsEnabled": {
 						"type": "boolean"
 					},

@@ -79,6 +79,11 @@
 			label={m['section.settings.useBigCharsMcap']()}
 		/>
 		<SwitchField
+			id="usDebtBigChar"
+			bind:checked={data.usDebtBigChar}
+			label={m['section.settings.useBigCharsUsDebt']()}
+		/>
+		<SwitchField
 			id="useBlkCountdown"
 			bind:checked={data.useBlkCountdown}
 			label={m['section.settings.useBlkCountdown']()}
