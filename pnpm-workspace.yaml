@@ -10,4 +10,7 @@ allowBuilds:
   sharp: true
 
 patchedDependencies:
-  '@sveltejs/kit@2.63.0': patches/@sveltejs__kit@2.63.0.patch
+  '@sveltejs/kit@2.64.0': patches/@sveltejs__kit@2.64.0.patch
+
+minimumReleaseAgeExclude:
+  - '@sveltejs/kit@2.64.0'
