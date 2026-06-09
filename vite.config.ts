@@ -24,7 +24,12 @@ export default defineConfig({
 		tailwindcss(),
 		paraglideVitePlugin({
 			project: './project.inlang',
-			outdir: './src/lib/paraglide'
+			outdir: './src/lib/paraglide',
+			// Bundle messages per-locale rather than per-message. This UI renders
+			// nearly every message, so message-modules' tree-shaking buys little
+			// while its per-message 15-branch locale dispatcher costs ~13 KiB gzip
+			// across the bundle; locale-modules avoids that duplication.
+			outputStructure: 'locale-modules'
 		}),
 		sveltekit(),
 		// Opt-in bundle analyzer. `pnpm build:report` (or any other build

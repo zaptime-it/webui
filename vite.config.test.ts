@@ -8,7 +8,11 @@ export default defineConfig({
 		tailwindcss(),
 		paraglideVitePlugin({
 			project: './project.inlang',
-			outdir: './src/lib/paraglide'
+			outdir: './src/lib/paraglide',
+			// Keep the test build's message output structure identical to
+			// production (see vite.config.ts) so Playwright exercises the same
+			// locale-modules bundle that ships to the device.
+			outputStructure: 'locale-modules'
 		}),
 		sveltekit()
 	],
