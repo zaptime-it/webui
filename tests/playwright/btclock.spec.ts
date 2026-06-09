@@ -138,6 +138,11 @@ test('time values can not be zero or negative', async ({ page }) => {
 	// every CollapseCard so the number fields below become interactive.
 	await page.getByRole('button', { name: 'Show all' }).click();
 
+	// Assert against the standardized `ValidityState.rangeUnderflow` flag rather
+	// than `validationMessage`: the human-readable message is browser-specific
+	// ("Value must be greater than…" in Chromium vs "Please select a value that
+	// is no less than 1." in Firefox), but `rangeUnderflow` is the spec'd signal
+	// for "value below the `min` attribute" and is identical across browsers.
 	for (const field of ['#timePerScreen', '#fullRefreshMin', '#minSecPriceUpd']) {
 		await expect(page.locator(field)).toBeVisible();
 		for (const val of ['42', '210']) {
@@ -145,11 +150,11 @@ test('time values can not be zero or negative', async ({ page }) => {
 			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
 			expect(resultValue).toBe(val);
 			await page.getByRole('button', { name: 'Save', exact: true }).click();
-			const validationMessage = await page.$eval(
+			const rangeUnderflow = await page.$eval(
 				field,
-				(input: HTMLInputElement) => input.validationMessage
+				(input: HTMLInputElement) => input.validity.rangeUnderflow
 			);
-			expect(validationMessage).not.toContain('Value must be greater');
+			expect(rangeUnderflow).toBe(false);
 		}
 
 		for (const val of ['-10', '0']) {
@@ -157,11 +162,11 @@ test('time values can not be zero or negative', async ({ page }) => {
 			const resultValue = await page.$eval(field, (input: HTMLInputElement) => input.value);
 			expect(resultValue).toBe(val);
 			await page.getByRole('button', { name: 'Save', exact: true }).click();
-			const validationMessage = await page.$eval(
+			const rangeUnderflow = await page.$eval(
 				field,
-				(input: HTMLInputElement) => input.validationMessage
+				(input: HTMLInputElement) => input.validity.rangeUnderflow
 			);
-			expect(validationMessage).toContain('Value must be greater');
+			expect(rangeUnderflow).toBe(true);
 		}
 	}
 });

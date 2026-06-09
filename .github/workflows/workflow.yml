@@ -70,10 +70,10 @@ jobs:
       - name: Run vitest tests
         run: pnpm test:unit run
       - name: Install Playwright system deps
-        run: pnpm exec playwright install-deps chromium
-      - name: Install Playwright Chromium
+        run: pnpm exec playwright install-deps chromium firefox
+      - name: Install Playwright Chromium & Firefox
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install chromium
+        run: pnpm exec playwright install chromium firefox
       - name: Run Playwright tests
         run: pnpm test:integration
       - name: Build WebUI
