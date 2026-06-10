@@ -1818,8 +1818,13 @@
 					"mcapBigChar": {
 						"type": "boolean"
 					},
-					"usDebtBigChar": {
+					"debtBigChar": {
 						"type": "boolean"
+					},
+					"debtCurrency": {
+						"type": "integer",
+						"enum": [0, 1],
+						"description": "Debt display currency. 0 uses the debt source currency (USD/EUR); 1 converts to BTC."
 					},
 					"mdnsEnabled": {
 						"type": "boolean"

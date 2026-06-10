@@ -29,8 +29,9 @@ describe('ScreenButtons layout', () => {
 		expect(src).not.toMatch(/join-item/);
 	});
 
-	test('buttons are rendered from a single loop over settings.screens', () => {
+	test('buttons are rendered from enabled settings screens only', () => {
 		const eachLoops = src.match(/\{#each\s+settings\.screens/g) ?? [];
 		expect(eachLoops.length).toBe(1);
+		expect(src).toContain('.filter((screen) => screen.enabled)');
 	});
 });

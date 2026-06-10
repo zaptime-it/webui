@@ -216,7 +216,8 @@ export const settingsJson = {
 	// authored. Real devices always emit these; the fixture would loop
 	// on "Loading…" without them.
 	priceSymMode: 0,
-	usDebtBigChar: true,
+	debtBigChar: true,
+	debtCurrency: 0,
 	useMscwTime: false,
 	useBlkCountdown: false,
 	inverseButtons: false,
