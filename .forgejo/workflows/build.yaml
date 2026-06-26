@@ -40,7 +40,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: pnpm/action-setup@v6
+      # action-setup v6 switched pnpm v11 to the @pnpm/exe standalone
+      # self-installer, which crashes under the Forgejo runner's bundled
+      # Node 18 (ERR_INVALID_ARG_TYPE in setup.js). v5's install path works
+      # fine for pnpm 11.x on this runner — keep it until the runner ships
+      # a newer Node for JS actions.
+      - uses: pnpm/action-setup@v5
         with:
           package_json_file: package.json
       - uses: actions/setup-node@v6
