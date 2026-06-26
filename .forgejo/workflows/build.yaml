@@ -14,7 +14,7 @@ jobs:
       all_changed_and_modified_files_count: ${{ steps.changed-files.outputs.all_changed_and_modified_files_count }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Get changed files count
         id: changed-files
@@ -37,10 +37,10 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: package.json
       - uses: actions/setup-node@v6
@@ -48,11 +48,11 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           node-version: lts/*
           cache: pnpm
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -124,14 +124,14 @@ jobs:
           /tmp/mklittlefs/mklittlefs -c build_gz -s 410000 output/littlefs.bin
       - name: Upload artifacts
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/v3' || github.ref == 'refs/heads/feature/v4-firmware' || github.ref == 'refs/heads/v4')
-        uses: https://code.forgejo.org/forgejo/upload-artifact@v4
+        uses: https://code.forgejo.org/forgejo/upload-artifact@v5
         with:
           path: |
             webui.tgz
             output/littlefs.bin
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.0
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.1
         with:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
@@ -146,7 +146,7 @@ jobs:
           release-notes-assistant: false
       - name: Create v3 release
         if: github.event_name == 'push' && github.ref == 'refs/heads/v3'
-        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.0
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.1
         with:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
@@ -161,7 +161,7 @@ jobs:
           release-notes-assistant: false
       - name: Create v4 release
         if: github.event_name == 'push' && (github.ref == 'refs/heads/feature/v4-firmware' || github.ref == 'refs/heads/v4')
-        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.0
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.1
         with:
           url: 'https://git.btclock.dev/'
           repo: '${{ github.repository }}'
