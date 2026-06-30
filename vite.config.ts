@@ -83,6 +83,14 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		setupFiles: ['./src/test-setup.ts'],
+		// The first `await import()` in a file pays the full cold
+		// transform/resolve cost of its module graph (e.g. the Svelte
+		// `.svelte.ts` stores + valibot). On a fresh, slow CI container
+		// that one-time cost can exceed vitest's default 5s testTimeout
+		// and flake the first test in a suite; warm subsequent imports
+		// are sub-millisecond. 20s is a ceiling, not a delay — green
+		// runs still finish in milliseconds.
+		testTimeout: 20_000,
 		alias: {
 			$app: path.resolve('./src/mocks/$app'),
 			$lib: path.resolve('./src/lib')
