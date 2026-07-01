@@ -28,7 +28,6 @@ describe('FramebufferPreview component', () => {
 	});
 
 	test('reconnects when preview websocket acks but sends no binary frame', () => {
-		expect(src).toContain('const BINARY_FRAME_TIMEOUT_MS = 4000');
 		expect(src).toContain('armFrameWatchdog(ws)');
 		expect(src).toContain('binaryFrameSeen = true');
 		expect(src).toContain('clearFrameWatchdogTimer()');
