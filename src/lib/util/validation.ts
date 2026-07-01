@@ -20,7 +20,7 @@ export interface FieldValidationError {
 	/** DOM id of the offending input — used to anchor + focus. */
 	id: string;
 	/** Section the input lives in (drives which CollapseCard pops open). */
-	section: 'screen' | 'display' | 'dataSource' | 'extra' | 'system';
+	section: 'screen' | 'screenRotation' | 'display' | 'dataSource' | 'extra' | 'system';
 	/** i18n message key already loaded by the caller, or a literal fallback. */
 	message: string;
 	/** Top-level Settings field this error pertains to (best-effort). */

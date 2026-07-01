@@ -5,6 +5,7 @@
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { validateSettings, type FieldValidationError } from '$lib/util/validation';
+	import { screenRotationValidation } from '$lib/stores/screenRotationValidation.svelte';
 	import ScreenSpecificSettings from './sections/ScreenSpecificSettings.svelte';
 	import ScreenRotationSection from './sections/ScreenRotationSection.svelte';
 	import CurrencyRotationSection from './sections/CurrencyRotationSection.svelte';
@@ -139,13 +140,24 @@
 		await settingsStore.load();
 	};
 
-	const validationErrors = $derived(
-		validateSettings(settingsStore.data, {
+	const validationErrors = $derived.by(() => {
+		const out = validateSettings(settingsStore.data, {
 			invalidNostrPubkey: m['section.settings.invalidNostrPubkey'](),
 			invalidNostrRelay: m['section.settings.invalidNostrRelay'](),
 			nostrRelayRequired: m['section.settings.nostrRelayRequired']()
-		})
-	);
+		});
+
+		if (screenRotationValidation.debtSelectionRequired) {
+			out.push({
+				id: 'debt-screen-list',
+				section: 'screenRotation',
+				message: m['section.settings.debtScreenRequired'](),
+				field: 'screens'
+			});
+		}
+
+		return out;
+	});
 
 	const showCurrencyRotation = $derived.by(() => {
 		const d = settingsStore.data;
@@ -180,7 +192,7 @@
 		const isSaveCombo = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's';
 		if (!isSaveCombo) return;
 		e.preventDefault();
-		if (!settingsStore.isDirty) return;
+		if (!settingsStore.isDirty || validationErrors.length > 0) return;
 		void handleSubmit(e);
 	};
 
@@ -414,7 +426,7 @@
 						<button
 							type="submit"
 							class="btn btn-sm btn-primary"
-							disabled={!settingsStore.isDirty}
+							disabled={!settingsStore.isDirty || validationErrors.length > 0}
 						>
 							{m['button.save']()}
 						</button>

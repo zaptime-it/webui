@@ -76,4 +76,11 @@ describe('SettingsPanel', () => {
 		expect(src).toContain('price-marker-radiogroup');
 		expect(src).toContain("fid === 'priceSymMode'");
 	});
+
+	test('blocks save when debt screen selection is invalid', () => {
+		const src = readFileSync(join(here, 'SettingsPanel.svelte'), 'utf8');
+		expect(src).toContain('screenRotationValidation.debtSelectionRequired');
+		expect(src).toContain("m['section.settings.debtScreenRequired']()");
+		expect(src).toContain('disabled={!settingsStore.isDirty || validationErrors.length > 0}');
+	});
 });

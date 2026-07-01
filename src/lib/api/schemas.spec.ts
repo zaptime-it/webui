@@ -54,6 +54,11 @@ describe('screenSchema', () => {
 		expect(v.parse(screenSchema, row)).toEqual(row);
 	});
 
+	test('preserves optional screen kind metadata', () => {
+		const row = { id: 100, name: 'US Debt', kind: 'debt', enabled: true, order: 8 };
+		expect(v.parse(screenSchema, row)).toEqual(row);
+	});
+
 	test('requires the explicit order field (rotation order + reorder PATCH)', () => {
 		expect(() =>
 			v.parse(screenSchema, { id: 0, name: 'Block Height', enabled: true })

@@ -49,7 +49,14 @@ describe('ScreenRotationList', () => {
 		// The button handlers guard this, but the buttons also visually
 		// disable so the affordance matches reality.
 		expect(src).toContain('disabled={idx === 0}');
-		expect(src).toContain('disabled={idx === screens.length - 1}');
+		expect(src).toContain('disabled={idx === rows.length - 1}');
+	});
+
+	test('uses stable local rows for drag state', () => {
+		expect(src).toContain('let rows = $state<RotationRow[]>(computeRows(screens))');
+		expect(src).toContain('use:dndzone={{ items: rows');
+		expect(src).toContain('{#each rows as row, idx (row.id)}');
+		expect(src).toContain('rows = e.detail.items');
 	});
 
 	test('keeps the currency-specific screen IDs in sync with firmware', () => {
@@ -67,12 +74,29 @@ describe('ScreenRotationList', () => {
 		expect(src).toContain("m['section.settings.perCurrency']()");
 	});
 
+	test('shows debt as one reorderable main row', () => {
+		expect(src).toContain("const DEBT_ROW_ID = 'debt'");
+		expect(src).toContain("rows.push({ id: DEBT_ROW_ID, rowType: 'debt' })");
+		expect(src).toContain("m['section.settings.debt']()");
+		expect(src).not.toContain('data-testid="screen-group-');
+	});
+
+	test('keeps individual debt screens in a separate fixed-order list', () => {
+		expect(src).toContain('data-testid="debt-screen-list"');
+		expect(src).toContain('{#each debtScreens() as screen (screen.id)}');
+		expect(src).toContain('onchange={(e) => setDebtScreenEnabled(screen.id, eventChecked(e))}');
+		expect(src).toContain("m['section.settings.debtScreensHint']()");
+	});
+
 	test('dims rows for disabled screens without hiding them', () => {
 		// Disabled screens stay in the list (and stay reorderable) because
 		// re-enabling them later should restore their chosen position —
 		// hiding disabled rows would force the user to rediscover where
 		// they put the screen.
-		expect(src).toContain('class:opacity-60={!s.enabled}');
+		expect(src).toContain(
+			"class:opacity-60={row.rowType === 'debt' ? !debtGroupEnabled() : !row.screen.enabled}"
+		);
+		expect(src).toContain('class:opacity-60={!screen.enabled}');
 	});
 
 	test('marks the screens list with a stable test id', () => {
