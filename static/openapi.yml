@@ -247,20 +247,35 @@ paths:
   '/api/show/custom':
     post:
       tags: [screens]
-      summary: Set custom multi-line EPD content (JSON array)
+      summary: Set custom multi-line EPD content
       description: |
+        Accepts two wire shapes, both still supported:
+
+        * a bare JSON array of strings — the original format;
+        * a wrapper object `{"cells": [...], "digitPx": N}`, which adds the
+          optional `digitPx` render-size override.
+
         Each cell is normally rendered as text. Cells starting with `mdi:` (ASCII,
         case-insensitive) followed by a Material Design Icons **kebab-case** name
         from the firmware subset (same names as `tools/fonts/regen_mdi.sh`) paint
         that icon centered via the icon font instead of digit text. Unknown names
         leave the panel blank. A `/` in the icon token opts out so split-text
         cells keep working.
+
+        A cell consisting of exactly one sats-symbol PUA codepoint
+        (U+E000..U+E00F) is painted with the dedicated sats font rather than the
+        digit font, which has no glyph in that range. It is scaled by 130/180
+        relative to the digit size so it weight-matches neighbouring digits,
+        mirroring what the Moscow-time renderer does.
       security: [{ basicAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { '$ref': '#/components/schemas/CustomText' }
+            schema:
+              oneOf:
+                - { '$ref': '#/components/schemas/CustomText' }
+                - { '$ref': '#/components/schemas/CustomTextRequest' }
       responses:
         '200': { description: successful operation }
   '/api/full_refresh':
@@ -1286,3 +1301,28 @@ components:
         `mdi:bitcoin`, `mdi:clock-outline`.
       minItems: 1
       items: { type: string }
+    CustomTextRequest:
+      type: object
+      description: >
+        Wrapper form of the custom-cell body. Equivalent to posting the bare
+        `CustomText` array, plus the optional `digitPx` override.
+      required: [cells]
+      properties:
+        cells: { '$ref': '#/components/schemas/CustomText' }
+        digitPx:
+          type: number
+          minimum: 20
+          maximum: 220
+          description: >
+            Optional render-size override, in pixels, for cells of one or two
+            codepoints. Raises the fit ceiling those cells are sized against,
+            replacing the built-in 120 px (single glyph) and 90 px (two glyphs)
+            caps; a glyph that still would not fit the panel shrinks rather than
+            clipping. Cells of three or more codepoints ignore it, as do the
+            `mdi:` icon and split-text (`A/B`) paths. Omitted, `0`, or any value
+            outside 20..220 means auto-size — the firmware falls back to
+            codepoint-length based sizing. Out-of-range and non-numeric values
+            are silently ignored and do NOT fail the request. Note this range is
+            deliberately wider than the `digitFontPx` setting (80..220).
+            Only meaningful on this wrapper form; the bare-array body has no
+            equivalent.
