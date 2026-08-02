@@ -16,8 +16,9 @@
 		{#each settings.screens as s (s.id)}
 			<button
 				type="button"
-				class="btn btn-xs sm:btn-sm btn-outline btn-primary"
-				class:btn-active={status?.currentScreen === s.id}
+				class="btn btn-xs sm:btn-sm btn-primary"
+				class:btn-outline={status?.currentScreen !== s.id}
+				aria-pressed={status?.currentScreen === s.id}
 				onclick={pick(s.id)}
 			>
 				{s.name}

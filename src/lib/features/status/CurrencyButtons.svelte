@@ -28,8 +28,9 @@
 		{#each settings.actCurrencies as c (c)}
 			<button
 				type="button"
-				class="btn btn-xs sm:btn-sm btn-outline btn-success"
-				class:btn-active={status?.currency === c}
+				class="btn btn-xs sm:btn-sm btn-success"
+				class:btn-outline={status?.currency !== c}
+				aria-pressed={status?.currency === c}
 				onclick={pick(c)}
 			>
 				{c}
