@@ -83,6 +83,14 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		setupFiles: ['./src/test-setup.ts'],
+		// Node 25+ enables the experimental Web Storage API by default and
+		// installs a `localStorage` getter on globalThis that returns
+		// undefined unless `--localstorage-file` is set. jsdom then skips
+		// its own Storage polyfill (`'localStorage' in globalThis` is true)
+		// and any `browser`-gated store that calls getItem/setItem crashes.
+		// Disable the stub so jsdom owns localStorage. Harmless on Node 24
+		// where the feature is already off by default.
+		execArgv: ['--no-experimental-webstorage'],
 		// The first `await import()` in a file pays the full cold
 		// transform/resolve cost of its module graph (e.g. the Svelte
 		// `.svelte.ts` stores + valibot). On a fresh, slow CI container

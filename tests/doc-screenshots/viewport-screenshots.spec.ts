@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { initMock, settingsJson, statusJson } from '../shared';
+import { initMock, settingsJson, statusJson, MIN_FIRMWARE } from '../shared';
 import { waitForStatusConnected } from '../wait-for-status-connected';
 import sharp from 'sharp';
 import { readFileSync } from 'node:fs';
@@ -57,14 +57,16 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 		settingsJson.invertedColor = false;
 	}
 
-	// Match the live REV_B device: bump gitRev to satisfy MIN_FIRMWARE
-	// so SystemInfo's "firmware too old" banner stays hidden, and flip
-	// hwRev to REV_B_EPD_2_13 so the dev-doc screenshot reflects the
-	// hardware the WebUI is actually exercised against.
+	// Match the live REV_B device: keep gitRev at MIN_FIRMWARE so
+	// SystemInfo's "firmware too old" banner stays hidden, and flip
+	// hwRev to REV_B_EPD_2_13 so the docs screenshot reflects the
+	// hardware the WebUI is actually exercised against. Read the floor
+	// from the shared fixture (sourced from src/lib/manifest.json) so
+	// bumping minFirmware can't resurrect the banner.
 	settingsJson.hwRev = 'REV_B_EPD_2_13';
-	settingsJson.gitRev = '4.0.0-rc.11';
-	settingsJson.fsRev = '4.0.0-rc.11';
-	settingsJson.gitTag = '4.0.0-rc.11';
+	settingsJson.gitRev = MIN_FIRMWARE;
+	settingsJson.fsRev = MIN_FIRMWARE;
+	settingsJson.gitTag = MIN_FIRMWARE;
 
 	// Inject the captured framebuffer packets into the page so the
 	// patched WebSocket below can replay them once the FramebufferPreview
@@ -88,6 +90,8 @@ test('capture screenshots across devices', async ({ page }, testInfo) => {
 	}
 
 	await waitForStatusConnected(page);
+	await expect(page.getByTestId('fw-too-old-banner')).toHaveCount(0);
+	await expect(page.getByText('You are up to date.')).toBeVisible();
 
 	// Wait for the panel rasters to land on the canvas. FramebufferPreview
 	// applies frames inside an effect; without this wait the screenshot

@@ -30,6 +30,7 @@ test.describe('layout screenshots (dashboard)', () => {
 			await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
 		}
 		await waitForStatusConnected(page);
+		await expect(page.getByTestId('fw-too-old-banner')).toHaveCount(0);
 		await shot(testInfo, page, 'layout-dashboard-light');
 	});
 
@@ -42,6 +43,7 @@ test.describe('layout screenshots (dashboard)', () => {
 		await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
 		await expect(page.locator('html[data-theme="dark"]')).toHaveCount(1);
 		await waitForStatusConnected(page);
+		await expect(page.getByTestId('fw-too-old-banner')).toHaveCount(0);
 		await shot(testInfo, page, 'layout-dashboard-dark');
 	});
 });

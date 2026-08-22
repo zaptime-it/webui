@@ -1,4 +1,12 @@
 import type { Page } from '@playwright/test';
+import manifest from '../src/lib/manifest.json' with { type: 'json' };
+
+// Same floor SystemInfo.svelte compares `gitRev` against. A hex SHA
+// (or any string older than this) trips the "firmware too old" banner,
+// which is noise in screenshots and in every spec that isn't testing
+// the incompatibility path. Keep the fixture at the floor so bumping
+// `minFirmware` can't silently reintroduce the banner.
+export const MIN_FIRMWARE: string = manifest.minFirmware;
 
 const MEMPOOL_TIP_HEIGHT = 'https://mempool.dbtc.link/api/blocks/tip/height';
 
@@ -15,23 +23,6 @@ export const fetchLatestBlockHeight = async (): Promise<string[]> => {
 	} catch (error) {
 		console.warn('Failed to fetch tip height from mempool.dbtc.link, using zeros:', error);
 		return ['BLOCK/HEIGHT', '0', '0', '0', '0', '0', '0'];
-	}
-};
-
-export const fetchLatestRelease = async () => {
-	try {
-		const response = await fetch(
-			'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/latest',
-			{ signal: AbortSignal.timeout(2500) }
-		);
-		if (!response.ok) throw new Error('Failed to fetch latest release');
-		const data = await response.json();
-		settingsJson.gitTag = data.tag_name;
-		return data;
-	} catch (error) {
-		console.warn('Failed to fetch latest release, using fallback:', error);
-		settingsJson.gitTag = latestReleaseFake.tag_name;
-		return latestReleaseFake;
 	}
 };
 
@@ -109,10 +100,10 @@ export const settingsJson = {
 	enableDebugLog: false,
 	fetchEurPrice: false,
 	fontName: 'antonio',
-	fsRev: 'd1b61eb00aa3dfbb4acf2b84f1d64b06f2d04733',
+	fsRev: MIN_FIRMWARE,
 	fullRefreshMin: 60,
-	gitRev: 'd1b61eb00aa3dfbb4acf2b84f1d64b06f2d04733',
-	gitTag: '3.3.14',
+	gitRev: MIN_FIRMWARE,
+	gitTag: MIN_FIRMWARE,
 	hostname: 'btclock-d60b14',
 	hostnamePrefix: 'btclock',
 	hwRev: 'REV_A_EPD_2_13',
@@ -253,14 +244,14 @@ export const settingsJson = {
 
 export const latestReleaseFake = {
 	id: 1084,
-	tag_name: '3.3.15',
+	tag_name: MIN_FIRMWARE,
 	target_commitish: '',
-	name: '3.3.15',
+	name: MIN_FIRMWARE,
 	body: '',
 	url: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/1084',
-	html_url: 'https://git.btclock.dev/btclock/btclock_v3/releases/tag/3.3.15',
-	tarball_url: 'https://git.btclock.dev/btclock/btclock_v3/archive/3.3.15.tar.gz',
-	zipball_url: 'https://git.btclock.dev/btclock/btclock_v3/archive/3.3.15.zip',
+	html_url: `https://git.btclock.dev/btclock/btclock_v4/releases/tag/${MIN_FIRMWARE}`,
+	tarball_url: `https://git.btclock.dev/btclock/btclock_v4/archive/${MIN_FIRMWARE}.tar.gz`,
+	zipball_url: `https://git.btclock.dev/btclock/btclock_v4/archive/${MIN_FIRMWARE}.zip`,
 	hide_archive_links: false,
 	upload_url: 'https://git.btclock.dev/api/v1/repos/btclock/btclock_v3/releases/1084/assets',
 	draft: false,
@@ -300,20 +291,19 @@ export const latestReleaseFake = {
 	}
 };
 
-// Cache the two external lookups across the per-test `beforeEach` so a CI
+// Cache the mempool lookup across the per-test `beforeEach` so a CI
 // runner with no outbound network pays the (now fail-fast) timeout at most
 // once per worker instead of on every test. Locally, with network, this still
-// surfaces the real block height / release the first time.
+// surfaces the real block height the first time. The firmware-release
+// feed is mocked (see `latestReleaseFake`) so VersionCheck stays
+// deterministic and docs screenshots don't pick up a live tag.
 let blockHeightCache: string[] | undefined;
-let latestReleaseCache: typeof latestReleaseFake | undefined;
 
 export const initMock = async ({ page }: { page: Page }) => {
 	// Update status with latest block height. Fresh copy per test because some
 	// specs splice statusJson.data in place.
 	if (!blockHeightCache) blockHeightCache = await fetchLatestBlockHeight();
 	statusJson.data = [...blockHeightCache];
-	if (!latestReleaseCache) latestReleaseCache = await fetchLatestRelease();
-	const latestRelease = latestReleaseCache;
 
 	// Chromium + Playwright’s fulfilled `text/event-stream` body does not reliably
 	// drive `EventSource` (open / custom `status` events). The real firmware sends
@@ -514,7 +504,11 @@ export const initMock = async ({ page }: { page: Page }) => {
 		await route.fulfill({ json: settingsJson });
 	});
 
-	await page.route('**/api/v1/repos/btclock/btclock_v3/releases/latest', async (route) => {
-		await route.fulfill({ json: latestRelease });
+	// VersionCheck reads `settings.gitReleaseUrl` (v4 by default). Mock
+	// every `releases/latest` so the firmware-updater block doesn't hit
+	// the network — and so docs screenshots don't flicker between
+	// "Loading…", a live tag, and "update available".
+	await page.route('**/releases/latest', async (route) => {
+		await route.fulfill({ json: latestReleaseFake });
 	});
 };

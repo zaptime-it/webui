@@ -39,6 +39,19 @@ test('index page has expected columns control, status, settings', async ({ page 
 	await expect(page.getByRole('heading', { name: 'Control' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Status' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+	await expect(page.getByTestId('fw-too-old-banner')).toHaveCount(0);
+});
+
+test('firmware-too-old banner renders when gitRev is below MIN_FIRMWARE', async ({ page }) => {
+	const original = settingsJson.gitRev;
+	// Any 4.0.0-rc.* is older than the 4.0.0 floor (semver prerelease).
+	settingsJson.gitRev = '4.0.0-rc.12';
+	try {
+		await page.goto('/');
+		await expect(page.getByTestId('fw-too-old-banner')).toBeVisible();
+	} finally {
+		settingsJson.gitRev = original;
+	}
 });
 
 /** Regression test: a partial settings fixture (missing e.g. `flMaxBrightness`,
