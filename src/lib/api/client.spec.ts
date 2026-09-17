@@ -147,6 +147,8 @@ describe('cold-start schema validation', () => {
 			availableFonts: ['antonio'],
 			stealFocus: false,
 			mcapBigChar: false,
+			debtBigChar: true,
+			debtCurrency: 0,
 			priceSymMode: 0,
 			useMscwTime: false,
 			useBlkCountdown: false,

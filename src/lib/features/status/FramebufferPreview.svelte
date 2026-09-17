@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { previewWsUrl } from '$lib/api/client';
 	import { settingsStore } from '$lib/stores/settings.svelte';
+	import { statusStore } from '$lib/stores/status.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import {
 		decodeFramebufferPreviewPacket,
@@ -49,10 +50,13 @@
 	let fittedHeightPx = $state(0);
 	let panelRasterByIndex = $state<Record<number, HTMLCanvasElement>>({});
 	const invertedColor = $derived(Boolean(settingsStore.data?.invertedColor));
+	const statusPanelTexts = $derived(statusStore.data?.data ?? []);
 	const darkThemeChrome = $derived(theme.effective === 'dark');
 	let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+	let frameWatchdogTimer: ReturnType<typeof setTimeout> | null = null;
 	let reconnectAttempt = 0;
 	let tearingDown = false;
+	let binaryFrameSeen = false;
 
 	const panelGutterMm = (count: number) => {
 		if (count <= 1) return 0;
@@ -181,6 +185,33 @@
 		ctx.drawImage(panelUpscaleCanvas, x, y, w, h);
 	};
 
+	const drawStatusFallback = (
+		ctx: CanvasRenderingContext2D,
+		text: string,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+		bg: string
+	) => {
+		if (!text) return;
+		ctx.save();
+		ctx.fillStyle = bg;
+		ctx.fillRect(x, y, w, h);
+		ctx.fillStyle = invertedColor ? PANEL_FACE_LIGHT : PANEL_FACE_DARK;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.font = `700 ${Math.max(10, Math.floor(w * 0.18))}px "Ubuntu", sans-serif`;
+		const lines = text.split('/').filter(Boolean);
+		const displayLines = lines.length > 1 ? lines : [text];
+		const lineHeight = Math.max(10, Math.floor(w * 0.2));
+		const startY = y + h / 2 - ((displayLines.length - 1) * lineHeight) / 2;
+		for (let i = 0; i < displayLines.length; i += 1) {
+			ctx.fillText(displayLines[i] ?? '', x + w / 2, startY + i * lineHeight, w * 0.9);
+		}
+		ctx.restore();
+	};
+
 	const redrawComposite = () => {
 		if (!canvasEl || fittedWidthPx <= 0 || fittedHeightPx <= 0) return;
 		const dpr = window.devicePixelRatio || 1;
@@ -256,7 +287,6 @@
 			ctx.roundRect(panelX, panelY, panelW, panelH, panelR);
 			ctx.fill();
 
-			if (!raster) continue;
 			const innerX = mapMm(xMm + PANEL_BEZEL_MM);
 			const innerY = mapMm(yMm + PANEL_BEZEL_MM);
 			const innerW = (PANEL_W_MM - 2 * PANEL_BEZEL_MM) * mmToPx;
@@ -277,15 +307,27 @@
 			ctx.clip();
 			ctx.fillStyle = rasterBackdrop;
 			ctx.fillRect(snappedInnerX, snappedInnerY, snappedInnerW, snappedInnerH);
-			drawPanelRaster(
-				ctx,
-				raster,
-				snappedInnerX,
-				snappedInnerY,
-				snappedInnerW,
-				snappedInnerH,
-				rasterBackdrop
-			);
+			if (raster) {
+				drawPanelRaster(
+					ctx,
+					raster,
+					snappedInnerX,
+					snappedInnerY,
+					snappedInnerW,
+					snappedInnerH,
+					rasterBackdrop
+				);
+			} else {
+				drawStatusFallback(
+					ctx,
+					statusPanelTexts[i] ?? '',
+					snappedInnerX,
+					snappedInnerY,
+					snappedInnerW,
+					snappedInnerH,
+					rasterBackdrop
+				);
+			}
 			ctx.restore();
 			// Keep a tiny bezel overlap over panel content edges to hide
 			// interpolation halos while preserving rounded cutout corners.
@@ -331,6 +373,12 @@
 		reconnectTimer = null;
 	};
 
+	const clearFrameWatchdogTimer = () => {
+		if (!frameWatchdogTimer) return;
+		clearTimeout(frameWatchdogTimer);
+		frameWatchdogTimer = null;
+	};
+
 	const reconnectDelayMs = (attempt: number) => {
 		const base = Math.min(1000 * 2 ** attempt, 15000);
 		const jitter = Math.floor(Math.random() * 250);
@@ -345,6 +393,18 @@
 			reconnectTimer = null;
 			connect();
 		}, delayMs);
+	};
+
+	const armFrameWatchdog = (ws: WebSocket) => {
+		const BINARY_FRAME_TIMEOUT_MS = 4e3;
+		clearFrameWatchdogTimer();
+		frameWatchdogTimer = setTimeout(() => {
+			frameWatchdogTimer = null;
+			if (tearingDown || socket !== ws || binaryFrameSeen) return;
+			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+				ws.close();
+			}
+		}, BINARY_FRAME_TIMEOUT_MS);
 	};
 
 	const applyFrame = (frame: FramebufferPreviewFrame) => {
@@ -378,6 +438,7 @@
 		clearReconnectTimer();
 		const ws = new WebSocket(previewWsUrl());
 		ws.binaryType = 'arraybuffer';
+		binaryFrameSeen = false;
 		ws.onopen = () => {
 			if (tearingDown) {
 				ws.close();
@@ -385,9 +446,11 @@
 			}
 			reconnectAttempt = 0;
 			ws.send(JSON.stringify({ action: 'start' }));
+			armFrameWatchdog(ws);
 		};
 		ws.onclose = () => {
 			if (socket !== ws) return;
+			clearFrameWatchdogTimer();
 			socket = null;
 			scheduleReconnect();
 		};
@@ -416,7 +479,11 @@
 					: await new Response(evt.data).arrayBuffer();
 			try {
 				const frame = await decodeFramebufferPreviewPacket(packet);
-				if (frame) applyFrame(frame);
+				if (frame) {
+					binaryFrameSeen = true;
+					clearFrameWatchdogTimer();
+					applyFrame(frame);
+				}
 			} catch (err) {
 				console.error('preview decode failed', err);
 			}
@@ -426,6 +493,7 @@
 
 	const disconnect = () => {
 		clearReconnectTimer();
+		clearFrameWatchdogTimer();
 		const ws = socket;
 		socket = null;
 		if (!ws) return;

@@ -13,7 +13,7 @@
 
 {#if settings?.screens}
 	<div class="flex flex-wrap justify-center gap-1" data-testid="screen-buttons">
-		{#each settings.screens as s (s.id)}
+		{#each settings.screens.filter((screen) => screen.enabled) as s (s.id)}
 			<button
 				type="button"
 				class="btn btn-xs sm:btn-sm btn-primary"

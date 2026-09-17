@@ -44,6 +44,15 @@ describe('settings grids stay viewport-responsive', () => {
 		expect(src).toContain("m['section.settings.useMscwTime']()");
 	});
 
+	test('ScreenSpecificSettings exposes generic debt display controls', () => {
+		const src = read('ScreenSpecificSettings.svelte');
+		expect(src).toContain('id="debtBigChar"');
+		expect(src).toContain('bind:checked={data.debtBigChar}');
+		expect(src).toContain('id="debtCurrency"');
+		expect(src).toContain('bind:value={data.debtCurrency}');
+		expect(src).toContain("'debtCurrency' in data");
+	});
+
 	test('ScreenSpecificSettings uses joined radio buttons for price marker + preview', () => {
 		const src = read('ScreenSpecificSettings.svelte');
 		expect(src).toContain('data-testid="price-marker-radiogroup"');

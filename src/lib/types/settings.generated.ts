@@ -111,6 +111,26 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'debtBigChar',
+		kind: 'boolean',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: true,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'debtCurrency',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 1,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'decimalShareDot',
 		kind: 'boolean',
 		bootOnly: false,
@@ -988,6 +1008,8 @@ export const settingsFieldSchemas = {
 	ceDisableSSL: v.boolean(),
 	ceEndpoint: v.string(),
 	dataSource: v.pipe(v.number(), v.minValue(0), v.maxValue(3)),
+	debtBigChar: v.boolean(),
+	debtCurrency: v.pipe(v.number(), v.minValue(0), v.maxValue(1)),
 	decimalShareDot: v.boolean(),
 	digitFontPx: v.pipe(v.number(), v.minValue(80), v.maxValue(220)),
 	disableLeds: v.boolean(),

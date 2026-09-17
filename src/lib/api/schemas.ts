@@ -53,6 +53,7 @@ export const availableFontsSchema = v.pipe(
 export const screenSchema = v.object({
 	id: v.number(),
 	name: v.string(),
+	kind: v.optional(v.string()),
 	enabled: v.boolean(),
 	/**
 	 * Zero-based position in the rotation sequence. The firmware emits

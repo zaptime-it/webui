@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
 	import CollapseCard from '$lib/ui/CollapseCard.svelte';
+	import SelectField from '$lib/ui/SelectField.svelte';
 	import SwitchField from '$lib/ui/SwitchField.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import { previewSatsSymbol, previewSuffixPrice } from '$lib/util/screenPreview';
@@ -61,6 +62,10 @@
 			decimalShareDot: data?.decimalShareDot
 		})
 	);
+	const debtCurrencyOptions: Array<[string, number]> = [
+		[m['section.settings.debtCurrencyNative'](), 0],
+		[m['section.settings.debtCurrencyBitcoin'](), 1]
+	];
 </script>
 
 <CollapseCard header={m['section.settings.section.screenSettings']()} bind:isOpen>
@@ -77,6 +82,11 @@
 			id="mcapBigChar"
 			bind:checked={data.mcapBigChar}
 			label={m['section.settings.useBigCharsMcap']()}
+		/>
+		<SwitchField
+			id="debtBigChar"
+			bind:checked={data.debtBigChar}
+			label={m['section.settings.useBigCharsDebt']()}
 		/>
 		<SwitchField
 			id="useBlkCountdown"
@@ -135,6 +145,17 @@
 			label={m['section.settings.supplyPercent']()}
 		/>
 	</div>
+
+	{#if 'debtCurrency' in data}
+		<div class="mt-3">
+			<SelectField
+				id="debtCurrency"
+				label={m['section.settings.debtCurrency']()}
+				bind:value={data.debtCurrency}
+				options={debtCurrencyOptions}
+			/>
+		</div>
+	{/if}
 
 	<div
 		class="mt-3 space-y-2"
