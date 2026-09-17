@@ -83,11 +83,13 @@
 			bind:checked={data.mcapBigChar}
 			label={m['section.settings.useBigCharsMcap']()}
 		/>
-		<SwitchField
-			id="debtBigChar"
-			bind:checked={data.debtBigChar}
-			label={m['section.settings.useBigCharsDebt']()}
-		/>
+		{#if 'debtBigChar' in data}
+			<SwitchField
+				id="debtBigChar"
+				bind:checked={data.debtBigChar}
+				label={m['section.settings.useBigCharsDebt']()}
+			/>
+		{/if}
 		<SwitchField
 			id="useBlkCountdown"
 			bind:checked={data.useBlkCountdown}

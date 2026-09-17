@@ -123,6 +123,11 @@ const {
 	distMode: distModeSchema,
 	distScreens: distScreensSchema,
 	distSelfIdx: distSelfIdxSchema,
+	// National-debt screen fields landed after the initial v4 release —
+	// pre-feature builds (and v3) don't emit them. Same treatment: pull
+	// the generated (required) schemas out and re-declare optional below.
+	debtBigChar: debtBigCharSchema,
+	debtCurrency: debtCurrencySchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
 void _nostrZapPubkeys;
@@ -169,6 +174,9 @@ export const settingsSchema = v.looseObject({
 	distMode: v.optional(distModeSchema),
 	distScreens: v.optional(distScreensSchema),
 	distSelfIdx: v.optional(distSelfIdxSchema),
+	// Debt-screen scalars — optional so pre-feature firmware parses.
+	debtBigChar: v.optional(debtBigCharSchema),
+	debtCurrency: v.optional(debtCurrencySchema),
 
 	// v4-only fields. Optional so v3 devices (which don't emit them) parse.
 	hideLeadZero: v.optional(hideLeadZeroSchema),
