@@ -22,39 +22,50 @@
 
 	const peers = $derived(data.distPeers ?? []);
 	const isMaster = $derived(data.distMode === 1);
+
+	// Capability gate: firmware without the distributed-display feature
+	// (anything before the dist-display branch landed) never emits
+	// `distMode`. Rendering the section anyway would let the <select>
+	// `bind:value` seed `distMode = 0` into the store on mount, which
+	// flips `isDirty` (badge + beforeunload prompt) before the user
+	// touched anything and leaks `distMode` into every PATCH. Same idiom
+	// as the `hideLeadZero` / `wifiRebootMin` gates.
+	const supported = $derived('distMode' in data);
 </script>
 
-<CollapseCard header={m['section.settings.section.distributed']()} bind:isOpen>
-	<div class="space-y-2">
-		<SelectField
-			id="distMode"
-			label="{m['section.settings.distMode']()} ({m['restartRequired']()})"
-			bind:value={data.distMode}
-			options={modeOptions}
-			helpText={m['section.settings.distModeHelp']()}
-		/>
-
-		{#if isMaster}
-			<DistPeerList
-				idPrefix="distPeers"
-				label="{m['section.settings.distPeers']()} ({m['restartRequired']()})"
-				{peers}
-				onChange={(next) => (data.distPeers = next)}
+{#if supported}
+	<CollapseCard header={m['section.settings.section.distributed']()} bind:isOpen>
+		<div class="space-y-2">
+			<SelectField
+				id="distMode"
+				label="{m['section.settings.distMode']()} ({m['restartRequired']()})"
+				bind:value={data.distMode}
+				options={modeOptions}
+				helpText={m['section.settings.distModeHelp']()}
 			/>
 
-			<NumberField
-				id="distSelfIdx"
-				label="{m['section.settings.distSelfIdx']()} ({m['restartRequired']()})"
-				bind:value={data.distSelfIdx}
-				min={0}
-				max={Math.max(0, peers.length - 1)}
-				step={1}
-				helpText={m['section.settings.distSelfIdxHelp']()}
-			/>
-		{/if}
+			{#if isMaster}
+				<DistPeerList
+					idPrefix="distPeers"
+					label="{m['section.settings.distPeers']()} ({m['restartRequired']()})"
+					{peers}
+					onChange={(next) => (data.distPeers = next)}
+				/>
 
-		{#if data.distMode === 2}
-			<p class="text-sm opacity-70">{m['section.settings.distSlaveHelp']()}</p>
-		{/if}
-	</div>
-</CollapseCard>
+				<NumberField
+					id="distSelfIdx"
+					label="{m['section.settings.distSelfIdx']()} ({m['restartRequired']()})"
+					bind:value={data.distSelfIdx}
+					min={0}
+					max={Math.max(0, peers.length - 1)}
+					step={1}
+					helpText={m['section.settings.distSelfIdxHelp']()}
+				/>
+			{/if}
+
+			{#if data.distMode === 2}
+				<p class="text-sm opacity-70">{m['section.settings.distSlaveHelp']()}</p>
+			{/if}
+		</div>
+	</CollapseCard>
+{/if}
