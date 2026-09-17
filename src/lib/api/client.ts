@@ -140,6 +140,31 @@ export const getStatus = async (): Promise<Status> => {
 	return parseStatus(raw) as Status;
 };
 
+/* ----- distributed display ----- */
+
+// One entry from GET /api/dist/scan (mDNS browse of _btclock._tcp). All
+// fields are best-effort — a peer that omits a TXT record just leaves the
+// matching field undefined.
+export interface DistScanPeer {
+	host?: string;
+	ip?: string;
+	port?: number;
+	instance?: string;
+	board?: string;
+	panels?: string;
+	rev?: string;
+}
+
+// Browse the LAN for other BTClocks so the distributed-display peer list
+// can be filled without typing hostnames. The firmware runs a ~2s mDNS
+// PTR query, so this promise takes a moment to resolve.
+export const scanDistPeers = async (): Promise<DistScanPeer[]> => {
+	const raw = await asJson<{ peers?: DistScanPeer[] }>(
+		await fetch(url('/api/dist/scan'), { credentials: 'same-origin' })
+	);
+	return raw.peers ?? [];
+};
+
 /* ----- show actions ----- */
 // POST actions now send parameters in JSON body (vs query strings).
 

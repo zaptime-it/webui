@@ -141,6 +141,46 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 		defaultStr: ''
 	},
 	{
+		key: 'distMode',
+		kind: 'number',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 2,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'distPeers',
+		kind: 'string',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
+		key: 'distScreens',
+		kind: 'number',
+		bootOnly: false,
+		minValue: 0,
+		maxValue: 0,
+		defaultBool: false,
+		defaultInt: 2147483647,
+		defaultStr: ''
+	},
+	{
+		key: 'distSelfIdx',
+		kind: 'number',
+		bootOnly: true,
+		minValue: 0,
+		maxValue: 15,
+		defaultBool: false,
+		defaultInt: 0,
+		defaultStr: ''
+	},
+	{
 		key: 'dndEnabled',
 		kind: 'boolean',
 		bootOnly: false,
@@ -951,6 +991,10 @@ export const settingsFieldSchemas = {
 	decimalShareDot: v.boolean(),
 	digitFontPx: v.pipe(v.number(), v.minValue(80), v.maxValue(220)),
 	disableLeds: v.boolean(),
+	distMode: v.pipe(v.number(), v.minValue(0), v.maxValue(2)),
+	distPeers: v.string(),
+	distScreens: v.number(),
+	distSelfIdx: v.pipe(v.number(), v.minValue(0), v.maxValue(15)),
 	dndEnabled: v.boolean(),
 	dndEndHour: v.pipe(v.number(), v.minValue(0), v.maxValue(23)),
 	dndEndMin: v.pipe(v.number(), v.minValue(0), v.maxValue(59)),

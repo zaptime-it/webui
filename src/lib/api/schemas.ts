@@ -115,6 +115,13 @@ const {
 	nwcFlashOnPay: nwcFlashOnPaySchema,
 	nwcShowNotify: nwcShowNotifySchema,
 	nwcRefreshSecs: nwcRefreshSecsSchema,
+	// Distributed-display fields landed after the initial v4 release —
+	// pre-feature builds (and v3) don't emit them. Extract the generated
+	// (required) scalar schemas so they can be re-declared optional below;
+	// distPeers is the array-over-wire exception handled in the object.
+	distMode: distModeSchema,
+	distScreens: distScreensSchema,
+	distSelfIdx: distSelfIdxSchema,
 	...kFieldsHttp
 } = settingsFieldSchemas;
 void _nostrZapPubkeys;
@@ -150,6 +157,17 @@ export const settingsSchema = v.looseObject({
 	// without the plural key still parses; the WebUI falls back to wrapping
 	// `nostrRelay` into a 1-entry list in that case.
 	nostrRelays: v.optional(v.array(v.string())),
+
+	// distPeers (master/multi-slave distributed display) follows the same
+	// CSV-in-NVS / array-on-wire pattern as nostrRelays: the firmware stores
+	// a comma-joined `host[:port[:panels]]` list and emits/accepts a JSON
+	// array. Boot-only — a PATCH that changes the list returns
+	// rebootRequired=true. Optional so firmware without the feature parses.
+	distPeers: v.optional(v.array(v.string())),
+	// Distributed-display scalars — optional so pre-feature firmware parses.
+	distMode: v.optional(distModeSchema),
+	distScreens: v.optional(distScreensSchema),
+	distSelfIdx: v.optional(distSelfIdxSchema),
 
 	// v4-only fields. Optional so v3 devices (which don't emit them) parse.
 	hideLeadZero: v.optional(hideLeadZeroSchema),

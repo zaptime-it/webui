@@ -13,6 +13,7 @@
 	import ExtraFeaturesSettings from './sections/ExtraFeaturesSettings.svelte';
 	import SystemSettings from './sections/SystemSettings.svelte';
 	import ProxySettings from './sections/ProxySettings.svelte';
+	import DistributedDisplaySettings from './sections/DistributedDisplaySettings.svelte';
 	import { DataSourceType } from '$lib/types/settings';
 
 	// Map firmware top-level error scopes / pseudo-fields onto the
@@ -29,6 +30,7 @@
 		| 'extra'
 		| 'system'
 		| 'proxy'
+		| 'distributed'
 	> = {
 		screens: 'screenRotation',
 		currency: 'currencyRotation',
@@ -56,7 +58,10 @@
 		proxyPort: 'proxy',
 		proxyUser: 'proxy',
 		proxyPass: 'proxy',
-		proxyBypass: 'proxy'
+		proxyBypass: 'proxy',
+		distMode: 'distributed',
+		distPeers: 'distributed',
+		distSelfIdx: 'distributed'
 	};
 
 	// Brand-form display labels, ordered to match the firmware's
@@ -87,7 +92,8 @@
 		| 'dataSource'
 		| 'extra'
 		| 'system'
-		| 'proxy';
+		| 'proxy'
+		| 'distributed';
 	const SECTIONS_OPEN_KEY = 'settings.sectionsOpen';
 	const sectionDefaults: Record<SectionKey, boolean> = {
 		screen: true,
@@ -97,7 +103,8 @@
 		dataSource: false,
 		extra: false,
 		system: false,
-		proxy: false
+		proxy: false,
+		distributed: false
 	};
 
 	const loadSectionsOpen = (): Record<SectionKey, boolean> => {
@@ -399,6 +406,7 @@
 					<ExtraFeaturesSettings bind:isOpen={sectionsOpen.extra} {miningPoolMap} />
 					<SystemSettings bind:isOpen={sectionsOpen.system} />
 					<ProxySettings bind:isOpen={sectionsOpen.proxy} />
+					<DistributedDisplaySettings bind:isOpen={sectionsOpen.distributed} />
 				</div>
 
 				<!-- Sticky action bar so Save / Reset stay reachable when any
