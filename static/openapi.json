@@ -1643,6 +1643,15 @@
 					},
 					"enabled": {
 						"type": "boolean"
+					},
+					"order": {
+						"type": "integer",
+						"description": "Position in the rotation (0-based). Emitted on GET; a PATCH reorder must supply it for every screen."
+					},
+					"kind": {
+						"type": "string",
+						"enum": ["debt"],
+						"description": "Coarse family tag, read-only. Present only on the runtime national-debt block (`\"debt\"`) so the UI can group/filter those rows; base screens omit the key. Echoing it back in a PATCH is ignored."
 					}
 				}
 			},
