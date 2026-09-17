@@ -3,6 +3,7 @@
 	import { dndzone } from 'svelte-dnd-action';
 	import { screenRotationValidation } from '$lib/stores/screenRotationValidation.svelte';
 	import type { Screen } from '$lib/types/settings';
+	import { isDebtScreen } from '$lib/util/screens';
 
 	interface Props {
 		screens: Screen[];
@@ -20,19 +21,9 @@
 	// UI shows one of these rows we annotate it with `× N currencies` so the
 	// user understands one slot actually expands into several rotation ticks.
 	const CURRENCY_SPECIFIC_IDS: ReadonlySet<number> = new Set([10, 20, 30]);
-	const DEBT_SCREEN_ID_START = 100;
 	const DEBT_ROW_ID = 'debt';
 
 	const FLIP_MS = 180;
-
-	function isDebtScreen(screen: Screen) {
-		if (screen.kind === 'debt') return true;
-		return (
-			screen.kind === undefined &&
-			screen.id >= DEBT_SCREEN_ID_START &&
-			screen.name.endsWith(' Debt')
-		);
-	}
 
 	function debtScreens() {
 		return screens.filter(isDebtScreen);
