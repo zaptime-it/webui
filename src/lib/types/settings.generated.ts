@@ -33,7 +33,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'bitaxeEnabled',
 		kind: 'boolean',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -43,7 +43,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'bitaxeHostname',
 		kind: 'string',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -373,7 +373,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'gitReleaseUrl',
 		kind: 'string',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -573,7 +573,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'miningPoolName',
 		kind: 'string',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -583,7 +583,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'miningPoolStats',
 		kind: 'boolean',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -593,7 +593,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'miningPoolUser',
 		kind: 'string',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: false,
@@ -743,7 +743,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'poolGlobalStats',
 		kind: 'boolean',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 0,
 		defaultBool: true,
@@ -963,7 +963,7 @@ export const settingsFieldMeta: readonly SettingsFieldMeta[] = [
 	{
 		key: 'wifiRebootMin',
 		kind: 'number',
-		bootOnly: false,
+		bootOnly: true,
 		minValue: 0,
 		maxValue: 120,
 		defaultBool: false,
