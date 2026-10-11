@@ -17,6 +17,13 @@ package-lock.json
 yarn.lock
 src/lib/paraglide
 src/lib/timezones.json
+# Paraglide writes .meta.json / README.md / cache/ into project.inlang at
+# runtime; its own .gitignore excludes everything but settings.json so
+# CI never sees them — keep local `pnpm lint` matching CI by skipping
+# them here too.
+project.inlang/.meta.json
+project.inlang/README.md
+project.inlang/cache
 
 # Beads stealth-mode workspace files (auto-generated, not checked in).
 .beads/
