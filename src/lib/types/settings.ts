@@ -167,6 +167,4 @@ export interface Settings {
  * eliminates the `isLoaded` sentinel and gives TypeScript narrowing for free.
  */
 export type SettingsState =
-	| { status: 'loading' }
-	| { status: 'error'; error: string }
-	| { status: 'ready'; data: Settings };
+	{ status: 'loading' } | { status: 'error'; error: string } | { status: 'ready'; data: Settings };

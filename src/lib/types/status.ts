@@ -50,6 +50,4 @@ export interface Status {
 }
 
 export type StatusState =
-	| { status: 'loading' }
-	| { status: 'error'; error: string }
-	| { status: 'ready'; data: Status };
+	{ status: 'loading' } | { status: 'error'; error: string } | { status: 'ready'; data: Status };
