@@ -106,7 +106,9 @@ paths:
             `timerSeconds:bad_type`, `screens:dup_id`) — or, for the
             inverted numeric out-of-range form, `range:<field>`. The
             WebUI's `parseSettingsError` helper splits the two halves so
-            it can highlight the offending input.
+            it can highlight the offending input. The PATCH is
+            all-or-nothing: on a 400 none of the fields in the body are
+            written.
           content:
             application/json:
               schema:
@@ -452,21 +454,82 @@ paths:
   '/upload/firmware':
     post:
       tags: [firmware]
-      summary: Upload a firmware binary (multipart)
+      summary: Upload a firmware binary (raw body)
       description: |
-        Streams the multipart body directly to `Update.write()` with on-the-fly SHA-256.
-        Available when OTA is enabled.
+        Streams the raw request body (the app image, e.g.
+        `build-rev-b/btclock_v4.bin`) into the next OTA partition, then
+        reboots ~1.5 s after responding. Not multipart: send the file as the
+        body, e.g. `curl --data-binary @btclock_v4.bin -H 'Content-Type:
+        application/octet-stream'`. `Content-Length` is required. Available
+        when OTA is enabled (`otaEnabled`).
       security: [{ basicAuth: [] }]
+      parameters:
+        - name: sha256
+          in: query
+          required: false
+          description: Expected SHA-256 of the image (64 hex chars); the update is rejected on mismatch.
+          schema: { type: string, pattern: '^[0-9a-fA-F]{64}$' }
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
       responses:
-        '200': { description: Upload finished; connection may close before reboot }
+        '200':
+          description: Image written; the device reboots shortly after.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result: { type: string, example: ok }
+                  bytes: { type: integer, example: 1749600 }
+        '400': { description: '`{"error":"sha256 mismatch"}`' }
+        '401': { description: Authentication required }
+        '403': { description: 'OTA disabled — `{"error":"ota_disabled"}`' }
+        '411': { description: 'Missing Content-Length — `{"error":"content-length required"}`' }
+        '413':
+          {
+            description: 'Image larger than the OTA partition — `{"error":"oversize","max":<bytes>}`'
+          }
+        '500': { description: Flash write failed or upload truncated }
+        '503':
+          { description: 'Another update is in progress — `{"msg":"Update already in progress"}`' }
   '/upload/webui':
     post:
       tags: [firmware]
-      summary: Upload WebUI / LittleFS image (multipart)
-      description: Available when OTA is enabled.
+      summary: Upload WebUI / LittleFS image (raw body)
+      description: |
+        Streams the raw request body — a LittleFS image packed from
+        `data/build_gz` with `tools/mklittlefs` — into the `storage`
+        partition, then reboots ~0.5 s after responding. Not multipart:
+        send the file as the body, e.g. `curl --data-binary @storage.bin
+        -H 'Content-Type: application/octet-stream'`. Replaces the whole
+        filesystem (including the cached pool logos, which are re-fetched).
+        Available when OTA is enabled (`otaEnabled`).
       security: [{ basicAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
       responses:
-        '200': { description: successful operation }
+        '200':
+          description: Image written; the device reboots shortly after.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result: { type: string, example: ok }
+                  bytes: { type: integer, example: 839680 }
+        '401': { description: Authentication required }
+        '403': { description: 'OTA disabled — `{"error":"ota_disabled"}`' }
+        '413':
+          {
+            description: 'Image larger than the storage partition — `{"error":"oversize","max":<bytes>}`'
+          }
+        '500': { description: Storage partition missing, flash write failed, or upload truncated }
   '/api/frontlight/on':
     post:
       tags: [frontlight]

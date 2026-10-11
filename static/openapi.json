@@ -126,7 +126,7 @@
 						}
 					},
 					"400": {
-						"description": "Validation failed. The body carries a single `error` string of\nthe form `<field>:<reason>` (e.g. `fontName:unknown`,\n`timerSeconds:bad_type`, `screens:dup_id`) \u2014 or, for the\ninverted numeric out-of-range form, `range:<field>`. The\nWebUI's `parseSettingsError` helper splits the two halves so\nit can highlight the offending input.\n",
+						"description": "Validation failed. The body carries a single `error` string of\nthe form `<field>:<reason>` (e.g. `fontName:unknown`,\n`timerSeconds:bad_type`, `screens:dup_id`) \u2014 or, for the\ninverted numeric out-of-range form, `range:<field>`. The\nWebUI's `parseSettingsError` helper splits the two halves so\nit can highlight the offending input. The PATCH is\nall-or-nothing: on a 400 none of the fields in the body are\nwritten.\n",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -747,16 +747,77 @@
 		"/upload/firmware": {
 			"post": {
 				"tags": ["firmware"],
-				"summary": "Upload a firmware binary (multipart)",
-				"description": "Streams the multipart body directly to `Update.write()` with on-the-fly SHA-256.\nAvailable when OTA is enabled.\n",
+				"summary": "Upload a firmware binary (raw body)",
+				"description": "Streams the raw request body (the app image, e.g.\n`build-rev-b/btclock_v4.bin`) into the next OTA partition, then\nreboots ~1.5 s after responding. Not multipart: send the file as the\nbody, e.g. `curl --data-binary @btclock_v4.bin -H 'Content-Type:\napplication/octet-stream'`. `Content-Length` is required. Available\nwhen OTA is enabled (`otaEnabled`).\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
+				"parameters": [
+					{
+						"name": "sha256",
+						"in": "query",
+						"required": false,
+						"description": "Expected SHA-256 of the image (64 hex chars); the update is rejected on mismatch.",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{64}$"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/octet-stream": {
+							"schema": {
+								"type": "string",
+								"format": "binary"
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
-						"description": "Upload finished; connection may close before reboot"
+						"description": "Image written; the device reboots shortly after.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"result": {
+											"type": "string",
+											"example": "ok"
+										},
+										"bytes": {
+											"type": "integer",
+											"example": 1749600
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "`{\"error\":\"sha256 mismatch\"}`"
+					},
+					"401": {
+						"description": "Authentication required"
+					},
+					"403": {
+						"description": "OTA disabled \u2014 `{\"error\":\"ota_disabled\"}`"
+					},
+					"411": {
+						"description": "Missing Content-Length \u2014 `{\"error\":\"content-length required\"}`"
+					},
+					"413": {
+						"description": "Image larger than the OTA partition \u2014 `{\"error\":\"oversize\",\"max\":<bytes>}`"
+					},
+					"500": {
+						"description": "Flash write failed or upload truncated"
+					},
+					"503": {
+						"description": "Another update is in progress \u2014 `{\"msg\":\"Update already in progress\"}`"
 					}
 				}
 			}
@@ -764,16 +825,58 @@
 		"/upload/webui": {
 			"post": {
 				"tags": ["firmware"],
-				"summary": "Upload WebUI / LittleFS image (multipart)",
-				"description": "Available when OTA is enabled.",
+				"summary": "Upload WebUI / LittleFS image (raw body)",
+				"description": "Streams the raw request body \u2014 a LittleFS image packed from\n`data/build_gz` with `tools/mklittlefs` \u2014 into the `storage`\npartition, then reboots ~0.5 s after responding. Not multipart:\nsend the file as the body, e.g. `curl --data-binary @storage.bin\n-H 'Content-Type: application/octet-stream'`. Replaces the whole\nfilesystem (including the cached pool logos, which are re-fetched).\nAvailable when OTA is enabled (`otaEnabled`).\n",
 				"security": [
 					{
 						"basicAuth": []
 					}
 				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/octet-stream": {
+							"schema": {
+								"type": "string",
+								"format": "binary"
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
-						"description": "successful operation"
+						"description": "Image written; the device reboots shortly after.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"result": {
+											"type": "string",
+											"example": "ok"
+										},
+										"bytes": {
+											"type": "integer",
+											"example": 839680
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Authentication required"
+					},
+					"403": {
+						"description": "OTA disabled \u2014 `{\"error\":\"ota_disabled\"}`"
+					},
+					"413": {
+						"description": "Image larger than the storage partition \u2014 `{\"error\":\"oversize\",\"max\":<bytes>}`"
+					},
+					"500": {
+						"description": "Storage partition missing",
+						"flash write failed": null,
+						"or upload truncated": null
 					}
 				}
 			}
