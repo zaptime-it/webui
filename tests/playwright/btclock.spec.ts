@@ -110,6 +110,34 @@ test('timezone selector is populated with the full IANA list', async ({ page }) 
 	}
 });
 
+/** Regression: the pool-wide hashrate switch is gated on a hardcoded list of
+ *  pool ids, which once said 'satoshiradio' instead of the firmware id
+ *  'satoshi_radio' — Satoshi Radio users never saw the switch. Drive the real
+ *  dropdown for every pool the firmware honours `poolGlobalStats` for, plus a
+ *  few that must not show it. */
+test('pool-wide hashrate switch follows the selected pool', async ({ page }) => {
+	const original = settingsJson.miningPoolStats;
+	settingsJson.miningPoolStats = true;
+	try {
+		await page.goto('/');
+		await waitForReady(page);
+		await page.getByRole('button', { name: 'Extra features', exact: true }).click();
+
+		const pool = page.locator('#miningPoolName');
+		const toggle = page.locator('#poolGlobalStats');
+		for (const id of ['noderunners', 'satoshi_radio', 'public_pool', 'blitzpool']) {
+			await pool.selectOption(id);
+			await expect(toggle, `switch shown for ${id}`).toBeVisible();
+		}
+		for (const id of ['ocean', 'braiins', 'ckpool']) {
+			await pool.selectOption(id);
+			await expect(toggle, `switch hidden for ${id}`).toHaveCount(0);
+		}
+	} finally {
+		settingsJson.miningPoolStats = original;
+	}
+});
+
 test('index page has working language selector', async ({ page }) => {
 	// v2 replaced the Bootstrap-style `#nav-language-dropdown` with a
 	// state-driven `LanguageMenu` (`src/lib/ui/LanguageMenu.svelte`).

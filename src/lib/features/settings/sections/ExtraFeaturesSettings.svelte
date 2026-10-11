@@ -169,12 +169,13 @@
 		])
 	);
 
-	// Pools that expose a ckpool-style /api/v1/pool endpoint — the firmware
-	// knows this via MiningPoolInterface::supportsGlobalStats(). Kept in sync
-	// by convention: add a pool here if you add the override in firmware.
+	// Pool ids (exactly as in availablePools) whose firmware source honours
+	// `poolGlobalStats` with a pool-wide endpoint. Kept in sync by
+	// convention with the pool components that read `pool/global`; a
+	// misspelt id silently hides the switch for that pool.
 	const poolsWithGlobalStats = new Set([
 		'noderunners',
-		'satoshiradio',
+		'satoshi_radio',
 		'blitzpool',
 		'public_pool'
 	]);

@@ -42,13 +42,14 @@ describe('ExtraFeaturesSettings test buttons', () => {
 		for (const p of patterns) expect(src).not.toMatch(p);
 	});
 
-	test('pool-wide hashrate toggle only appears for pools that expose /api/v1/pool', () => {
+	test('pool-wide hashrate toggle only appears for pools with a pool-wide endpoint', () => {
 		// The toggle is gated in the template by `supportsGlobalStats`, which
 		// is a derived Set-membership check. The hardcoded list mirrors the
-		// firmware's MiningPoolInterface::supportsGlobalStats() overrides;
-		// adding a third pool requires updates on both sides.
+		// firmware pool sources that read `pool/global`, by their
+		// availablePools id; the e2e test in tests/playwright/btclock.spec.ts
+		// drives the real dropdown for each of them.
 		expect(src).toMatch(
-			/poolsWithGlobalStats = new Set\(\[[\s\S]*?'noderunners'[\s\S]*?'satoshiradio'[\s\S]*?'blitzpool'[\s\S]*?'public_pool'[\s\S]*?\]\)/
+			/poolsWithGlobalStats = new Set\(\[[\s\S]*?'noderunners'[\s\S]*?'satoshi_radio'[\s\S]*?'blitzpool'[\s\S]*?'public_pool'[\s\S]*?\]\)/
 		);
 		expect(src).toContain('const supportsGlobalStats = $derived(');
 		// Toggle renders only inside the supportsGlobalStats guard.
