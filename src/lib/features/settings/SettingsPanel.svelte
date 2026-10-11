@@ -82,7 +82,8 @@
 		['nerdminers_org', 'NerdMiner.org'],
 		['nerdminer_io', 'NerdMiner.io'],
 		['foundry_usa', 'Foundry USA'],
-		['viabtc', 'ViaBTC']
+		['viabtc', 'ViaBTC'],
+		['btcpowlab', 'BTC PoW Lab']
 	]);
 
 	type SectionKey =
